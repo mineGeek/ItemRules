@@ -1,0 +1,31 @@
+rules:
+  example:
+    restrictionMessage: 'You cannot %s %m after XP level %m'
+    actions:
+    - CRAFT
+    - PICKUP
+    - USE
+    worlds:
+    - world
+    excludeWorlds:
+    - world_nether
+    XPMin: 0
+    XPMax: 2
+    items:
+    - '268'
+    - '5.2'
+  example2:
+    restrictionMessage: 'You cannot %s %m until after XP level %m'
+    actions:
+    - CRAFT
+    - PICKUP
+    - USE
+    worlds:
+    - world
+    excludeWorlds:
+    - world_nether
+    XPMin: 5
+    XPMax: 
+    items:
+    - '276'
+    - '278'
