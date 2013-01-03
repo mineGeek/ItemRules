@@ -3,6 +3,7 @@ package com.github.mineGeek.ItemRules.Commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.github.mineGeek.ItemRules.Rules.RuleInterface;
@@ -47,28 +48,32 @@ public class RulesAvailable extends CommandBase {
 
 		Boolean can = ( cmdName.equalsIgnoreCase( "ircan" ) ? true : false );
 		
-		List<RuleInterface> unrestricted 		= new ArrayList<RuleInterface>();
-		List<RuleInterface> restricted 			= new ArrayList<RuleInterface>();
-		List<RuleInterface> unrestrictednext 	= new ArrayList<RuleInterface>();		
+		String unrestricted 	= null;
+		String restricted 		= null;
+		String unrestrictednext	= null;		
+		
+		ChatColor unrestrictedColor = ChatColor.GREEN;
+		ChatColor restrictedColor	= ChatColor.RED;
+		ChatColor unrestrictedNext	= ChatColor.YELLOW;
 		
 		if ( ( args.length > ( 0 + argStart ) ) && !args[ argStart ].equalsIgnoreCase("current" ) ) {
 			
 			if ( args[ argStart ].equalsIgnoreCase("all") ) {
 				
-				unrestricted = Rules.getPlayerItemRules(player, false, false);
-				restricted = Rules.getPlayerItemRules(player, true, false);
-				unrestrictednext = Rules.getPlayerItemRules(player, true, true);
+				unrestricted = Rules.getPlayerItemRules(player, unrestrictedColor, false, false);
+				restricted = Rules.getPlayerItemRules(player, restrictedColor, true, false);
+				unrestrictednext = Rules.getPlayerItemRules(player, unrestrictedNext, true, true);
 				emptyMessage = can ? "do nothing" : "be limited!";
 					
 			} else if ( args[ argStart ].equalsIgnoreCase("current" ) ) {
 				
-				unrestricted = Rules.getPlayerItemRules(player, false, false);
-				unrestrictednext = Rules.getPlayerItemRules(player, true, true);
+				unrestricted = Rules.getPlayerItemRules(player, unrestrictedColor, false, false);
+				unrestrictednext = Rules.getPlayerItemRules(player, unrestrictedNext, true, true);
 				emptyMessage = can ? "nothing new" : "have any new restrictions (at this level)";
 					
 			} if ( args[argStart].equalsIgnoreCase("next") ) {
 				
-				unrestrictednext = Rules.getPlayerItemRules(player, true, true);
+				unrestrictednext = Rules.getPlayerItemRules(player, unrestrictedNext, true, true);
 				emptyMessage = can ? "do the same as this level" : "do the same things at this level";
 					
 			}
@@ -77,12 +82,26 @@ public class RulesAvailable extends CommandBase {
 		} else {
 
 			emptyMessage = can ? "nothing" : "anything!";
-			unrestricted = Rules.getPlayerItemRules(player, false, false);
-			unrestrictednext = Rules.getPlayerItemRules(player, true, true);
+			unrestricted = Rules.getPlayerItemRules(player, unrestrictedColor, false, false);
+			unrestrictednext = Rules.getPlayerItemRules(player,  unrestrictedNext, true, true);
 			if ( execMessage.length() == 0 ) execMessage = can ? "You have no restrictions" : "You seem to have too many restrictions to even count.";
 			
 		}
 		
+		execMessage = "";
+		
+		if ( unrestricted != null ) {
+			execMessage = unrestricted;
+		}
+		
+		if ( unrestrictedNext != null ) {
+			execMessage = execMessage + unrestrictedNext;
+		}
+		
+		if ( restricted != null ) {
+			execMessage = execMessage + restricted;
+		}
+
 		
 		if ( execMessage == null || execMessage.length() == 0 ) execMessage = emptyMessage;		
 		

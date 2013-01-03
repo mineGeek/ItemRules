@@ -18,7 +18,7 @@ abstract class CommandBase  implements CommandExecutor{
 		
 		Boolean result = exec( cmd.getName().toLowerCase(), args );
 		
-		if ( execMessage != null ) {
+		if ( execMessage != null && execMessage.length() > 0 ) {
 			
 			sender.sendMessage( this.execMessage );
 			

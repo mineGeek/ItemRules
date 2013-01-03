@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -19,9 +20,10 @@ public class Rules {
 		return Rules.getPlayerRules(player, Users.get(player).getXPLevel(), Users.get(player).getItemLevel() );
 	}
 	
-	public static List<RuleInterface> getPlayerItemRules( Player player, Boolean restricted, Boolean nextOnly ) {
+	public static String getPlayerItemRules( Player player, ChatColor color, Boolean restricted, Boolean nextOnly ) {
 		
-		List<RuleInterface> ruleSet = new ArrayList<RuleInterface>();
+		List<String> ruleSet = new ArrayList<String>();
+		String result = null;
 		Integer XP= 0;
 		Integer IL = 0;
 		
@@ -43,11 +45,11 @@ public class Rules {
 					if ( x.isItemLevelMaxTooLow(IL) || x.isItemLevelMinTooHigh(IL) || x.isXPMaxTooLow(XP) || x.isXPMinTooHigh(XP)) {
 						
 						if ( restricted ) {
-							ruleSet.add( x );
+							ruleSet.add(x.getRestrictionMessage() );
 						}
 						
 					} else if ( !restricted ) {
-						ruleSet.add( x );
+						ruleSet.add( x.getRestrictionMessage() );
 					}
 						
 				}
@@ -55,7 +57,26 @@ public class Rules {
 			
 		}		
 
-		return ruleSet;
+		if ( !ruleSet.isEmpty() ) {
+			int y = 1;
+			for ( String x : ruleSet ) {
+				
+				y++;
+				if ( result != null ) {
+					if ( y > ruleSet.size() ) {
+						result = result + " and " + x;
+					} else {
+						result = result + ", " + x;
+					}
+				} else {
+					result = color + x;
+				}
+				
+			}
+			
+		}
+		
+		return result;
 		
 	}
 	
