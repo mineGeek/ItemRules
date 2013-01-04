@@ -1,6 +1,7 @@
 rules:
   example:
-    restrictionMessage: 'You cannot %s %m after XP level %m'
+    unrestrictedMessage: You can %s ex1 now.
+    restrictedMessage: 'You cannot %1 %3 after XP level %4'
     actions:
     - CRAFT
     - PICKUP
@@ -15,7 +16,8 @@ rules:
     - '268'
     - '5.2'
   example2:
-    restrictionMessage: 'You cannot %s %m until after XP level %m'
+    unrestrictedMessage: You can %s ex2 now.  
+    restrictedMessage: 'You cannot %1 %4 until after XP level %3'
     actions:
     - CRAFT
     - PICKUP

@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.github.mineGeek.ItemRules.Commands.RulesAvailable;
 import com.github.mineGeek.ItemRules.Events.Listeners;
 import com.github.mineGeek.ItemRules.Store.Users;
 
@@ -31,6 +32,9 @@ public class ItemRules extends JavaPlugin {
 		Users.loadOnline();
 		
 		this.getServer().getPluginManager().registerEvents( new Listeners(), this);
+    	RulesAvailable ra = new RulesAvailable();
+    	getCommand("ircan").setExecutor( ra );
+    	getCommand("ircant").setExecutor( ra );		
 		
 		
 	}
@@ -43,7 +47,7 @@ public class ItemRules extends JavaPlugin {
     		try {
     			file.mkdir();
     		} catch (Exception e ) {
-    			this.getLogger().info("Failed making plugins/LevelRestrictions/players");
+    			this.getLogger().info("Failed making plugins/ItemRules/players");
     		}
     	}		
 		

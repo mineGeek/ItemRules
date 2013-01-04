@@ -22,12 +22,15 @@ public class Users {
 	}
 	
 	public static void addPlayer( Player player ) {
-		players.put( player.getName(), new UserStoreItem( dataFolder, player ) );
+
+		UserStoreItem ui = new UserStoreItem( dataFolder, player);
+		players.put( player.getName(), ui );
+		ui.loadRules();
 	}
 	
-	public static void removePlayer( Player player ) {
-		players.get(player.getName()).save();
-		players.remove( player.getName() );
+	public static void removePlayer( String playerName ) {
+		players.get( playerName ).save();
+		players.remove( playerName );
 	}
 	
 	public static void loadOnline() {

@@ -1,5 +1,7 @@
 package com.github.mineGeek.ItemRules.Store;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,8 @@ public class UserStoreItem extends DataStore {
 	Player player = null;
 	
 	Map<Actions, List<RuleInterface>> rules;
+	Map<String, RuleInterface> manualRules = new HashMap<String, RuleInterface>();
+	List<String> manualRuleList = new ArrayList<String>();
 	
 	public UserStoreItem( String dataFolder ) {
 		super(dataFolder);
@@ -31,17 +35,59 @@ public class UserStoreItem extends DataStore {
 		this.load();
 		
 		if ( Config.ItemLevelDefaultsToXPLevel ) {
-			this.setXPLevel( player.getLevel() );
-		} else {
-			
-			this.loadRules();
-		}		
+			this.setXPLevel( player.getLevel(), false );
+		}
 		
+	}
+	
+	public void addManualRule( String tag ) {
+		
+		RuleInterface rule = Rules.getRule( tag );
+		
+		if ( rule != null ) {
+			this.manualRuleList.add( tag );
+			this.manualRules.put(tag ,rule);
+		}
+		
+	}
+	
+	public void addManualRule( RuleInterface rule ) {
+		this.manualRules.put( rule.getTag(), rule);
+		this.manualRuleList.add( rule.getTag() );
+	}
+	
+	public void removeManualRule( String tag ) {
+		this.manualRules.remove(tag);
+		this.manualRuleList.remove(tag);
+	}
+	
+	public void clearManualRules() {
+		this.manualRules.clear();
+		this.manualRuleList.clear();
 	}
 	
 	public void loadRules() {
 		
 		this.rules = Rules.getPlayerRules( this.player );
+		
+	}
+	
+	public void setManualList() {
+		
+		this.set("manualList", this.manualRuleList );
+		
+	}
+	
+	public void loadManualList() {
+		
+		this.manualRuleList = this.getAsStringList("manualList");
+		
+	}
+	
+	public Boolean hasManualRule( String value ) {
+		
+		if ( this.manualRules.containsKey( value ) ) return true;
+		return false;
 		
 	}
 	
@@ -52,7 +98,7 @@ public class UserStoreItem extends DataStore {
 			
 			while ( r.hasNext() ) {
 				
-				if ( r.next().isRestricted(material, data) ) return true;
+				if ( r.next().isRestricted( this.player, material, data) ) return true;
 			}
 			
 		}
@@ -71,6 +117,10 @@ public class UserStoreItem extends DataStore {
 	}
 	
 	public void setXPLevel( Integer level ) {
+		this.setXPLevel(level, true);
+	}
+	
+	public void setXPLevel( Integer level, Boolean refreshRules ) {
 	
 		
 		this.set("XPLevel", level);
@@ -81,7 +131,7 @@ public class UserStoreItem extends DataStore {
 			this.setItemLevel(level);
 		}
 		
-		this.loadRules();
+		if ( refreshRules)  loadRules();
 	}
 	
 	

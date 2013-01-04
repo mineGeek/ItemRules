@@ -1,6 +1,7 @@
 package com.github.mineGeek.ItemRules.Rules;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Material;
@@ -23,7 +24,9 @@ public class RuleBase implements RuleInterface {
 	private Boolean defaultValue;
 	private List<String> items = new ArrayList<String>();
 	private List<Actions> actions = new ArrayList<Actions>();
-	private String restrictionMessage;
+	private String restrictedMessage;
+	private String unrestrictedMessage;
+	private Boolean autoAdd = true;
 	
 	
 	public RuleBase( RuleBase rule ) {
@@ -57,6 +60,14 @@ public class RuleBase implements RuleInterface {
 	}
 
 
+	
+	public void setAutoAdd( Boolean value ) {
+		this.autoAdd = value;
+	}
+	
+	public Boolean getAutoAdd() {
+		return this.autoAdd;
+	}
 
 
 	public String getDescription() {
@@ -71,12 +82,63 @@ public class RuleBase implements RuleInterface {
 	}
 
 
-	public void setRestrictionMessage( String value ) {
-		this.restrictionMessage = value;
+	public String getActionsAsString() {
+		
+		String result = null;
+		Iterator<Actions> i = this.actions.iterator();
+		
+		while ( i.hasNext() ) {
+			String y = i.next().toString().toLowerCase();
+			if ( result == null ) {
+				result = y;
+			} else if ( i.hasNext() ) {
+				result = result + ", " + y;
+			} else {
+				result = result + " & " + y;
+			}
+			
+		}
+		return result;
 	}
 	
-	public String getRestrictionMessage() {
-		return String.format( this.restrictionMessage, new Object[]{"hi", "there", "1", "23"});
+	public void setUnrestrictedMessage( String value ) {
+		this.unrestrictedMessage = value;
+	}
+	
+	public String getUnrestrictedMessage( String material ) {
+		return this.getFormattedMessage( this.unrestrictedMessage, material );
+	}
+	
+	public String getUnrestrictedMessage() {
+		return this.getFormattedMessage( this.unrestrictedMessage, "");
+	}
+	
+	public void setRestrictedMessage( String value ) {
+		this.restrictedMessage = value;
+	}
+	
+	public String getRestrictedMessage() {
+		return this.getRestrictedMessage( "" );
+	}
+	
+	private String getFormattedMessage( String message, String material ) {
+		
+		try {
+			List<Object> tokens = new ArrayList<Object>();
+			tokens.add( this.getActionsAsString() + (material.length() > 0 ? " " + material : "" ) );
+			tokens.add( ( this.getXPMin() != null ? this.getXPMin() : 0 ) );
+			tokens.add( ( this.getXPMax() != null ? this.getXPMax() : 0 ) );
+			tokens.add( ( this.getItemLevelMin() != null ? this.getItemLevelMin() : 0 ) );
+			tokens.add( ( this.getItemLevelMax() != null ? this.getItemLevelMax() : 0 ) );
+			return String.format( message, tokens.toArray() );
+		} catch ( Exception e ) {
+			return message;
+		}
+		
+	}
+	
+	public String getRestrictedMessage( String material ) {
+		return this.getFormattedMessage( this.restrictedMessage, material );
 	}
 
 	public void setWorldNames( List<String> value ) {
@@ -114,6 +176,24 @@ public class RuleBase implements RuleInterface {
 		
 	}
 	
+	
+	public Boolean appliesToItemLevel( int value ) {
+		
+		boolean minOk = true;
+		boolean maxOk = true;
+		
+		if ( this.getItemLevelMin() != null && this.getItemLevelMin() > 0 ) {
+			if ( this.getItemLevelMin() > value ) minOk = false;
+		}
+		
+		if ( this.getItemLevelMax() != null && this.getItemLevelMax() > 0 ) {
+			if ( this.getItemLevelMax() < value ) maxOk = false;
+		}
+		
+		return minOk && maxOk;		
+		
+	}
+	
 	public Boolean isXPMinTooHigh( int value ) {
 		
 		if ( this.getXPMin() != null ) {
@@ -139,18 +219,17 @@ public class RuleBase implements RuleInterface {
 		boolean minOk = true;
 		boolean maxOk = true;
 		
-		if ( this.getXPMin() != null ) {
-			if ( this.getXPMin() < value ) minOk = false;
+		if ( this.getXPMin() != null  ) {
+			if ( this.getXPMin() > value ) minOk = false;
 		}
 		
-		if ( this.getXPMax() != null ) {
-			if ( this.getXPMax() > value ) maxOk = false;
+		if ( this.getXPMax() != null && this.getXPMax() > 0 ) {
+			if ( this.getXPMax() < value ) maxOk = false;
 		}
 		
 		return minOk && maxOk;
 		
 	}
-	
 	
 	public Boolean isItemLevelMinTooHigh( int value ) {
 		
@@ -169,23 +248,6 @@ public class RuleBase implements RuleInterface {
 		}
 		return false;
 	}
-	
-	public Boolean appliesToItemLevel( int value ) {
-		
-		boolean minOk = true;
-		boolean maxOk = true;
-		
-		if ( this.getItemLevelMin() != null ) {
-			if ( this.getItemLevelMin() < value ) minOk = false;
-		}
-		
-		if ( this.getItemLevelMax() != null ) {
-			if ( this.getItemLevelMax() > value ) maxOk = false;
-		}
-		
-		return minOk && maxOk;
-		
-	}	
 	
 
 	protected Boolean getDefaultValue() {
@@ -306,6 +368,7 @@ public class RuleBase implements RuleInterface {
 		
 	}
 	
+	
 	public boolean isActionApplicable( Actions action, Player player ) {
 		
 		if ( this.isBypassed( player ) ) return false;
@@ -318,9 +381,9 @@ public class RuleBase implements RuleInterface {
 		
 		if ( !this.isActionApplicable(action, player) ) return false;
 		if ( !this.appliesToXPLevel( XPLevel ) ) return false;
-		if ( !this.appliesToItemLevel( Users.get(player).getItemLevel() ) ) return false;
+		if ( !this.appliesToItemLevel( itemLevel ) ) return false;
 		
-		return false;
+		return true;
 		
 	}
 	
@@ -338,8 +401,10 @@ public class RuleBase implements RuleInterface {
 	
 	public Boolean isRestricted( Player player, Material material, byte data ) {
 		
-		if ( !this.appliesToXPLevel( player.getLevel() ) ) {
-			return this.appliesToItem( material.getId(), data );
+		if ( this.appliesToXPLevel( player.getLevel() ) ) {
+			if ( this.appliesToItemLevel( Users.get(player).getItemLevel() ) ) {
+				return this.appliesToItem( material.getId(), data );
+			}
 		}
 		
 		return false;

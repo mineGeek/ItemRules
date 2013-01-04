@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
+import com.github.mineGeek.ItemRules.API;
 import com.github.mineGeek.ItemRules.ItemRules.Actions;
 import com.github.mineGeek.ItemRules.Store.Users;
 
@@ -27,14 +28,15 @@ public class Listeners implements Listener {
 	public void onPlayerJoin( PlayerJoinEvent evt ) {
 
 		Users.addPlayer( evt.getPlayer() );
-		evt.getPlayer().sendMessage("Your level is " + Users.get(evt.getPlayer()).getXPLevel() + " your item level is " + Users.get( evt.getPlayer() ).getItemLevel() );
+		//evt.getPlayer().sendMessage("Your level is " + Users.get(evt.getPlayer()).getXPLevel() + " your item level is " + Users.get( evt.getPlayer() ).getItemLevel() );
+		API.printCurrentRulesToPlayer( evt.getPlayer() );
 		
 	}
 	
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLeave(PlayerQuitEvent evt )
     {
-    	Users.removePlayer( evt.getPlayer() );
+    	Users.removePlayer( evt.getPlayer().getName() );
     	
     }
     

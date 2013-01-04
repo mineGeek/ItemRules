@@ -16,6 +16,10 @@ public class Config {
 	public static Boolean XPLossReducesItemLevel 		= true;
 	public static Boolean ItemLevelDefaultsToXPLevel	= true;
 	
+	public static String txtCanDoPrefix = "You can ";
+	public static String txtCanDoNextPrefix = "Next you can ";
+	public static String txtCannotDoPrefix = "You cannot yet ";
+	
 	public static void loadRulesFromConfig( MemorySection c) {
 		
 		if ( c.contains("rules") ) {

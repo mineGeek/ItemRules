@@ -1,7 +1,9 @@
 package com.github.mineGeek.ItemRules.Store;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -38,6 +40,14 @@ public class DataStore {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<String> getAsStringList( String columnName ) {
+		Object value = this.get(columnName);
+		try {
+			return ( ArrayList<String> )value;
+		} catch (Exception e ) { return new ArrayList<String>(); }
+	}
+	
 	public Boolean getAsBoolean( String columnName, Boolean defaultValue ) {
 		Object value = this.get( columnName );
 		if ( value == null ) return defaultValue;
@@ -69,7 +79,8 @@ public class DataStore {
 
 	public String getFullFileName() {
 
-		return this.dataFolder + File.separator + "players" +  File.separator + this.getFileName() + "." + this.getFileExt();
+		String result = this.dataFolder + File.separator + "players" +  File.separator + this.getFileName() + "." + this.getFileExt();
+		return result;
 	}
 	
 	public Boolean save() {
@@ -78,7 +89,9 @@ public class DataStore {
 			 SLAPI.save( this.data, this.getFullFileName() );
 			 return true;
 			 
-		} catch (Exception e) { e.printStackTrace(); }		
+		} catch (Exception e) { 
+			e.printStackTrace();
+		}		
 		
     	return false;
 	}

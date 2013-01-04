@@ -32,6 +32,7 @@ public interface RuleInterface {
 	
 	public void setWorldNames( List<String> value );
 	
+	
 	public Boolean appliesToXPLevel( int value );
 	public Boolean isXPMinTooHigh( int value );
 	public Boolean isXPMaxTooLow( int value );
@@ -44,9 +45,16 @@ public interface RuleInterface {
 	public void setItemLevelMax( Integer value );
 	
 	public void setTag( String value );
+	public String getTag();
 	public void setDefaultValue( Boolean value );
 	
-	public String getRestrictionMessage();
-	public void setRestrictionMessage( String value );
+	public String getRestrictedMessage();
+	public String getUnrestrictedMessage();
+	public void setRestrictedMessage( String value );
+	public void setUnrestrictedMessage( String value );
+	
+	public void setAutoAdd( Boolean value );
+	public Boolean getAutoAdd();
+	
 	
 }
