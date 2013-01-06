@@ -7,6 +7,14 @@ import org.bukkit.entity.Player;
 
 import com.github.mineGeek.ItemRules.ItemRules.Actions;
 
+
+
+
+/**
+ * Interface for working with different kinds of rules
+ * e.g. Standard, Faction based, McMMO based.
+ *
+ */
 public interface RuleInterface {
 
 	public void setActions(List<Actions> actions);
@@ -33,12 +41,12 @@ public interface RuleInterface {
 	public void setWorldNames( List<String> value );
 	
 	
-	public Boolean appliesToXPLevel( int value );
+	public Boolean passesXPLevel( int value );
 	public Boolean isXPMinTooHigh( int value );
 	public Boolean isXPMaxTooLow( int value );
 	public void setXPMin( Integer value );
 	public void setXPMax( Integer value );
-	public Boolean appliesToItemLevel( int value );
+	public Boolean passesItemLevel( int value );
 	public Boolean isItemLevelMinTooHigh( int value );
 	public Boolean isItemLevelMaxTooLow( int value );
 	public void setItemLevelMin( Integer value );
@@ -52,9 +60,14 @@ public interface RuleInterface {
 	public String getUnrestrictedMessage();
 	public void setRestrictedMessage( String value );
 	public void setUnrestrictedMessage( String value );
+	public String getRestrictedMessage( Actions action, Material material );
+	public String getDescription();
+	public void setDescription( String value );
 	
 	public void setAutoAdd( Boolean value );
 	public Boolean getAutoAdd();
+	public void setAllow( Boolean value );
+	public Boolean getAllow();
 	
 	
 }

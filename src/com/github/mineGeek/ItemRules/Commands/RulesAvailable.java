@@ -5,8 +5,27 @@ import org.bukkit.entity.Player;
 
 import com.github.mineGeek.ItemRules.Rules.Rules;
 
+
+
+
+
+/**
+ * Allows users to see which rules apply and do not apply.
+ * covers:
+ * 
+ * can [all|current|next]
+ * cant [all|current|next]
+ *
+ */
 public class RulesAvailable extends CommandBase {
 
+	
+	
+	
+	
+	/**
+	 * Executes the command
+	 */
 	protected Boolean exec( String cmdName, String[] args ) {
 			
 		Integer argStart = 0;

@@ -7,19 +7,133 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import com.github.mineGeek.ItemRules.Rules.Rules;
 
+/**
+ * Utility wrapper for configuration
+ *
+ */
 public class Config {
 
+	/**
+	 * The server
+	 */
 	public static Server server;
+	
+	
+	
+	
+	/**
+	 * The actual config file from getConfig()
+	 */
 	public static FileConfiguration c;
 	
+	
+	
+	/**
+	 * If true, will increase item level when XP level increases
+	 */
 	public static Boolean XPLevelIncreasesItemLevel 	= true;
+	
+	
+	
+	
+	/**
+	 * If true, will decrease item level when XP level decreases
+	 */
 	public static Boolean XPLossReducesItemLevel 		= true;
+	
+	
+	
+	
+	/**
+	 * If true, will start off player with an item level equal to their
+	 * XP level
+	 */
 	public static Boolean ItemLevelDefaultsToXPLevel	= true;
 	
+	
+	
+	
+	/**
+	 * Here is this damn setting I need to get rid of
+	 * TODO: Get rid of this
+	 */
+	public static Boolean defaultValue					= false;
+	
+	
+	
+	
+	/**
+	 * Default mode for restrictions. If false, rules act as 
+	 * blacklist (the default mode). If true, it acts as a whitelist
+	 */
+	public static Boolean defaultAllow					= false;
+	
+	
+	
+	
+	
+	/**
+	 * The textual prefix for when we show the player a list of things
+	 * they can do
+	 */
 	public static String txtCanDoPrefix = "You can ";
+	
+	
+	
+	
+	/**
+	 * the textual prefix for when we show the player what they can do next
+	 */
 	public static String txtCanDoNextPrefix = "Next you can ";
+	
+	
+	
+	
+	/**
+	 * The textual prefix for when we show the player what they cannot do
+	 */
 	public static String txtCannotDoPrefix = "You cannot yet ";
 	
+	
+	
+	
+	/**
+	 * Whether or not to monitor player locations. Will go to true if there
+	 * are any areaRules set up
+	 */
+	public static Boolean monitorPlayerLocations		= false;
+	
+	
+	
+	
+	
+	/**
+	 * Loads all areaRules from the config
+	 * @param c
+	 */
+	public static void loadAreaRulesFromConfig( MemorySection c ) {
+		
+		if ( c.contains("arearules") ) {
+			for ( String x : c.getConfigurationSection("arearules").getKeys( false ) ) {
+				AreaRules.addRule(x, c.getConfigurationSection("arearules." + x) );
+			}
+		}
+		
+		if ( !AreaRules.activeChunks.isEmpty() ) {
+			//monitor movement!
+			Config.monitorPlayerLocations = true;			
+		}
+		
+	}
+	
+	
+	
+	
+	
+	/**
+	 * Load all rules from the config
+	 * @param c
+	 */
 	public static void loadRulesFromConfig( MemorySection c) {
 		
 		if ( c.contains("rules") ) {
@@ -37,66 +151,19 @@ public class Config {
 	}
 	
 	
+	
+	
+	/**
+	 * Load other variables from config
+	 */
 	public static void loadConfig() {
 		
 		Config.XPLevelIncreasesItemLevel 	= c.getBoolean("XP.levelIncreasesItemLevel", true );
 		Config.XPLossReducesItemLevel 		= c.getBoolean("XP.levelDecreasesItemLevel", true );
 		Config.XPLevelIncreasesItemLevel 	= c.getBoolean("XP.itemLevelDefaultsToXPLevel", true );
-		
-		/*
-		List<Actions> actionList = new ArrayList<Actions>();
-		actionList.add( Actions.CRAFT );
-		actionList.add( Actions.PICKUP );
-		actionList.add( Actions.USE );
-		
-		c.addDefault("rules.example.actions", actionList);
-		
-		List<String> worldList = new ArrayList<String>();
-		worldList.add("world");
-		
-		c.addDefault("rules.example.worlds", worldList );
-		
-		worldList.clear();
-		worldList.add("world_nether");
-		
-		c.addDefault("rules.example.excludeWorlds", worldList );
-		c.addDefault("rules.example.XPMin", 0 );
-		c.addDefault("rules.example.XPMax", 2 );
-		
-		List<String> itemList = new ArrayList<String>();
-		itemList.add("268");
-		itemList.add("5.2");
-		
-		c.addDefault("rules.example.items", itemList );
-		
-		actionList = new ArrayList<Actions>();
-		actionList.add( Actions.CRAFT );
-		actionList.add( Actions.PICKUP );
-		actionList.add( Actions.USE );	
-		
-		
-		c.addDefault("rules.example2.actions", actionList);
-		
-		worldList = new ArrayList<String>();
-		worldList.add("world");
-		
-		c.addDefault("rules.example2.worlds", worldList );
-		
-		worldList.clear();
-		worldList.add("world_nether");
-		
-		c.addDefault("rules.example2.excludeWorlds", worldList );
-		c.addDefault("rules.example2.XPMin", 0 );
-		c.addDefault("rules.example2.XPMax", 2 );
-		
-		itemList = new ArrayList<String>();
-		itemList.add("276");
-		itemList.add("278");		
-		
-		c.addDefault("rules.example2.items", itemList );
-		*/
-		c.options().copyDefaults( true );
-		
+		Config.defaultAllow					= c.getBoolean("defaultAllow", false );
+
 	}
+	
 	
 }

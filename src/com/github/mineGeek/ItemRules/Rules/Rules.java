@@ -9,16 +9,46 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import com.github.mineGeek.Integration.FactionsPlayer;
+import com.github.mineGeek.Integration.McMMOPlayer;
 import com.github.mineGeek.ItemRules.Config;
 import com.github.mineGeek.ItemRules.ItemRules.Actions;
-import com.github.mineGeek.ItemRules.Store.Users;
+import com.github.mineGeek.ItemRules.Rules.RuleCollection.RuleRangeType;
+import com.github.mineGeek.ItemRules.Store.Players;
+import com.gmail.nossr50.datatypes.SkillType;
 
+
+/**
+ * Static object for interacting with rules
+ *
+ */
 public class Rules {
 
-	private static List<RuleInterface> ruleList = new ArrayList<RuleInterface>();
-	private static Map<String, RuleInterface> ruleByTagList = new HashMap<String, RuleInterface>();
+
+	/**
+	 * ArrayList of all rules
+	 */
+	private static List<RuleNew> ruleList = new ArrayList<RuleNew>();
 	
 	
+	/**
+	 * main Map of rules accessible via their tag
+	 * Key = rule.tag/ Value = rule
+	 */
+	private static Map<String, RuleNew> ruleByTagList = new HashMap<String, RuleNew>();
+	
+	
+	/**
+	 * Gets a formatted string of rules that apply to player. Sort of a shite function.
+	 * @param player
+	 * @param doCan
+	 * @param doCanNow
+	 * @param doNext
+	 * @param canColor
+	 * @param nextColor
+	 * @param cannotColor
+	 * @return
+	 */
 	public static String getRuleList( Player player, Boolean doCan, Boolean doCanNow, Boolean doNext, ChatColor canColor, ChatColor nextColor, ChatColor cannotColor ) {
 
 		List<String> can = new ArrayList<String>();
@@ -27,31 +57,28 @@ public class Rules {
 
 		if ( !ruleList.isEmpty() ) {
 			
-			for ( RuleInterface x : Rules.ruleList ) {
+			for ( Rule x : Rules.ruleList ) {
 				
-				if ( x.getAutoAdd() || Users.get(player).hasManualRule( x.getTag() ) ) {
+				if ( x.getAutoAdd() || Players.get(player).hasManualRule( x.getTag() ) ) {
 					if ( x.appliesToWorldName( player.getWorld().getName() ) ) {
 				
-						int il = Users.get(player).getItemLevel();
-						int xp = Users.get(player).getXPLevel();
+						int il = Players.get(player).getItemLevel();
+						int xp = Players.get(player).getXPLevel();
 						
-						Boolean ted = x.appliesToItemLevel(il);
-						Boolean fred = x.appliesToXPLevel(xp);
-						
-						if ( x.appliesToItemLevel( il ) && x.appliesToXPLevel( xp ) && ( doCan || doCanNow ) ) {
+						if ( x.passesItemLevel( il ) && x.passesXPLevel( xp ) && ( doCan || doCanNow ) ) {
 							
 							if ( doCanNow ) {
-								if ( !x.appliesToItemLevel( il - 1 ) || !x.appliesToXPLevel( xp-1)) can.add( x.getUnrestrictedMessage() );
+								if ( x.passesItemLevel( il - 1 ) || x.passesXPLevel( xp-1)) can.add( x.getDescription() );
 							} else {
-								can.add( x.getUnrestrictedMessage() );
+								can.add( x.getDescription() );
 							}
 							
 						} else {
 							
-							if ( x.appliesToItemLevel( il + 1 ) && x.appliesToXPLevel( xp + 1 ) && doNext ) {
-								next.add( x.getRestrictedMessage() );
-							} else if ( !x.appliesToItemLevel( il ) || !x.appliesToXPLevel( xp ) && ( !doCan ) ){
-								cannot.add( x.getRestrictedMessage() );
+							if ( x.passesItemLevel( il + 1 ) && x.passesXPLevel( xp + 1 ) && doNext ) {
+								next.add( x.getDescription() );
+							} else if ( !x.passesItemLevel( il ) && !x.passesXPLevel( xp ) && ( !doCan ) ){
+								cannot.add( x.getDescription() );
 							}
 							
 						}
@@ -113,83 +140,34 @@ public class Rules {
 		
 	}
 	
-	public static Map<Actions, List<RuleInterface>> getPlayerRules( Player player ) {
-		return Rules.getPlayerRules(player, Users.get(player).getXPLevel(), Users.get(player).getItemLevel() );
-	}
-	
-	
-	public static String getPlayerItemRules( Player player, ChatColor color, Boolean restricted, Boolean nextOnly ) {
-		
-		List<String> ruleSet = new ArrayList<String>();
-		String result = null;
-		Integer XP= 0;
-		Integer IL = 0;
-		
-		if ( !ruleList.isEmpty() ) {
-			
-			XP = Users.get(player).getXPLevel();
-			IL = Users.get(player).getItemLevel();
-			
-			if ( nextOnly ) {
-				XP++;
-				IL++;
-			}
-			
-			
-			for ( RuleInterface x : Rules.ruleList ) {
-				
-				if ( x.getAutoAdd() || Users.get(player).hasManualRule( x.getTag() ) ) {
-					if ( x.appliesToWorldName( player.getWorld().getName() ) ) {						
-						
-						if ( x.isItemLevelMaxTooLow(IL) || x.isItemLevelMinTooHigh(IL) || x.isXPMaxTooLow(XP) || x.isXPMinTooHigh(XP)) {
-							
-							if ( restricted ) {
-								ruleSet.add(x.getRestrictedMessage() );
-							}
-							
-						} else if ( !restricted ) {
-							ruleSet.add( x.getRestrictedMessage() );
-						}
-							
-					}
-				}
-			}
-			
-		}		
 
-		if ( !ruleSet.isEmpty() ) {
-			int y = 1;
-			for ( String x : ruleSet ) {
-				
-				y++;
-				if ( result != null ) {
-					if ( y > ruleSet.size() ) {
-						result = result + " and " + x;
-					} else {
-						result = result + ", " + x;
-					}
-				} else {
-					result = color + x;
-				}
-				
-			}
-			
-		}
-		
-		return result;
-		
+	/**
+	 * Gets list of all rules applicable to player grouped by action for quick reference
+	 * @param player
+	 * @return
+	 */
+	public static Map<Actions, List<Rule>> getPlayerRules( Player player ) {
+		return Rules.getPlayerRules(player, Players.get(player).getXPLevel(), Players.get(player).getItemLevel() );
 	}
 	
-	public static Map<Actions, List<RuleInterface>> getPlayerRules( Player player, Integer XPLevel, Integer itemLevel ) {
+
+	/**
+	 * Returns a list of all rules that apply to a player grouped by action
+	 * @param player
+	 * @param XPLevel
+	 * @param itemLevel
+	 * @return
+	 */
+	public static Map<Actions, List<Rule>> getPlayerRules( Player player, Integer XPLevel, Integer itemLevel ) {
 		
-		Map< Actions, List<RuleInterface>> actionRules = new HashMap< Actions, List<RuleInterface>>();
+		Map< Actions, List<Rule>> actionRules = new HashMap< Actions, List<Rule>>();
 		if ( !ruleList.isEmpty() ) {
 			
-			for ( RuleInterface x : Rules.ruleList ) {
+			for ( Rule x : Rules.ruleList ) {
 				
 				if ( x.appliesToWorldName( player.getWorld().getName() ) ) {
 					
-					List<RuleInterface> ruleSet;
+					List<Rule> ruleSet;
 					
 					
 					ruleSet = Rules.getPlayerRulesForAction(Actions.BREAK, player, XPLevel, itemLevel);
@@ -217,17 +195,25 @@ public class Rules {
 		return actionRules;
 		
 	}
+
 	
-	
-	public static List<RuleInterface> getPlayerRulesForAction( Actions action, Player player, Integer XPLevel, Integer itemLevel ) {
+	/**
+	 * Returns list of rules for a specific action. Used by getPlayerRules
+	 * @param action
+	 * @param player
+	 * @param XPLevel
+	 * @param itemLevel
+	 * @return
+	 */
+	public static List<Rule> getPlayerRulesForAction( Actions action, Player player, Integer XPLevel, Integer itemLevel ) {
 		
-		List<RuleInterface> rules = new ArrayList<RuleInterface>();
+		List<Rule> rules = new ArrayList<Rule>();
 		
 		if ( !Rules.ruleList.isEmpty() ) {
 			
-			for ( RuleInterface x : Rules.ruleList ) {
+			for ( RuleNew x : Rules.ruleList ) {
 				
-				if ( x.getAutoAdd() || Users.get(player).hasManualRule(x.getTag())) {
+				if ( x.getAutoAdd() || Players.get(player).hasManualRule(x.getTag())) {
 					if ( x.isApplicable(action, player, XPLevel, itemLevel ) ) {
 						rules.add( x );						
 					}
@@ -238,59 +224,109 @@ public class Rules {
 		return rules;
 	}
 	
-	public static RuleInterface getRule( String tagName ) {
+
+	/**
+	 * Return a rule by its tag name
+	 * @param tagName
+	 * @return
+	 */
+	public static RuleNew getRule( String tagName ) {
 		return Rules.ruleByTagList.get( tagName );
 	}
 	
-	public static void removeRule( RuleInterface rule ) {
+	
+	/**
+	 * Removes a rule from the list. Will no longer be applied to players
+	 * @param rule
+	 */
+	public static void removeRule( Rule rule ) {
 		
 		Rules.ruleByTagList.remove( rule.getTag() );
 		Rules.ruleList.remove( rule );
 		
 	}
 	
-	public static void addRule( RuleInterface rule ) {
+	
+	/**
+	 * Adds a rule to the Rules list
+	 * @param rule
+	 */
+	public static void addRule( RuleNew rule ) {
 		
 		Rules.ruleByTagList.put( rule.getTag(), rule );
 		Rules.ruleList.add( rule );		
 	}
 	
+
+	/**
+	 * Build, then add a rule from the config file
+	 * @param tag
+	 * @param config
+	 */
 	public static void addRule( String tag, ConfigurationSection config ) {
 		
-		RuleInterface rule;
+		RuleNew rule = new RuleNew( tag );
+				
+		if ( McMMOPlayer.enabled ) {
 		
-		if ( config.contains("factions") || config.contains("powerMin") || config.contains("powerMax") ) {
-			
-			//Faction rule
-			rule = new RuleFaction();
-			
-		} else if ( config.contains("mcmmo" ) ) {
-			//mcmmo rule
-			rule = new RuleBase();
-		} else {
-			
-			rule = new RuleBase();
+			if ( config.contains("mcmmo") ) {
+				
+				ConditionMcMMO mcMMO = new ConditionMcMMO( config.getBoolean("mcmmo.party", false) );
+				
+				if ( config.contains("mcmmo.skills")) {
+					for ( String x : config.getConfigurationSection("mcmmo.skills").getKeys( false ) ) {
+						mcMMO.add( SkillType.valueOf( x ), config.getInt("mcmmo.skills." + x, 0) );
+					}
+				}
+				
+			}
 			
 		}
 		
-		rule.setTag( tag );
-		rule.setDefaultValue( config.getBoolean("defaultValue", false ) );
-		rule.setRestrictedMessage( config.getString("restrictedMessage", ""));
-		rule.setUnrestrictedMessage( config.getString("unrestrictedMessage", ""));
-		rule.setAutoAdd( config.getBoolean("auto", true ) );
-		if ( config.contains("actions") ) 	rule.setActionsFromStringList( config.getStringList("actions") );
+		if ( FactionsPlayer.enabled ) {
+			
+			if ( config.contains("factions") ) {
+				
+				ConditionFactions factions = new ConditionFactions();
+				
+				if ( config.contains("factions.whitelisted") ) {
+					factions.setWhitelist( config.getStringList("factions.whitelisted") );
+				}
+				
+				if ( config.contains("factions.blacklisted") ) {
+					factions.setBlacklist( config.getStringList("factions.blacklisted") );
+				}
+				
+				if ( config.contains("factions.maxPower") || config.contains("factions.minPower")) {
+					factions.setPower( config.getInt("factions.minPower"), config.getInt("factions.maxPower") );
+				}
+				
+			}
+			
+		}
+		
+		rule.setWhitelistItems( config.getBoolean("explicit", false ) );
+		rule.setAuto( config.getBoolean("auto", true ) );
+		rule.setDescription( config.getString("description", "") );
+		
+		if ( config.contains("actions") ) 	rule.setActions( config.getStringList("actions") );
 		if ( config.contains("items") ) 	rule.setItems( config.getStringList("items") );
-		if ( config.contains("worlds") )	rule.setWorldNames( config.getStringList("worlds") );
-		if ( config.contains("XPMin") )		rule.setXPMin( config.getInt("XPMin", 0 ) );
-		if ( config.contains("XPMax") )		rule.setXPMax( config.getInt("XPMax", 0 ) );
-		if ( config.contains("itemLevelMin"))rule.setItemLevelMin( config.getInt("itemLevelMin", 0 ) );
-		if ( config.contains("itemLevelMax"))rule.setItemLevelMax( config.getInt("itemLevelMax", 0 ) );
+		if ( config.contains("worlds") )	rule.addApplicator( new ConditionWorld( true, config.getStringList("worlds")));
+		if ( config.contains("excludeworlds") )	rule.addApplicator( new ConditionWorld( false, config.getStringList("excludeworlds")));
+		
+		rule.addApplicator( new ConditionXP( config.getInt("XPMin"), config.getInt("XPMax") ) );
+		rule.addApplicator( new ConditionItemLevel( config.getInt("itemLevelMin"), config.getInt("itemLevelMax") ) );
 		
 		Rules.addRule( rule );
 		
 		
 	}
 	
+	
+	/**
+	 * Returns number of rules loaded
+	 * @return
+	 */
 	public static int count() {
 		return Rules.ruleList.size();
 	}

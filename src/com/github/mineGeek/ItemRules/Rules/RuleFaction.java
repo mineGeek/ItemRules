@@ -7,58 +7,156 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import com.github.mineGeek.ItemRules.ItemRules.Actions;
-import com.github.mineGeek.ItemRules.Store.Users;
+import com.github.mineGeek.ItemRules.Store.Players;
 
-public class RuleFaction extends RuleBase {
 
+
+
+
+/**
+ * Factions specific rules
+ *
+ */
+public class RuleFaction extends Rule {
+
+	
+	
+	
+	
+	/**
+	 * List of faction names this rule applies to
+	 */
 	private List<String> factionNames = new ArrayList<String>();
+	
+	
+	
+	
+	
+	/**
+	 * The power levels this rule applies to
+	 */
 	private double powerMin = 0;
 	private double powerMax = 0;
 	private boolean powerMinSet = false;
 	private boolean powerMaxSet = false;
 	
-	public RuleFaction(RuleBase rule) {
-		super(rule);
+	
+	
+	
+	
+	/**
+	 * Constructor
+	 */
+	public RuleFaction() {
+		super();
 	}
 	
-	public RuleFaction() {
-		// TODO Auto-generated constructor stub
-	}
 
+	
+	
+	
+	
+	/**
+	 * sets list of faction names to this rule
+	 * @param factions
+	 */
 	public void setFactionNames( List<String> factions ) {
 		this.factionNames = factions;
 	}
 	
+	
+	
+	
+	
+	/**
+	 * Add a faction name to this rule
+	 * @param name
+	 */
 	public void addFactionName( String name ) {
 		this.factionNames.add( name );
 	}
 	
+	
+	
+	
+	
+	/**
+	 * Clears all faction names from rule
+	 */
 	public void clearFactionNames() {
 		this.factionNames.clear();
 	}
 	
+	
+	
+	
+	/**
+	 * Removes a specific faction name from rule
+	 * @param name
+	 */
 	public void removeFactionName( String name ) {
 		this.factionNames.remove( name );
 	}
 
+	
+	
+	
+	
+	/**
+	 * Returns minimum power level required by rule
+	 * @return
+	 */
 	public double getPowerMin() {
 		return powerMin;
 	}
 
+	
+	
+	
+	
+	/**
+	 * Sets Minium Power for rule
+	 * @param powerMin
+	 */
 	public void setPowerMin(double powerMin) {
 		this.powerMin = powerMin;
 		this.powerMinSet = true;
 	}
 
+	
+	
+	
+	
+	/**
+	 * Returns Max Power for rule
+	 * @return
+	 */
 	public double getPowerMax() {
 		return powerMax;
 	}
 
+	
+	
+	
+	
+	/**
+	 * Sets Max Power for rule
+	 * @param powerMax
+	 */
 	public void setPowerMax(double powerMax) {
 		this.powerMax = powerMax;
 		this.powerMaxSet = true;
 	}
 	
+	
+	
+	
+	
+	/**
+	 * Returns true if value applies to Min Power
+	 * @param value
+	 * @return
+	 */
 	public Boolean appliesToPowerMin( double value ) {
 		
 		boolean minOk = true;
@@ -71,6 +169,15 @@ public class RuleFaction extends RuleBase {
 		
 	}
 	
+	
+	
+	
+	
+	/**
+	 * Returns True is value applies to Max Power
+	 * @param value
+	 * @return
+	 */
 	public Boolean appliesToPowerMax( double value ) {
 		
 		boolean maxOk = true;
@@ -82,26 +189,53 @@ public class RuleFaction extends RuleBase {
 		
 	}
 	
+	
+	
+	
+	
+	/**
+	 * Convienince method. Will return true if Min or Max values
+	 * apply to this rule
+	 * @param min
+	 * @param max
+	 * @return
+	 */
 	public Boolean appliesToPower( double min, double max ) {
 		
 		return this.appliesToPowerMin( min ) && this.appliesToPowerMax( max );
 		
 	}
 	
+	
+	
+	
+	
+	/**
+	 * Convienence method will return true if Players power settings apply to rule
+	 * @param player
+	 * @return
+	 */
 	public Boolean appliesToPower( Player player ) {
 		
-		return this.appliesToPowerMax( Users.get(player).getFactionPowerMin() ) && this.appliesToPowerMax( Users.get(player).getFactionPowerMax() );
+		return this.appliesToPowerMax( Players.get(player).getFactionPowerMin() ) && this.appliesToPowerMax( Players.get(player).getFactionPowerMax() );
 		
 	}
 	
+	
+	
+	
+	
+	/**
+	 * Returnd true if rule applies to action and player
+	 */
 	@Override
 	public boolean isApplicable( Actions action, Player player, Integer XPLevel, Integer itemLevel ) {
 		
 		if( super.isApplicable(action, player, XPLevel, itemLevel ) ) {
 		
-			if ( this.factionNames.contains( Users.get( player ).getFactionName() ) ) {
+			if ( this.factionNames.contains( Players.get( player ).getFactionName() ) ) {
 				
-				if ( this.appliesToPower( Users.get(player).getFactionPowerMin(), Users.get(player).getFactionPowerMax() ) ) {
+				if ( this.appliesToPower( Players.get(player).getFactionPowerMin(), Players.get(player).getFactionPowerMax() ) ) {
 					
 					return true;
 					
@@ -113,6 +247,13 @@ public class RuleFaction extends RuleBase {
 		return false;
 	}
 	
+	
+	
+	
+	
+	/**
+	 * Returns true if player is restricted from using material/item
+	 */
 	@Override
 	public Boolean isRestricted( Player player, Material material, byte data ) {
 		
@@ -122,7 +263,9 @@ public class RuleFaction extends RuleBase {
 		
 		return false;
 		
-	}	
+	}
+	
+	
 	
 
 }
