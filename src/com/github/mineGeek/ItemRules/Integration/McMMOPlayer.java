@@ -1,4 +1,4 @@
-package com.github.mineGeek.Integration;
+package com.github.mineGeek.ItemRules.Integration;
 
 
 import org.bukkit.Bukkit;
@@ -36,6 +36,7 @@ public class McMMOPlayer {
 	
 	public static void loadPlayerSkills( Player player ) {
 		
+		if ( !enabled ) return;
 		if ( !player.isOnline() ) return;
 		
 		for ( SkillType x : SkillType.values() ) {

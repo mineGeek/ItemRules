@@ -1,4 +1,4 @@
-package com.github.mineGeek.Integration;
+package com.github.mineGeek.ItemRules.Integration;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -36,6 +36,9 @@ public class McMMOEventListener implements Listener {
 		
 	}
 	
+	public void close() {
+		this.itemRules = null;
+	}
 	
 
 }

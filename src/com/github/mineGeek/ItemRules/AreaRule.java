@@ -204,6 +204,16 @@ public class AreaRule {
 	}
 	
 	
+	public void close() {
+		
+		this.area.close();
+		this.area = null;
+		this.enterRules.clear();
+		this.exitRules.clear();
+		this.tag = null;
+		
+	}
+	
 	
 	
 }

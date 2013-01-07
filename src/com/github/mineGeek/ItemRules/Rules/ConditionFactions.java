@@ -2,7 +2,6 @@ package com.github.mineGeek.ItemRules.Rules;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.github.mineGeek.ItemRules.Store.PlayerStoreItem;
 import com.massivecraft.factions.FPlayers;
 
@@ -44,12 +43,38 @@ public class ConditionFactions implements Applicator {
 	}
 	
 	@Override
-	public Boolean isApplicable(PlayerStoreItem player) {
+	public ApplicationResult isApplicable(PlayerStoreItem player) {
 		
-		if ( !this.whitelist.contains( FPlayers.i.get( player.getPlayer() ).getFaction().getTag() ) ) return false;
-		if ( this.blacklist.contains( FPlayers.i.get( player.getPlayer() ).getFaction().getTag() ) ) return false;
+		String factionName = FPlayers.i.get( player.getPlayer() ).getFaction().getTag();
+		int power = FPlayers.i.get( player.getPlayer()).getPowerRounded();
 		
-		return !this.condition.meetsRequirements( FPlayers.i.get( player.getPlayer()).getPowerRounded() );
+		if ( this.blacklist.contains( factionName ) ) {
+			return ApplicationResult.NO;
+		}		
+		
+		if ( this.whitelist.contains( factionName ) ) {
+			
+			if ( this.condition != null && this.condition.meetsRequirements( power ) ) {
+				return ApplicationResult.NONE;
+			} else {
+				return ApplicationResult.YES;
+			}
+			
+		}
+		
+		if ( this.condition != null && this.condition.meetsRequirements( power ) ) {
+			return ApplicationResult.NO;
+		} 
+		
+		return ApplicationResult.NONE;
+		
+		
+	}
+
+	@Override
+	public void close() {
+		this.blacklist.clear();
+		this.whitelist.clear();
 		
 	}
 	

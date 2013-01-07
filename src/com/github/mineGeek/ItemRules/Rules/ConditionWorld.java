@@ -16,14 +16,19 @@ public class ConditionWorld extends ConditionStringList implements Applicator {
 	}
 	
 	@Override
-	public Boolean isApplicable(PlayerStoreItem player) {
+	public ApplicationResult isApplicable(PlayerStoreItem player) {
 		
 		String name = player.getPlayer().getWorld().getName();
+		boolean inList = this.isInList(name);
+		if ( this.whitelistMode && inList ) return ApplicationResult.NONE;
+		if ( !this.whitelistMode && inList ) return ApplicationResult.NO;
 		
-		if ( this.whitelistMode ) return this.isInList( name );
-		if ( !this.whitelistMode ) return this.isNotInList( name );
-		
-		return false;
+		return ApplicationResult.NONE;
+	}
+	
+	@Override
+	public void close() {
+		super.close();
 	}
 
 }

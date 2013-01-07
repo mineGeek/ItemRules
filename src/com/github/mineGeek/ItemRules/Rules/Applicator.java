@@ -4,7 +4,8 @@ import com.github.mineGeek.ItemRules.Store.PlayerStoreItem;
 
 public interface Applicator {
 
-	public Boolean isApplicable( PlayerStoreItem player );
-
+	public enum ApplicationResult {NONE, YES, NO};
+	public ApplicationResult isApplicable( PlayerStoreItem player );
+	public void close();
 	
 }

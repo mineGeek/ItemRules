@@ -1,4 +1,4 @@
-package com.github.mineGeek.Integration;
+package com.github.mineGeek.ItemRules.Integration;
 
 import java.util.ArrayList;
 import java.util.List;

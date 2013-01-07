@@ -4,15 +4,12 @@ import java.io.File;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.mineGeek.Integration.FactionsPlayer;
-import com.github.mineGeek.Integration.McMMOPlayer;
 import com.github.mineGeek.ItemRules.Commands.RulesAvailable;
 import com.github.mineGeek.ItemRules.Events.Listeners;
+import com.github.mineGeek.ItemRules.Integration.FactionsPlayer;
+import com.github.mineGeek.ItemRules.Integration.McMMOPlayer;
+import com.github.mineGeek.ItemRules.Rules.Rules;
 import com.github.mineGeek.ItemRules.Store.Players;
-
-
-
-
 
 /**
  * Main entry point for plugin
@@ -33,12 +30,14 @@ public class ItemRules extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		
-		Players.saveOnline();
+		Players.close( true );
+		AreaRules.close();
+		Rules.close();
+		PlayerMessenger.close();
+		Config.close();
+		
+		
 	}
-	
-	
-	
-	
 	
 	/**
 	 * Set up plugin.
@@ -72,15 +71,10 @@ public class ItemRules extends JavaPlugin {
     	getCommand("ircan").setExecutor( ra );
     	getCommand("ircant").setExecutor( ra );
     	
-    	
 
-		
 	}
 	
-	
-	
-	
-	
+		
 	/**
 	 * Make sure local file structure is sorted!
 	 */
@@ -97,6 +91,5 @@ public class ItemRules extends JavaPlugin {
     	}		
 		
 	}
-	
 	
 }

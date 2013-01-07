@@ -89,4 +89,8 @@ public class PlayerMessenger {
 		}
 		
 	}
+	
+	public static void close() {
+		if ( !_queue.isEmpty() ) _queue.clear();
+	}
 }

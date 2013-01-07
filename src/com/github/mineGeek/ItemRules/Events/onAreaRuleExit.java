@@ -46,4 +46,9 @@ public class onAreaRuleExit extends Event implements Cancellable {
 		this.cancelled = cancel;
 		
 	}
+	
+	public void close() {
+		this.areaRule = null;
+		this.player = null;
+	}
 }

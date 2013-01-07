@@ -32,6 +32,7 @@ abstract class CommandBase  implements CommandExecutor{
 			
 		}
 		
+		this.sender = null;
 		return result;
 		
 		

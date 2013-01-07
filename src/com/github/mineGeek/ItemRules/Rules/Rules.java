@@ -9,11 +9,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import com.github.mineGeek.Integration.FactionsPlayer;
-import com.github.mineGeek.Integration.McMMOPlayer;
 import com.github.mineGeek.ItemRules.Config;
-import com.github.mineGeek.ItemRules.ItemRules.Actions;
-import com.github.mineGeek.ItemRules.Rules.RuleCollection.RuleRangeType;
+import com.github.mineGeek.ItemRules.Integration.FactionsPlayer;
+import com.github.mineGeek.ItemRules.Integration.McMMOPlayer;
+import com.github.mineGeek.ItemRules.Store.PlayerStoreItem;
 import com.github.mineGeek.ItemRules.Store.Players;
 import com.gmail.nossr50.datatypes.SkillType;
 
@@ -28,14 +27,14 @@ public class Rules {
 	/**
 	 * ArrayList of all rules
 	 */
-	private static List<RuleNew> ruleList = new ArrayList<RuleNew>();
+	private static List<Rule> ruleList = new ArrayList<Rule>();
 	
 	
 	/**
 	 * main Map of rules accessible via their tag
 	 * Key = rule.tag/ Value = rule
 	 */
-	private static Map<String, RuleNew> ruleByTagList = new HashMap<String, RuleNew>();
+	private static Map<String, Rule> ruleByTagList = new HashMap<String, Rule>();
 	
 	
 	/**
@@ -54,7 +53,7 @@ public class Rules {
 		List<String> can = new ArrayList<String>();
 		List<String> cannot = new ArrayList<String>();
 		List<String> next = new ArrayList<String>();
-
+		/*
 		if ( !ruleList.isEmpty() ) {
 			
 			for ( Rule x : Rules.ruleList ) {
@@ -90,7 +89,7 @@ public class Rules {
 				
 			}
 			
-		}
+		} */
 		String r = "";
 		Boolean o = false;
 		
@@ -139,17 +138,7 @@ public class Rules {
 		return r;
 		
 	}
-	
-
-	/**
-	 * Gets list of all rules applicable to player grouped by action for quick reference
-	 * @param player
-	 * @return
-	 */
-	public static Map<Actions, List<Rule>> getPlayerRules( Player player ) {
-		return Rules.getPlayerRules(player, Players.get(player).getXPLevel(), Players.get(player).getItemLevel() );
-	}
-	
+		
 
 	/**
 	 * Returns a list of all rules that apply to a player grouped by action
@@ -158,70 +147,73 @@ public class Rules {
 	 * @param itemLevel
 	 * @return
 	 */
-	public static Map<Actions, List<Rule>> getPlayerRules( Player player, Integer XPLevel, Integer itemLevel ) {
+	public static Map<String, RuleItem> getPlayerRules( Player player ) {
 		
-		Map< Actions, List<Rule>> actionRules = new HashMap< Actions, List<Rule>>();
+		Map<String, RuleItem> rules = new HashMap<String, RuleItem>();
+		
 		if ( !ruleList.isEmpty() ) {
 			
-			for ( Rule x : Rules.ruleList ) {
-				
-				if ( x.appliesToWorldName( player.getWorld().getName() ) ) {
-					
-					List<Rule> ruleSet;
-					
-					
-					ruleSet = Rules.getPlayerRulesForAction(Actions.BREAK, player, XPLevel, itemLevel);
-					if ( ruleSet != null ) actionRules.put( Actions.BREAK, ruleSet );
-					
-					ruleSet = Rules.getPlayerRulesForAction(Actions.CRAFT, player, XPLevel, itemLevel);
-					if ( ruleSet != null ) actionRules.put( Actions.CRAFT, ruleSet );
-					
-					ruleSet = Rules.getPlayerRulesForAction(Actions.PICKUP, player, XPLevel, itemLevel);
-					if ( ruleSet != null ) actionRules.put( Actions.PICKUP, ruleSet );					
-					
-					ruleSet = Rules.getPlayerRulesForAction(Actions.PLACE, player, XPLevel, itemLevel);
-					if ( ruleSet != null ) actionRules.put( Actions.PLACE, ruleSet );					
-					
-					ruleSet = Rules.getPlayerRulesForAction(Actions.USE, player, XPLevel, itemLevel);
-					if ( ruleSet != null ) actionRules.put( Actions.USE, ruleSet );
-					
-				}
-				
-			}
-			
-			
-		}
-		
-		return actionRules;
-		
-	}
+			PlayerStoreItem ps = Players.get(player);
 
-	
-	/**
-	 * Returns list of rules for a specific action. Used by getPlayerRules
-	 * @param action
-	 * @param player
-	 * @param XPLevel
-	 * @param itemLevel
-	 * @return
-	 */
-	public static List<Rule> getPlayerRulesForAction( Actions action, Player player, Integer XPLevel, Integer itemLevel ) {
-		
-		List<Rule> rules = new ArrayList<Rule>();
-		
-		if ( !Rules.ruleList.isEmpty() ) {
+			/**
+			 * Automatically apply rules
+			 */
 			
-			for ( RuleNew x : Rules.ruleList ) {
-				
-				if ( x.getAutoAdd() || Players.get(player).hasManualRule(x.getTag())) {
-					if ( x.isApplicable(action, player, XPLevel, itemLevel ) ) {
-						rules.add( x );						
+			for ( Rule x : Rules.ruleList ) {
+		
+				if ( x.getAuto() ) {
+					
+					if ( x.appliesToPlayer( ps ) ) {
+						
+						Map<String, RuleItem> r = x.getItems();
+						
+						if ( !r.isEmpty() ) {
+							
+							for( String y : r.keySet() ) {
+								rules.put(y, r.get(y) );
+							}
+							
+						}
+						
+						
 					}
+					
 				}
 			}
+			
+			/**
+			 * Apply manual rule (may override existing rules)
+			 */
+			if ( !ps.getManualRules().isEmpty() ) {
+			
+				for ( String x : ps.getManualRules() ) {
+					
+					if ( Rules.ruleByTagList.containsKey( x ) ) {
+					
+						if ( Rules.ruleByTagList.get(x).appliesToPlayer( ps ) ) {
+						
+							Map<String, RuleItem> r = Rules.ruleByTagList.get(x).getItems();
+							
+							if ( !r.isEmpty() ) {
+								
+								for ( String y : r.keySet() ) {
+									rules.put(y, r.get(y) );
+								}
+								
+							}
+							
+						}
+						
+					}
+					
+				}
+				
+				
+			}
 		}
-		
+	
 		return rules;
+
 	}
 	
 
@@ -230,7 +222,7 @@ public class Rules {
 	 * @param tagName
 	 * @return
 	 */
-	public static RuleNew getRule( String tagName ) {
+	public static Rule getRule( String tagName ) {
 		return Rules.ruleByTagList.get( tagName );
 	}
 	
@@ -241,6 +233,7 @@ public class Rules {
 	 */
 	public static void removeRule( Rule rule ) {
 		
+		rule.close();
 		Rules.ruleByTagList.remove( rule.getTag() );
 		Rules.ruleList.remove( rule );
 		
@@ -251,22 +244,47 @@ public class Rules {
 	 * Adds a rule to the Rules list
 	 * @param rule
 	 */
-	public static void addRule( RuleNew rule ) {
+	public static void addRule( Rule rule ) {
 		
 		Rules.ruleByTagList.put( rule.getTag(), rule );
 		Rules.ruleList.add( rule );		
 	}
 	
 
+	public static void addRule( String tag, ConfigurationSection config ) {
+		
+		Rules.addRule( tag, config, false );
+		
+	}
+	
+	
 	/**
 	 * Build, then add a rule from the config file
 	 * @param tag
 	 * @param config
 	 */
-	public static void addRule( String tag, ConfigurationSection config ) {
+	public static void addRule( String tag, ConfigurationSection config, boolean manual ) {
 		
-		RuleNew rule = new RuleNew( tag );
+		Rule rule = null;
+		
+		if ( config.contains("inherit") ) {
+			
+			rule = Rules.ruleByTagList.get( config.getString("inherit"));
+			
+			if ( rule != null ) {
 				
+				rule = new Rule( tag, rule );
+				
+			}
+			
+		}
+		
+		if ( rule == null ) {
+			
+			 rule = new Rule( tag );
+			
+		}
+		
 		if ( McMMOPlayer.enabled ) {
 		
 			if ( config.contains("mcmmo") ) {
@@ -275,10 +293,11 @@ public class Rules {
 				
 				if ( config.contains("mcmmo.skills")) {
 					for ( String x : config.getConfigurationSection("mcmmo.skills").getKeys( false ) ) {
-						mcMMO.add( SkillType.valueOf( x ), config.getInt("mcmmo.skills." + x, 0) );
+						mcMMO.add( SkillType.valueOf( x.toUpperCase() ), config.getInt("mcmmo.skills." + x, 0) );
 					}
 				}
-				
+			
+				rule.addApplicator( mcMMO );
 			}
 			
 		}
@@ -301,21 +320,24 @@ public class Rules {
 					factions.setPower( config.getInt("factions.minPower"), config.getInt("factions.maxPower") );
 				}
 				
+				if ( factions != null ) rule.addApplicator( factions );
 			}
 			
 		}
 		
 		rule.setWhitelistItems( config.getBoolean("explicit", false ) );
-		rule.setAuto( config.getBoolean("auto", true ) );
+		rule.setAuto( config.getBoolean("auto", !manual ) );
 		rule.setDescription( config.getString("description", "") );
 		
 		if ( config.contains("actions") ) 	rule.setActions( config.getStringList("actions") );
 		if ( config.contains("items") ) 	rule.setItems( config.getStringList("items") );
-		if ( config.contains("worlds") )	rule.addApplicator( new ConditionWorld( true, config.getStringList("worlds")));
-		if ( config.contains("excludeworlds") )	rule.addApplicator( new ConditionWorld( false, config.getStringList("excludeworlds")));
+		List<String> list = config.contains("worlds") ? config.getStringList("worlds") : new ArrayList<String>();
+		if ( !list.isEmpty() ) rule.addApplicator( new ConditionWorld( true, list));
+		list = config.contains("excludeWorlds") ? config.getStringList("excludeWorlds") : new ArrayList<String>();
+		if ( !list.isEmpty() ) rule.addApplicator( new ConditionWorld( false, list));
 		
-		rule.addApplicator( new ConditionXP( config.getInt("XPMin"), config.getInt("XPMax") ) );
-		rule.addApplicator( new ConditionItemLevel( config.getInt("itemLevelMin"), config.getInt("itemLevelMax") ) );
+		rule.addApplicator( new ConditionXP( config.contains("XPMin") ? config.getInt("XPMin") : null, config.contains("XPMax") ? config.getInt("XPMax") : null ) );
+		rule.addApplicator( new ConditionItemLevel( config.contains("itemLevelMin") ? config.getInt("itemLevelMin") : null, config.contains("itemLevelMax") ? config.getInt("itemLevelMax") : null ) );
 		
 		Rules.addRule( rule );
 		
@@ -331,5 +353,18 @@ public class Rules {
 		return Rules.ruleList.size();
 	}
 	
+	
+	public static void close() {
+		
+		if ( ! ruleList.isEmpty() ) {
+			for ( Rule r : ruleList ) {
+				r.close();
+			}
+		}
+		
+		ruleList.clear();
+		ruleByTagList.clear();
+		
+	}
 	
 }

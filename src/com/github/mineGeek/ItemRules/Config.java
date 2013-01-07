@@ -19,30 +19,23 @@ public class Config {
 	public static Server server;
 	
 	
-	
-	
 	/**
 	 * The actual config file from getConfig()
 	 */
 	public static FileConfiguration c;
 	
 	
-	
 	/**
 	 * If true, will increase item level when XP level increases
 	 */
 	public static Boolean XPLevelIncreasesItemLevel 	= true;
-	
-	
-	
+		
 	
 	/**
 	 * If true, will decrease item level when XP level decreases
 	 */
 	public static Boolean XPLossReducesItemLevel 		= true;
-	
-	
-	
+		
 	
 	/**
 	 * If true, will start off player with an item level equal to their
@@ -51,26 +44,12 @@ public class Config {
 	public static Boolean ItemLevelDefaultsToXPLevel	= true;
 	
 	
-	
-	
-	/**
-	 * Here is this damn setting I need to get rid of
-	 * TODO: Get rid of this
-	 */
-	public static Boolean defaultValue					= false;
-	
-	
-	
-	
 	/**
 	 * Default mode for restrictions. If false, rules act as 
 	 * blacklist (the default mode). If true, it acts as a whitelist
 	 */
 	public static Boolean defaultAllow					= false;
-	
-	
-	
-	
+		
 	
 	/**
 	 * The textual prefix for when we show the player a list of things
@@ -78,15 +57,11 @@ public class Config {
 	 */
 	public static String txtCanDoPrefix = "You can ";
 	
-	
-	
-	
+
 	/**
 	 * the textual prefix for when we show the player what they can do next
 	 */
 	public static String txtCanDoNextPrefix = "Next you can ";
-	
-	
 	
 	
 	/**
@@ -94,17 +69,12 @@ public class Config {
 	 */
 	public static String txtCannotDoPrefix = "You cannot yet ";
 	
-	
-	
-	
+
 	/**
 	 * Whether or not to monitor player locations. Will go to true if there
 	 * are any areaRules set up
 	 */
 	public static Boolean monitorPlayerLocations		= false;
-	
-	
-	
 	
 	
 	/**
@@ -128,8 +98,6 @@ public class Config {
 	
 	
 	
-	
-	
 	/**
 	 * Load all rules from the config
 	 * @param c
@@ -145,6 +113,16 @@ public class Config {
 			}
 			
 		}
+		
+		if ( c.contains("manualRules") ) {
+			
+			for ( String x : c.getConfigurationSection( "manualRules").getKeys( false ) ) {
+				
+				Rules.addRule( x, c.getConfigurationSection("manualRules." + x), true );
+				
+			}
+			
+		}		
 		
 		Config.server.getLogger().info("ItemRules loaded " + Rules.count() + " rules total.");
 		
@@ -163,6 +141,13 @@ public class Config {
 		Config.XPLevelIncreasesItemLevel 	= c.getBoolean("XP.itemLevelDefaultsToXPLevel", true );
 		Config.defaultAllow					= c.getBoolean("defaultAllow", false );
 
+	}
+	
+	
+	public static void close() {
+		Config.c = null;
+		Config.server = null;
+		
 	}
 	
 	

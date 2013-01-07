@@ -1,4 +1,4 @@
-package com.github.mineGeek.Integration;
+package com.github.mineGeek.ItemRules.Integration;
 
 
 import org.bukkit.entity.Player;
@@ -60,7 +60,11 @@ public class FactionsEventListener implements Listener {
 		}, 30L);		
 		
 
-	}	
+	}
+	
+	public void close() {
+		this.plugin = null;
+	}
 	
 	
 }

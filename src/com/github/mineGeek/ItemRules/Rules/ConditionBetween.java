@@ -33,15 +33,17 @@ public class ConditionBetween {
 	
 	public Boolean isMinOk( int value ) {
 		
-		if ( this.min != null && this.min > value ) return false;
-		return true;
+		if ( this.min == null || this.min == 0 ) return true;
+		if ( value >= this.min ) return true;
+		return false;
 		
 	}
 	
 	public Boolean isMaxOk( int value ) {
 		
-		if ( this.max != null && this.max < value ) return false;
-		return true;
+		if ( this.max == null || this.max == 0 ) return true;
+		if ( value <= this.max ) return true;
+		return false;
 	}
 	
 	public Boolean meetsRequirements( int value ) {

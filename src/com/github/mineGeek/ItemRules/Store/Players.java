@@ -75,6 +75,7 @@ public class Players {
 	 */
 	public static void removePlayer( String playerName ) {
 		players.get( playerName ).save();
+		players.get(playerName).close();
 		players.remove( playerName );
 	}
 	
@@ -83,7 +84,7 @@ public class Players {
 	
 	
 	/**
-	 * Loads all players currently onling
+	 * Loads all players currently online
 	 */
 	public static void loadOnline() {
 		
@@ -104,13 +105,39 @@ public class Players {
 	 */
 	public static void saveOnline() {
 		
-		if ( Config.server.getOnlinePlayers().length > 0 ) {
-			for( Player p : Config.server.getOnlinePlayers() ) {
-				get( p.getName() ).save() ;
-			}			
-		}
+		Players.saveOnline( false );
+
 	}
 	
+	public static void saveOnline( boolean close ) {
+		
+		if ( Config.server.getOnlinePlayers().length > 0 ) {
+			for( Player p : Config.server.getOnlinePlayers() ) {
+				Players.removePlayer( p.getName() );
+			}			
+		}
+		
+		if ( close ) players.clear();
+		
+	}
+	
+	public static void close( boolean saveFirst ) {
+		
+		if ( saveFirst ) {
+			saveOnline( true );
+		}
+		
+		if ( !players.isEmpty() ) {
+			
+			for ( PlayerStoreItem p : players.values() ) {
+				p.close();
+			}
+			
+		}
+		
+		players.clear();
+
+	}
 	
 	
 	

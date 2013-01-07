@@ -9,22 +9,19 @@ public class ConditionItemLevel extends ConditionBetween implements Applicator {
 	}	
 	
 	@Override
-	public Boolean isApplicable(PlayerStoreItem player) {
+	public ApplicationResult isApplicable(PlayerStoreItem player) {
 		
-		int 	value = player.getItemLevel();
-		boolean minOk = true;
-		boolean maxOk = true;
+		int value = player.getItemLevel();
 		
-		if ( this.min != null && this.min > 0 ) {
-			if ( min > value ) minOk = false;
-		}
+		if ( !this.meetsRequirements( value ) ) return ApplicationResult.YES;
+		return ApplicationResult.NONE;
 		
-		if ( this.max != null && this.max > 0 ) {
-			if ( this.max < value ) maxOk = false;
-		}
-		
-		return minOk && maxOk;
+	}
 
+	@Override
+	public void close() {
+		return;
+		
 	}	
 
 }

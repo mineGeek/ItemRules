@@ -1,6 +1,7 @@
 name: ItemRules
 main: com.github.mineGeek.ItemRules.ItemRules
 version: 1.0.0
+softdepend: [mcMMO, Factions]
 commands:
     ircan:
         description: List of what you can do at your level

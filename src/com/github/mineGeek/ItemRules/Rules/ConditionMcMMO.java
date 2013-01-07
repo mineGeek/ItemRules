@@ -37,11 +37,10 @@ public class ConditionMcMMO implements Applicator {
 	}
 	
 	@Override
-	public Boolean isApplicable(PlayerStoreItem player) {
+	public ApplicationResult isApplicable(PlayerStoreItem player) {
 		
-		boolean result = false;
 		
-		if ( this.requiresParty && !Users.getPlayer( player.getPlayer() ).inParty() ) return false;
+		if ( this.requiresParty && !player.getMcMMOinParty() ) return ApplicationResult.YES;
 		
 		if ( !this.skills.isEmpty() ) {
 			
@@ -53,13 +52,21 @@ public class ConditionMcMMO implements Applicator {
 				SkillType skill = row.getKey();
 				ConditionBetween condition = row.getValue();
 				
-				result = result & !condition.isMinOk( Users.getPlayer(player.getPlayer()).getProfile().getSkillLevel( skill ) );
+				if ( !condition.isMinOk( Users.getPlayer(player.getPlayer()).getProfile().getSkillLevel( skill ) ) ) {
+					return ApplicationResult.YES;
+				}
 				
 			}
 			
 		}
 				
-		return result;
+		return ApplicationResult.NONE;
+	}
+
+	@Override
+	public void close() {
+		this.skills.clear();
+		
 	}
 	
 

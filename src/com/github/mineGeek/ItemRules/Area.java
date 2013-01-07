@@ -96,18 +96,6 @@ public class Area {
 	 */
 	public Boolean intersectsWith( Location l ) {	
 		
-		/*
-		Boolean maxX = (int)l.getX() <= Math.max(ne.getX(), sw.getX());
-		Boolean minX = (int)l.getX() >= Math.min(ne.getX(), sw.getX());
-		Boolean maxY = (int)l.getY() <= Math.max(ne.getY(), sw.getY());
-		Boolean minY = (int)l.getY() >= Math.min(ne.getY(), sw.getY());
-		Boolean maxZ = (int)l.getZ() <= Math.max(ne.getZ(), sw.getZ());
-		Boolean minZ = (int)l.getZ() >= Math.min(ne.getZ(), sw.getZ());
-		
-		Boolean result = (maxX && minX) && (maxY && minY) && (maxZ && minZ);
-		return result;
-		 */
-		//this should be faster.
 		if ( l.getX() > Math.max( ne.getX(), sw.getX() ) ) 	return false;
 		if ( l.getX() < Math.min( ne.getX(), sw.getX() ) ) 	return false;
 		if ( l.getZ() > Math.max( ne.getZ(), sw.getZ() ) ) 	return false;
@@ -118,6 +106,11 @@ public class Area {
 		return true;
 		
 		
+	}
+	
+	public void close() {
+		this.ne = null;
+		this.sw = null;
 	}
 
 	

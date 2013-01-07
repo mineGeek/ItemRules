@@ -113,6 +113,29 @@ public class AreaRules {
 
 		
 		
-	}	
+	}
+	
+	public static void close() {
+		
+		if ( !AreaRules.activeChunks.isEmpty() ) {
+			
+			for( String x : AreaRules.activeChunks.keySet() ) {
+				
+				if ( !AreaRules.activeChunks.get(x).isEmpty() ) {
+					
+					for ( AreaRule y : AreaRules.activeChunks.get(x) ) {
+						y.close();
+					}
+					
+					AreaRules.activeChunks.get(x).clear();
+					
+				}
+				
+			}
+			
+		}
+		
+		AreaRules.activeChunks.clear();
+	}
 	
 }

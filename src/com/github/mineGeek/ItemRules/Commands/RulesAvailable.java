@@ -1,9 +1,14 @@
 package com.github.mineGeek.ItemRules.Commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import com.github.mineGeek.ItemRules.Rules.RuleItem;
 import com.github.mineGeek.ItemRules.Rules.Rules;
+import com.github.mineGeek.ItemRules.Store.Players;
 
 
 
@@ -57,11 +62,32 @@ public class RulesAvailable extends CommandBase {
 			
 		}
 		
+		
+		
 		Boolean doCan 		= cmdName.equalsIgnoreCase("ircan") ? true : false;
 		Boolean doCanNext 	= doCan ? true : false;				
 		Boolean doCanNow	= doCan ? true : false;
 		
+		if ( doCan ) {
+			
+			if ( Players.get(player).getAppliedRules().isEmpty() ) {
+				player.sendMessage("There are currently no rules applied to you right now!!");
+			} else {
+				player.sendMessage("there are currently " + Players.get(player).getAppliedRules().size()  + " rule(s) applied to you");
+				
+				List<String> rulenames = new ArrayList<String>();
+				for ( RuleItem r : Players.get(player).getAppliedRules().values() ) {
+					if ( !rulenames.contains(r.getTag())) rulenames.add(r.getTag());
+				}
+				
+				player.sendMessage(" Rule applied: " + rulenames.toString() );
+			}
+			
+		}		
+		
 		if (  args.length > ( 0 + argStart ) ) {
+			
+
 			
 			if ( args[ argStart ].equalsIgnoreCase("all") ) {
 				

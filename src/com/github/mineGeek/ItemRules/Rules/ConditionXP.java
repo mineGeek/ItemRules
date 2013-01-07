@@ -1,5 +1,6 @@
 package com.github.mineGeek.ItemRules.Rules;
 
+
 import com.github.mineGeek.ItemRules.Store.PlayerStoreItem;
 
 public class ConditionXP extends ConditionBetween implements Applicator {
@@ -9,22 +10,20 @@ public class ConditionXP extends ConditionBetween implements Applicator {
 	}	
 	
 	@Override
-	public Boolean isApplicable(PlayerStoreItem player) {
+	public ApplicationResult isApplicable(PlayerStoreItem player) {
 		
 		Integer value = player.getXPLevel();
-		Boolean minOk = true;
-		Boolean maxOk = true;
 		
-		if ( this.min != null && this.min > 0 ) {
-			if ( min > value ) minOk = false;
-		}
+		if ( !this.meetsRequirements( value ) ) return ApplicationResult.YES;
+		return ApplicationResult.NONE;
 		
-		if ( this.max != null && this.max > 0 ) {
-			if ( this.max < value ) maxOk = false;
-		}
-		
-		return minOk && maxOk;
 
+	}
+
+	@Override
+	public void close() {
+		return;
+		
 	}
 
 

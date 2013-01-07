@@ -29,7 +29,9 @@ public class ConditionStringList {
 		return !this.list.contains( item );
 	}
 	
-	
+	public void close() {
+		this.list.clear();
+	}
 	
 	
 }

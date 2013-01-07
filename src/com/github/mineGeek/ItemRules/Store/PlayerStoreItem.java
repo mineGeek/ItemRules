@@ -2,21 +2,20 @@ package com.github.mineGeek.ItemRules.Store;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import com.github.mineGeek.Integration.McMMOPlayer;
 import com.github.mineGeek.ItemRules.AreaRule;
 import com.github.mineGeek.ItemRules.AreaRules;
 import com.github.mineGeek.ItemRules.Config;
+import com.github.mineGeek.ItemRules.Integration.McMMOPlayer;
 import com.github.mineGeek.ItemRules.ItemRules.Actions;
 import com.github.mineGeek.ItemRules.PlayerMessenger;
+import com.github.mineGeek.ItemRules.Rules.RuleItem;
 import com.github.mineGeek.ItemRules.Rules.Rule;
 import com.github.mineGeek.ItemRules.Rules.Rules;
 
@@ -39,10 +38,10 @@ public class PlayerStoreItem extends DataStore {
 	
 	
 	/**
-	 * Refernce to currently applicable rules
-	 * Action => Rules that apply to action
+	 * Reference to current item restrictions
+	 * itemId => Rule Result
 	 */
-	Map<Actions, List<Rule>> rules;
+	Map<String, RuleItem> rules;
 	
 	
 	
@@ -218,6 +217,19 @@ public class PlayerStoreItem extends DataStore {
 	public void loadRules() {
 		
 		this.rules = Rules.getPlayerRules( this.player );
+
+		if ( this.rules.isEmpty() ) {
+			this.player.sendMessage("There are currently no rules applied to you right now!!");
+		} else {
+			this.player.sendMessage("there are currently " + this.rules.size()  + " items have restrictions");
+			
+			List<String> rulenames = new ArrayList<String>();
+			for ( RuleItem r : this.rules.values() ) {
+				if ( !rulenames.contains(r.getTag())) rulenames.add(r.getTag());
+			}
+			
+			this.player.sendMessage(" Rule applied: " + rulenames.toString() );
+		}
 		
 	}
 	
@@ -262,6 +274,10 @@ public class PlayerStoreItem extends DataStore {
 		
 	}
 	
+	
+	public List<String> getManualRules() {
+		return this.manualRuleList;
+	}
 	
 	
 	
@@ -348,8 +364,17 @@ public class PlayerStoreItem extends DataStore {
 	}
 	
 	
+	public RuleItem getRuleItem( String material, String data ) {
+		
+		if ( this.rules.containsKey( material + "." + data ) ) return this.rules.get(material + "." + data);
+		if ( this.rules.containsKey( material ) ) return this.rules.get( material );
+		return null;
+	}
 	
 	
+	public Map<String, RuleItem> getAppliedRules() {
+		return this.rules;
+	}
 	
 	/**
 	 * Core process to see if player has access to the item/material for specified action.
@@ -361,72 +386,28 @@ public class PlayerStoreItem extends DataStore {
 	 */
 	public boolean isRestricted( Actions action, Material material, byte data ) {
 		
-		Boolean result 	= Config.defaultValue;
-		String message 	= "you cannot do that.";
-		Boolean isRestricted = false;
-		// Check automatically configured actions
+		//Boolean result 	= Config.defaultValue;
+		//String message 	= "you cannot do that.";
+		//Boolean isRestricted = false;
 		
-		if ( this.rules.containsKey( action ) ) {
-			Iterator<Rule> r = this.rules.get( action ).iterator();	
-			while ( r.hasNext() ) {
-				
-				result = false;
-				Rule rule = r.next();
-				if ( rule.passesMcMMO( this.player ) ) {
-					if ( rule.isRestricted( material, data) ) {
-						isRestricted = true;
-					}
-				} else {
-					isRestricted = true;
-				}
-				
-				if ( isRestricted ) {
-					
-					result = true;
-					message = rule.getRestrictedMessage( action, material );			
-					break;
-				}				
-			}
-			
+		RuleItem item = this.getRuleItem( String.valueOf( material.getId() )  , String.valueOf( data ) ) ;
+		
+		if ( item == null ) {
+			//PlayerMessenger.SendPlayerMessage( this.player, action.toString() + " for " + material.toString() + " does not apply");
+			return false;
 		}
+		
+		boolean result = item.isRestricted( action );
+		
+		if ( result ) {
+			PlayerMessenger.SendPlayerMessage( this.player, action.toString() + " for " + material.toString() + " is restricted");
+		} else {
+			PlayerMessenger.SendPlayerMessage( this.player, action.toString() + " for " + material.toString() + " is not restricted");
+		}
+		
+		return result;
 		
 
-		
-		//check against any manually added actions that may override auto actions
-		
-		if ( !this.manualRuleList.isEmpty() ) {
-			
-			for ( String x : this.manualRuleList ) {
-				
-				if ( this.manualRules.get(x).passesMcMMO( this.player ) ) {
-				
-					if ( this.manualRules.get(x).isRestricted( material, data) ) {
-						
-						//player is denied
-						result 	= true;
-						message = this.manualRules.get(x).getRestrictedMessage(action, material);
-						break;
-						
-					} else if ( result ) {
-						
-						if ( this.manualRules.get(x).appliesToItem( material.getId(), data) ) {
-							
-							//player was denied, but this rule overrides it.
-							return false;
-						}
-					}
-				
-				} else if ( result && this.manualRules.get(x).appliesToItem( material.getId(), data ) ) {
-					return false;
-				}
-				
-			}
-			
-		}
-		
-		if ( result ) PlayerMessenger.SendPlayerMessage( this.player, ChatColor.RED + Config.txtCannotDoPrefix + message );
-		
-		return result;		
 	}
 	
 	
@@ -615,4 +596,17 @@ public class PlayerStoreItem extends DataStore {
 		return this.mcmmoSkills;
 	}
 
+	public void close() {
+		
+		if ( !this.activeAreaRules.isEmpty() ) this.activeAreaRules.clear();
+		if ( !this.data.isEmpty() ) this.data.clear();
+		if ( !this.inAreas.isEmpty() ) this.inAreas.clear();
+		if ( !this.manualRuleList.isEmpty() ) this.manualRuleList.clear();
+		if ( !this.manualRules.isEmpty() ) this.manualRules.clear();
+		if ( !this.mcmmoSkills.isEmpty() ) this.mcmmoSkills.clear();
+		if ( !this.rules.isEmpty() ) this.rules.clear();
+		this.player = null;
+		
+	}
+	
 }
