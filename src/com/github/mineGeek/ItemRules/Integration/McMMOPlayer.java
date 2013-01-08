@@ -26,10 +26,11 @@ public class McMMOPlayer {
 
 		} else {
 			Bukkit.getLogger().info("mcMMO integration for [ItemRules] is enabled");
+			Bukkit.getServer().getPluginManager().registerEvents( new McMMOEventListener(itemRules), itemRules );
 			enabled = true;
 		}
 		
-		Bukkit.getServer().getPluginManager().registerEvents( new McMMOEventListener(itemRules), itemRules );
+		
 		
 	}
 	

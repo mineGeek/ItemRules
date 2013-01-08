@@ -45,6 +45,8 @@ public class ItemRules extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		
+		this.saveDefaultConfig();
+		
 		Config.server = this.getServer();
 		Config.c = this.getConfig();
 		
@@ -53,11 +55,10 @@ public class ItemRules extends JavaPlugin {
     	 * Intergrators
     	 */
     	FactionsPlayer.FactionsPlayerEnable( this );
-    	McMMOPlayer.McMMOEnable( this );		
+    	McMMOPlayer.McMMOEnable( this );
 		
 		
 		Config.loadConfig();
-		this.saveConfig();
 		
 		Config.loadRulesFromConfig( this.getConfig() );
 		Config.loadAreaRulesFromConfig( this.getConfig() );

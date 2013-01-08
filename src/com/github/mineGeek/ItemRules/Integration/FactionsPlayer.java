@@ -29,10 +29,9 @@ public class FactionsPlayer {
 
 		} else {
 			Bukkit.getLogger().info("Factions integration for [ItemRules] is enabled");
+			Bukkit.getServer().getPluginManager().registerEvents( new FactionsEventListener(itemRules), itemRules );
 			enabled = true;
 		}
-		
-		Bukkit.getServer().getPluginManager().registerEvents( new FactionsEventListener(itemRules), itemRules );
 		
 	}
 	

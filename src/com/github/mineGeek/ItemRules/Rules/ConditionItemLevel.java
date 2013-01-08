@@ -7,14 +7,18 @@ public class ConditionItemLevel extends ConditionBetween implements Applicator {
 	public ConditionItemLevel( Integer min, Integer max ) {
 		super(min, max);
 	}	
+
+	private ApplicationResult isApplicable( int value ) {
+		
+		if ( !this.meetsRequirements( value ) ) return ApplicationResult.YES;
+		return ApplicationResult.NONE;		
+		
+	}
 	
 	@Override
 	public ApplicationResult isApplicable(PlayerStoreItem player) {
 		
-		int value = player.getItemLevel();
-		
-		if ( !this.meetsRequirements( value ) ) return ApplicationResult.YES;
-		return ApplicationResult.NONE;
+		return this.isApplicable( player.getItemLevel() );
 		
 	}
 
@@ -22,6 +26,16 @@ public class ConditionItemLevel extends ConditionBetween implements Applicator {
 	public void close() {
 		return;
 		
+	}
+
+	@Override
+	public ApplicationResult willBeApplicable(PlayerStoreItem player) {
+		return this.isApplicable( player.getItemLevel() + 1 );
+	}
+
+	@Override
+	public ApplicationResult wasApplicable(PlayerStoreItem player) {
+		return this.isApplicable( player.getItemLevel() - 1 );
 	}	
 
 }

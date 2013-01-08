@@ -6,6 +6,8 @@ public interface Applicator {
 
 	public enum ApplicationResult {NONE, YES, NO};
 	public ApplicationResult isApplicable( PlayerStoreItem player );
+	public ApplicationResult willBeApplicable( PlayerStoreItem player );
+	public ApplicationResult wasApplicable( PlayerStoreItem player );
 	public void close();
 	
 }

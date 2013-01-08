@@ -90,6 +90,8 @@ public class AreaRule {
 	 */
 	public void setArea( Area area) {
 		this.area = area;
+		
+		
 	}
 	
 	
@@ -206,10 +208,10 @@ public class AreaRule {
 	
 	public void close() {
 		
-		this.area.close();
+		if ( this.area != null ) this.area.close();
 		this.area = null;
-		this.enterRules.clear();
-		this.exitRules.clear();
+		if ( this.enterRules != null ) this.enterRules.clear();
+		if ( this.exitRules != null ) this.exitRules.clear();
 		this.tag = null;
 		
 	}

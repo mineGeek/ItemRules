@@ -20,9 +20,8 @@ public class AreaRules {
 	 * List of all areaRules cross referenced by world|chunkX|chunkZ tokens
 	 */
 	public static Map<String, List<AreaRule>> activeChunks = new HashMap<String, List<AreaRule>>();
-	
-	
-	
+
+
 	
 	
 	/**
@@ -34,53 +33,36 @@ public class AreaRules {
 		String sig;
 		List<AreaRule> ar;
 		
-		double fromX = 0;
-		double toX = 0;
-		double fromZ = 0;
-		double toZ = 0;
+		int nex = (int) Math.floor( rule.getArea().ne.getX() / 16 );
+		int swx = (int) Math.floor( rule.getArea().sw.getX() / 16 );
 		
-		/**
-		 * dont use chunk.get*() as it may not yet be loaded
-		 */
-		if ( rule.getArea().ne.getX() > rule.getArea().sw.getX() ) {
-			fromX = rule.getArea().ne.getX()/16 ;
-			toX = rule.getArea().sw.getX()/16;
-		} else {
-			fromX = rule.getArea().sw.getX()/16;
-			toX = rule.getArea().ne.getX() /16 ;			
-		}
+		int nez = (int) Math.floor( rule.getArea().ne.getZ() / 16 );
+		int swz = (int) Math.floor( rule.getArea().sw.getZ() / 16 );		
+		
+		int xMax = Math.max(nex, swx );
+		int xMin = Math.min(nex, swx);
 
-		if ( rule.getArea().ne.getZ() > rule.getArea().sw.getZ() ) {
-			fromZ = rule.getArea().ne.getZ()/16;
-			toZ = rule.getArea().sw.getZ()/16;
-		} else {
-			fromZ = rule.getArea().sw.getZ()/16;
-			toZ = rule.getArea().ne.getZ()/16;			
-		}
+		int zMax = Math.max(nez, swz );
+		int zMin = Math.min(nez, swz);		
 		
-		int fX = (int) Math.floor( fromX );
-		int tX = (int) Math.floor( toX );
-		int fZ = (int) Math.floor( fromZ );
-		int tZ = (int) Math.floor( toZ );
-				
-		for ( int x = fX; x <= tX; x++ ) {
+		for ( int x = xMin; x <= xMax; x++ ) {
 			
-			for ( int z = fZ; z <= tZ; z++ ) {
+			for ( int z = zMin; z <= zMax; z++ ) {
 				
 				sig = rule.getArea().ne.getWorld().getName() + "|" + x + "|" + z;
-				
+
 				if ( activeChunks.containsKey( sig ) ) {
 					ar = activeChunks.get(sig);
 				} else {
 					ar = new ArrayList<AreaRule>();
 				}
 				ar.add( rule );
-				activeChunks.put(sig, ar );
+				activeChunks.put(sig, ar );					
 				
 			}
 			
 		}
-		
+
 		
 	}
 	
@@ -97,7 +79,7 @@ public class AreaRules {
 		
 		AreaRule rule = new AreaRule();
 		
-		String worldName = config.getString("worldName", "world");
+		String worldName = config.getString("world", "world");
 		List<Integer> ne = config.getIntegerList("ne");
 		List<Integer> sw = config.getIntegerList("sw");		
 		
@@ -115,9 +97,10 @@ public class AreaRules {
 		
 	}
 	
+	
 	public static void close() {
 		
-		if ( !AreaRules.activeChunks.isEmpty() ) {
+		if ( AreaRules.activeChunks!= null && !AreaRules.activeChunks.isEmpty() ) {
 			
 			for( String x : AreaRules.activeChunks.keySet() ) {
 				

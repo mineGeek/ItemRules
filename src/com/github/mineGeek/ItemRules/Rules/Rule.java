@@ -10,6 +10,8 @@ import com.github.mineGeek.ItemRules.Rules.Applicator.ApplicationResult;
 import com.github.mineGeek.ItemRules.Store.PlayerStoreItem;
 
 public class Rule {
+	
+	public enum AppliesToMode {NOW, NEXT, PREVIOUS};
 
 	private List<Applicator> appliesTo = new ArrayList<Applicator>();
 	private Map<String, RuleItem> items = new HashMap<String, RuleItem>();
@@ -94,6 +96,10 @@ public class Rule {
 		
 	}
 	
+	public void removeItem( String itemId ) {
+		this.items.remove(itemId);
+	}
+	
 	public void setItems( List<String> itemids ) {
 		
 		if ( !itemids.isEmpty() ) {
@@ -127,12 +133,27 @@ public class Rule {
 	}
 	
 	public boolean appliesToPlayer( PlayerStoreItem player ) {
+		return this.appliesToPlayer(player, AppliesToMode.NOW );
+	}
+	
+	public boolean appliesToPlayer( PlayerStoreItem player, AppliesToMode method ) {
 		
 		if ( player.getPlayer().hasPermission("itemRules.bypass." + this.getTag() ) ) return false;
 		
+		if ( this.appliesTo.isEmpty() ) return true; //? Doesn't apply to anyone so make it!?!?
+		
+		ApplicationResult result = null;
+		
 		for( Applicator x : this.appliesTo ) {
 			
-			ApplicationResult result = x.isApplicable(player);
+			
+			if ( method == AppliesToMode.NOW ) {
+				result = x.isApplicable(player);
+			} else if ( method == AppliesToMode.NEXT ) {
+				result = x.willBeApplicable(player);
+			} else if ( method == AppliesToMode.PREVIOUS ) {
+				result = x.wasApplicable(player);
+			}
 			
 			if ( result == ApplicationResult.YES ) {
 				return true;

@@ -1,33 +1,49 @@
 rules:
-  example:
-    unrestrictedMessage: You can %s ex1 now.
-    restrictedMessage: 'You cannot %1 %3 after XP level %4'
-    actions:
-    - CRAFT
-    - PICKUP
-    - USE
-    worlds:
-    - world
-    excludeWorlds:
-    - world_nether
-    XPMin: 0
-    XPMax: 2
-    items:
-    - '268'
-    - '5.2'
-  example2:
-    unrestrictedMessage: You can %s ex2 now.  
-    restrictedMessage: 'You cannot %1 %4 until after XP level %3'
-    actions:
-    - CRAFT
-    - PICKUP
-    - USE
-    worlds:
-    - world
-    excludeWorlds:
-    - world_nether
-    XPMin: 5
-    XPMax: 
-    items:
-    - '276'
-    - '278'
+    WoodenWeapons:
+        actions: [CRAFT, PICKUP, USE]
+        xp:
+            max: 2
+        items: [268, 268, 270, 271]
+    StoneWeapons:
+      unrestrictedMessage: You can %s ex1 now.
+      restrictedMessage: 'You cannot %1 %3 after XP level %4'
+      actions:
+      - CRAFT
+      - PICKUP
+      - USE
+      worlds:
+      - world
+      xp:
+          min: 2
+      items:
+      - '272'
+      - '273'
+      - '274'
+      - '275'
+    diamondWeapons:
+      unrestrictedMessage: You can %s ex2 now.  
+      restrictedMessage: 'You cannot %1 %4 until after XP level %3'
+      actions:
+      - CRAFT
+      - PICKUP
+      - USE
+      worlds:
+      - world
+      xp:
+          min: 5 
+      items:
+      - '276'
+      - '277'
+      - '278'
+      - '279'
+manualRules:
+    sticksOnly:
+        allow: false
+        items: [280]
+areaRules:
+    pvpZone:
+        world: world
+        ne: [-196, 69, 201]
+        sw: [-180, 72, 187]
+        entrance: [sticksOnly]
+        exit: [sticksOnly]

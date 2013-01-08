@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import com.github.mineGeek.ItemRules.Config;
 import com.github.mineGeek.ItemRules.Integration.FactionsPlayer;
 import com.github.mineGeek.ItemRules.Integration.McMMOPlayer;
+import com.github.mineGeek.ItemRules.Rules.Rule.AppliesToMode;
 import com.github.mineGeek.ItemRules.Store.PlayerStoreItem;
 import com.github.mineGeek.ItemRules.Store.Players;
 import com.gmail.nossr50.datatypes.SkillType;
@@ -90,6 +91,38 @@ public class Rules {
 			}
 			
 		} */
+		
+		
+		if ( !ruleList.isEmpty() ) {
+			
+			PlayerStoreItem ps = Players.get(player);
+			
+			for ( Rule x : Rules.ruleList ) {
+		
+				if ( x.getAuto() ) {
+					
+					if ( x.appliesToPlayer( ps ) ) {
+						
+						can.add( x.getTag() );						
+						
+					} else {
+						
+						cannot.add( x.getTag() );
+						
+					}
+					
+					if ( x.appliesToPlayer( ps, AppliesToMode.NEXT ) ) {
+						
+						next.add( x.getTag() );
+						
+					}
+					
+				}
+				
+			}
+
+		}
+		
 		String r = "";
 		Boolean o = false;
 		
@@ -308,12 +341,12 @@ public class Rules {
 				
 				ConditionFactions factions = new ConditionFactions();
 				
-				if ( config.contains("factions.whitelisted") ) {
-					factions.setWhitelist( config.getStringList("factions.whitelisted") );
+				if ( config.contains("factions.appliesTo") ) {
+					factions.setWhitelist( config.getStringList("factions.appliesTo") );
 				}
 				
-				if ( config.contains("factions.blacklisted") ) {
-					factions.setBlacklist( config.getStringList("factions.blacklisted") );
+				if ( config.contains("factions.exclude") ) {
+					factions.setBlacklist( config.getStringList("factions.exclude") );
 				}
 				
 				if ( config.contains("factions.maxPower") || config.contains("factions.minPower")) {
@@ -331,13 +364,37 @@ public class Rules {
 		
 		if ( config.contains("actions") ) 	rule.setActions( config.getStringList("actions") );
 		if ( config.contains("items") ) 	rule.setItems( config.getStringList("items") );
+		if ( config.contains("itemsAdd") ) {
+			
+			for( String x : config.getStringList("itemsAdd") ) {
+				rule.addItem( x );
+			}
+			
+		}
+		
+		if ( config.contains("itemsRemove") ) {
+			
+			for( String x : config.getStringList("itemsRemove") ) {
+				rule.removeItem( x );
+			}
+			
+		}
+		
 		List<String> list = config.contains("worlds") ? config.getStringList("worlds") : new ArrayList<String>();
+		
 		if ( !list.isEmpty() ) rule.addApplicator( new ConditionWorld( true, list));
+		
 		list = config.contains("excludeWorlds") ? config.getStringList("excludeWorlds") : new ArrayList<String>();
+		
 		if ( !list.isEmpty() ) rule.addApplicator( new ConditionWorld( false, list));
 		
-		rule.addApplicator( new ConditionXP( config.contains("XPMin") ? config.getInt("XPMin") : null, config.contains("XPMax") ? config.getInt("XPMax") : null ) );
-		rule.addApplicator( new ConditionItemLevel( config.contains("itemLevelMin") ? config.getInt("itemLevelMin") : null, config.contains("itemLevelMax") ? config.getInt("itemLevelMax") : null ) );
+		if ( config.contains("xp.min") || config.contains("xp.max") ) {
+			rule.addApplicator( new ConditionXP( config.contains("xp.min") ? config.getInt("xp.min") : null, config.contains("xp.max") ? config.getInt("xp.max") : null ) );	
+		}
+
+		if ( config.contains("itemLevel.min") || config.contains("itemLevel.max") ) {
+			rule.addApplicator( new ConditionItemLevel( config.contains("itemLevel.min") ? config.getInt("itemLevel.min") : null, config.contains("itemLevel.max") ? config.getInt("itemLevel.max") : null ) );	
+		}
 		
 		Rules.addRule( rule );
 		

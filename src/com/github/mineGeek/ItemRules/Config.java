@@ -83,9 +83,9 @@ public class Config {
 	 */
 	public static void loadAreaRulesFromConfig( MemorySection c ) {
 		
-		if ( c.contains("arearules") ) {
-			for ( String x : c.getConfigurationSection("arearules").getKeys( false ) ) {
-				AreaRules.addRule(x, c.getConfigurationSection("arearules." + x) );
+		if ( c.contains("areaRules") ) {
+			for ( String x : c.getConfigurationSection("areaRules").getKeys( false ) ) {
+				AreaRules.addRule(x, c.getConfigurationSection("areaRules." + x) );
 			}
 		}
 		

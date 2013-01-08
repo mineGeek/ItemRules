@@ -31,4 +31,14 @@ public class ConditionWorld extends ConditionStringList implements Applicator {
 		super.close();
 	}
 
+	@Override
+	public ApplicationResult willBeApplicable(PlayerStoreItem player) {
+		return this.isApplicable(player);
+	}
+
+	@Override
+	public ApplicationResult wasApplicable(PlayerStoreItem player) {
+		return this.isApplicable(player);
+	}
+
 }

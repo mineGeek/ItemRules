@@ -42,6 +42,16 @@ public class ConditionFactions implements Applicator {
 		this.condition = new ConditionBetween( min, max );
 	}
 	
+	private ApplicationResult isApplicable( int power ) {
+		
+		if ( this.condition != null && this.condition.meetsRequirements( power ) ) {
+			return ApplicationResult.NONE;
+		} else {
+			return ApplicationResult.YES;
+		}
+		
+	}
+	
 	@Override
 	public ApplicationResult isApplicable(PlayerStoreItem player) {
 		
@@ -54,17 +64,11 @@ public class ConditionFactions implements Applicator {
 		
 		if ( this.whitelist.contains( factionName ) ) {
 			
-			if ( this.condition != null && this.condition.meetsRequirements( power ) ) {
-				return ApplicationResult.NONE;
-			} else {
-				return ApplicationResult.YES;
-			}
+			return isApplicable( power );
 			
 		}
 		
-		if ( this.condition != null && this.condition.meetsRequirements( power ) ) {
-			return ApplicationResult.NO;
-		} 
+		if ( isApplicable( power ) == ApplicationResult.NONE ) return ApplicationResult.NO;
 		
 		return ApplicationResult.NONE;
 		
@@ -76,6 +80,18 @@ public class ConditionFactions implements Applicator {
 		this.blacklist.clear();
 		this.whitelist.clear();
 		
+	}
+
+	@Override
+	public ApplicationResult willBeApplicable(PlayerStoreItem player) {
+		
+		return this.isApplicable( FPlayers.i.get( player.getPlayer()).getPowerRounded() + 1 );
+
+	}
+
+	@Override
+	public ApplicationResult wasApplicable(PlayerStoreItem player) {
+		return this.isApplicable( FPlayers.i.get( player.getPlayer()).getPowerRounded() - 1 );
 	}
 	
 

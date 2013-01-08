@@ -27,14 +27,10 @@ import com.github.mineGeek.ItemRules.Rules.Rules;
 public class PlayerStoreItem extends DataStore {
 	
 	
-	
-	
 	/**
 	 * The Bukkit player
 	 */
-	Player player = null;
-	
-	
+	Player player = null;	
 	
 	
 	/**
@@ -44,15 +40,11 @@ public class PlayerStoreItem extends DataStore {
 	Map<String, RuleItem> rules;
 	
 	
-	
-	
 	/**
 	 * Reference to currently active rules that
 	 * were added to player via the API or and area
 	 */
 	Map<String, Rule> manualRules = new HashMap<String, Rule>();
-	
-	
 	
 	
 	/**
@@ -61,24 +53,18 @@ public class PlayerStoreItem extends DataStore {
 	List<String> manualRuleList = new ArrayList<String>();
 	
 	
-	
-	
 	/**
 	 * List of current active rules for the players area
 	 * used to reduce the amount of location lookups
 	 */
 	private List<AreaRule> activeAreaRules = null;
-	
-	
-	
+		
 	
 	/**
 	 * A reference to the last known chunk player was in.
 	 * used to reduce location calculations
 	 */
 	private String lastChunkSignature;
-	
-	
 	
 	
 	/**
@@ -208,19 +194,38 @@ public class PlayerStoreItem extends DataStore {
 	
 	
 	
-	
+	public void loadRules(  ) {
+		
+		this.loadRules( null );
+		
+	}
 	
 	/**
 	 * Refreshes all rules specific to player. Should be
 	 * called when rules change or xp or item level changes
 	 */
-	public void loadRules() {
+	public void loadRules( String reasonForChange ) {		
 		
-		this.rules = Rules.getPlayerRules( this.player );
+		
+		Map<String, RuleItem> newRule = Rules.getPlayerRules( this.player );
 
-		if ( this.rules.isEmpty() ) {
+		if ( this.rules != null) {
+			if ( newRule != null ) {
+				if ( this.rules.equals( newRule ) ) {
+					this.player.sendMessage("rules are the same");
+				}
+			}			
+		}
+		
+		
+		this.rules = newRule;
+		
+		if ( newRule == null || this.rules.isEmpty() ) {
+			
 			this.player.sendMessage("There are currently no rules applied to you right now!!");
+			
 		} else {
+			
 			this.player.sendMessage("there are currently " + this.rules.size()  + " items have restrictions");
 			
 			List<String> rulenames = new ArrayList<String>();
@@ -228,8 +233,9 @@ public class PlayerStoreItem extends DataStore {
 				if ( !rulenames.contains(r.getTag())) rulenames.add(r.getTag());
 			}
 			
-			this.player.sendMessage(" Rule applied: " + rulenames.toString() );
+			this.player.sendMessage(" Rule applied: " + rulenames.toString() );			
 		}
+		
 		
 	}
 	
@@ -295,6 +301,7 @@ public class PlayerStoreItem extends DataStore {
 					if ( !x.getArea().intersectsWith( location ) ) {
 						x.applyExitRules( this.player );
 						this.inAreas.remove(x.getTag());
+						//this.player.sendMessage("Leaving: " + x );
 					}
 				}
 			}
@@ -321,6 +328,7 @@ public class PlayerStoreItem extends DataStore {
 					if ( x.getArea().intersectsWith( this.player.getLocation() ) ) {
 						x.applyEntranceRules( this.player );
 						this.inAreas.add(x.getTag());
+						//this.player.sendMessage("Entering: " + x );
 					}
 				}
 			}
@@ -347,6 +355,7 @@ public class PlayerStoreItem extends DataStore {
 		if ( !sig.equals(this.lastChunkSignature ) ) {		
 			
 			this.lastChunkSignature = sig;
+			//this.player.sendMessage(sig);
 		}
 		
 		if ( this.activeAreaRules != null ) {
@@ -358,8 +367,6 @@ public class PlayerStoreItem extends DataStore {
 		if ( this.activeAreaRules != null ) {
 			this.processEntranceRules( this.activeAreaRules );	
 		}		
-			
-		
 		
 	}
 	
@@ -598,7 +605,7 @@ public class PlayerStoreItem extends DataStore {
 
 	public void close() {
 		
-		if ( !this.activeAreaRules.isEmpty() ) this.activeAreaRules.clear();
+		if ( this.activeAreaRules != null && !this.activeAreaRules.isEmpty() ) this.activeAreaRules.clear();
 		if ( !this.data.isEmpty() ) this.data.clear();
 		if ( !this.inAreas.isEmpty() ) this.inAreas.clear();
 		if ( !this.manualRuleList.isEmpty() ) this.manualRuleList.clear();

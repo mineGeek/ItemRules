@@ -9,13 +9,17 @@ public class ConditionXP extends ConditionBetween implements Applicator {
 		super(min, max);
 	}	
 	
+	private ApplicationResult isApplicable( int value ) {
+		
+		if ( !this.meetsRequirements( value ) ) return ApplicationResult.YES;
+		return ApplicationResult.NONE;		
+		
+	}	
+	
 	@Override
 	public ApplicationResult isApplicable(PlayerStoreItem player) {
 		
-		Integer value = player.getXPLevel();
-		
-		if ( !this.meetsRequirements( value ) ) return ApplicationResult.YES;
-		return ApplicationResult.NONE;
+		return this.isApplicable( player.getXPLevel() );
 		
 
 	}
@@ -24,6 +28,16 @@ public class ConditionXP extends ConditionBetween implements Applicator {
 	public void close() {
 		return;
 		
+	}
+
+	@Override
+	public ApplicationResult willBeApplicable(PlayerStoreItem player) {
+		return this.isApplicable( player.getXPLevel() + 1 );
+	}
+
+	@Override
+	public ApplicationResult wasApplicable(PlayerStoreItem player) {
+		return this.isApplicable( player.getXPLevel() - 1 );
 	}
 
 

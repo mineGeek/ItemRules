@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.entity.Player;
+
 import com.github.mineGeek.ItemRules.Store.PlayerStoreItem;
 import com.gmail.nossr50.datatypes.SkillType;
 import com.gmail.nossr50.util.Users;
@@ -36,11 +38,7 @@ public class ConditionMcMMO implements Applicator {
 		
 	}
 	
-	@Override
-	public ApplicationResult isApplicable(PlayerStoreItem player) {
-		
-		
-		if ( this.requiresParty && !player.getMcMMOinParty() ) return ApplicationResult.YES;
+	private ApplicationResult isApplicable( Player player, int adjustedLevel ) {
 		
 		if ( !this.skills.isEmpty() ) {
 			
@@ -52,21 +50,42 @@ public class ConditionMcMMO implements Applicator {
 				SkillType skill = row.getKey();
 				ConditionBetween condition = row.getValue();
 				
-				if ( !condition.isMinOk( Users.getPlayer(player.getPlayer()).getProfile().getSkillLevel( skill ) ) ) {
+				if ( !condition.isMinOk( Users.getPlayer( player ).getProfile().getSkillLevel( skill ) + adjustedLevel ) ) {
 					return ApplicationResult.YES;
 				}
 				
 			}
 			
 		}
-				
+		
 		return ApplicationResult.NONE;
+		
+	}
+	
+	@Override
+	public ApplicationResult isApplicable(PlayerStoreItem player) {
+		
+		
+		if ( this.requiresParty && !player.getMcMMOinParty() ) return ApplicationResult.YES;
+		
+		return this.isApplicable( player.getPlayer(), 0 );
+
 	}
 
 	@Override
 	public void close() {
 		this.skills.clear();
 		
+	}
+
+	@Override
+	public ApplicationResult willBeApplicable(PlayerStoreItem player) {
+		return this.isApplicable(player.getPlayer(), 1 );
+	}
+
+	@Override
+	public ApplicationResult wasApplicable(PlayerStoreItem player) {
+		return this.isApplicable(player.getPlayer(), -1 );
 	}
 	
 
