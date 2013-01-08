@@ -22,6 +22,8 @@ public class Rule {
 	
 	private String tag;
 	private String description;
+	private String restrictedMessage;
+	private String unrestrictedMessage;
 	
 	private RuleItem ruleItem;
 	
@@ -60,6 +62,22 @@ public class Rule {
 	
 	public String getDescription() {
 		return this.description;
+	}
+	
+	public void setRestrictedMessage( String value ) {
+		this.restrictedMessage = value;
+	}
+	
+	public String getRestrictedMessage() {
+		return this.restrictedMessage;
+	}
+	
+	public void setUnrestrictedMessage( String value ) {
+		this.unrestrictedMessage = value;
+	}
+	
+	public String getUnrestrictedMessage() {
+		return this.unrestrictedMessage;
 	}
 	
 	public void setAuto( boolean value ) {

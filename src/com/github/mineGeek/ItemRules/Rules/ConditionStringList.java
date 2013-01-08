@@ -5,7 +5,7 @@ import java.util.List;
 
 public class ConditionStringList {
 
-	private List<String> list = new ArrayList<String>();
+	protected List<String> list = new ArrayList<String>();
 
 	public ConditionStringList(){}
 	

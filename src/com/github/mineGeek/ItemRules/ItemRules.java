@@ -30,12 +30,16 @@ public class ItemRules extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		
-		Players.close( true );
-		AreaRules.close();
-		Rules.close();
-		PlayerMessenger.close();
-		Config.close();
-		
+		try { Players.close( true ); }
+		catch (Exception e ) {}
+		try{ AreaRules.close(); }
+		catch( Exception e ) {}
+		try{ Rules.close(); }
+		catch ( Exception e ) {}
+		try { PlayerMessenger.close(); }
+		catch (Exception e) {}
+		try { Config.close(); }
+		catch( Exception e ) {}
 		
 	}
 	

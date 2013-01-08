@@ -49,49 +49,11 @@ public class Rules {
 	 * @param cannotColor
 	 * @return
 	 */
-	public static String getRuleList( Player player, Boolean doCan, Boolean doCanNow, Boolean doNext, ChatColor canColor, ChatColor nextColor, ChatColor cannotColor ) {
+	public static List<String> getRuleList( Player player, Boolean doCan, Boolean doCanNow, Boolean doNext, ChatColor canColor, ChatColor nextColor, ChatColor cannotColor ) {
 
 		List<String> can = new ArrayList<String>();
 		List<String> cannot = new ArrayList<String>();
 		List<String> next = new ArrayList<String>();
-		/*
-		if ( !ruleList.isEmpty() ) {
-			
-			for ( Rule x : Rules.ruleList ) {
-				
-				if ( x.getAutoAdd() || Players.get(player).hasManualRule( x.getTag() ) ) {
-					if ( x.appliesToWorldName( player.getWorld().getName() ) ) {
-				
-						int il = Players.get(player).getItemLevel();
-						int xp = Players.get(player).getXPLevel();
-						
-						if ( x.passesItemLevel( il ) && x.passesXPLevel( xp ) && ( doCan || doCanNow ) ) {
-							
-							if ( doCanNow ) {
-								if ( x.passesItemLevel( il - 1 ) || x.passesXPLevel( xp-1)) can.add( x.getDescription() );
-							} else {
-								can.add( x.getDescription() );
-							}
-							
-						} else {
-							
-							if ( x.passesItemLevel( il + 1 ) && x.passesXPLevel( xp + 1 ) && doNext ) {
-								next.add( x.getDescription() );
-							} else if ( !x.passesItemLevel( il ) && !x.passesXPLevel( xp ) && ( !doCan ) ){
-								cannot.add( x.getDescription() );
-							}
-							
-						}
-						
-						
-					}
-					
-				}
-				
-			}
-			
-		} */
-		
 		
 		if ( !ruleList.isEmpty() ) {
 			
@@ -101,20 +63,31 @@ public class Rules {
 		
 				if ( x.getAuto() ) {
 					
-					if ( x.appliesToPlayer( ps ) ) {
+					if ( ( doCan || doCanNow ) && x.appliesToPlayer( ps ) ) {
+						if ( x.getUnrestrictedMessage() != null ) {
+							if ( doCanNow ) {
+								if ( !x.appliesToPlayer(ps, AppliesToMode.PREVIOUS ) ) can.add( x.getUnrestrictedMessage() );						
+							} else {
+								can.add( x.getUnrestrictedMessage() );
+							}
+						}
 						
-						can.add( x.getTag() );						
+					} else if ( !doCan ){
 						
-					} else {
-						
-						cannot.add( x.getTag() );
+						if ( x.getRestrictedMessage() != null )	 cannot.add( x.getRestrictedMessage() );
 						
 					}
 					
-					if ( x.appliesToPlayer( ps, AppliesToMode.NEXT ) ) {
-						
-						next.add( x.getTag() );
-						
+					if ( doNext && x.getUnrestrictedMessage() != null &&  !can.contains( x.getUnrestrictedMessage() ) ) {
+					
+						if ( x.appliesToPlayer( ps, AppliesToMode.NEXT ) ) {
+
+							
+							if ( cannot.contains( x.getRestrictedMessage() ) ) cannot.remove( x.getRestrictedMessage() );
+							
+							next.add( x.getRestrictedMessage() );
+							
+						}
 					}
 					
 				}
@@ -124,6 +97,7 @@ public class Rules {
 		}
 		
 		String r = "";
+		List<String> result = new ArrayList<String>();
 		Boolean o = false;
 		
 		if ( can.size() > 0 ) {
@@ -136,6 +110,8 @@ public class Rules {
 				r = r + x;
 			}
 			r = r + ". ";
+			result.add( r );
+			r = "";
 			o = false;
 		}
 		
@@ -151,6 +127,8 @@ public class Rules {
 			}
 			
 			r = r + ". ";
+			result.add( r );
+			r = "";
 			o = false;
 		}
 		
@@ -165,10 +143,11 @@ public class Rules {
 				r = r + x ;
 			}
 			
+			result.add( r );
 			r = r + ". ";
 		}
 		
-		return r;
+		return result;
 		
 	}
 		
@@ -361,6 +340,9 @@ public class Rules {
 		rule.setWhitelistItems( config.getBoolean("explicit", false ) );
 		rule.setAuto( config.getBoolean("auto", !manual ) );
 		rule.setDescription( config.getString("description", "") );
+		
+		if ( config.contains( "messages.restricted") ) rule.setRestrictedMessage( config.getString("messages.restricted", null) );
+		if ( config.contains( "messages.unrestricted") ) rule.setUnrestrictedMessage( config.getString("messages.unrestricted", null) );
 		
 		if ( config.contains("actions") ) 	rule.setActions( config.getStringList("actions") );
 		if ( config.contains("items") ) 	rule.setItems( config.getStringList("items") );

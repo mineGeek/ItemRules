@@ -1,5 +1,6 @@
 package com.github.mineGeek.ItemRules.Rules;
 
+
 import com.github.mineGeek.ItemRules.Store.PlayerStoreItem;
 
 public class ConditionItemLevel extends ConditionBetween implements Applicator {
@@ -36,6 +37,7 @@ public class ConditionItemLevel extends ConditionBetween implements Applicator {
 	@Override
 	public ApplicationResult wasApplicable(PlayerStoreItem player) {
 		return this.isApplicable( player.getItemLevel() - 1 );
-	}	
+	}
+	
 
 }

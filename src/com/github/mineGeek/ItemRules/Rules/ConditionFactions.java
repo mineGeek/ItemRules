@@ -94,5 +94,6 @@ public class ConditionFactions implements Applicator {
 		return this.isApplicable( FPlayers.i.get( player.getPlayer()).getPowerRounded() - 1 );
 	}
 	
+	
 
 }

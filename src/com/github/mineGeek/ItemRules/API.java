@@ -127,7 +127,10 @@ public class API {
 	 * @param player
 	 */
 	public static void printCurrentRulesToPlayer( Player player ) {
-		player.sendMessage( Rules.getRuleList(player, true, true, true, ChatColor.GREEN, ChatColor.YELLOW, ChatColor.RED) );
+		List<String> result = Rules.getRuleList(player, true, true, true, ChatColor.GREEN, ChatColor.YELLOW, ChatColor.RED);
+		for (String x : result ) {
+			player.sendMessage(x);
+		}
 	}
 	
 	
@@ -139,7 +142,10 @@ public class API {
 	 * @param player
 	 */
 	public static void printCurrentRestrictionsToPlayer( Player player ) {
-		player.sendMessage( Rules.getRuleList(player, false, false, true, ChatColor.GREEN, ChatColor.YELLOW, ChatColor.RED) );
+		List<String> result = Rules.getRuleList(player, false, false, true, ChatColor.GREEN, ChatColor.YELLOW, ChatColor.RED);
+		for (String x : result ) {
+			player.sendMessage(x);
+		}		
 	}
 	
 	

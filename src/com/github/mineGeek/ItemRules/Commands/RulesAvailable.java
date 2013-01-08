@@ -68,23 +68,6 @@ public class RulesAvailable extends CommandBase {
 		Boolean doCanNext 	= doCan ? true : false;				
 		Boolean doCanNow	= doCan ? true : false;
 		
-		if ( doCan ) {
-			
-			if ( Players.get(player).getAppliedRules().isEmpty() ) {
-				player.sendMessage("There are currently no rules applied to you right now!!");
-			} else {
-				player.sendMessage("there are currently " + Players.get(player).getAppliedRules().size()  + " rule(s) applied to you");
-				
-				List<String> rulenames = new ArrayList<String>();
-				for ( RuleItem r : Players.get(player).getAppliedRules().values() ) {
-					if ( !rulenames.contains(r.getTag())) rulenames.add(r.getTag());
-				}
-				
-				player.sendMessage(" Rule applied: " + rulenames.toString() );
-			}
-			
-		}		
-		
 		if (  args.length > ( 0 + argStart ) ) {
 			
 
@@ -108,8 +91,12 @@ public class RulesAvailable extends CommandBase {
 			
 		}
 		
-		execMessage = Rules.getRuleList( player, doCan, doCanNow, doCanNext, ChatColor.GREEN, ChatColor.YELLOW, ChatColor.RED );
+		List<String> result = Rules.getRuleList( player, doCan, doCanNow, doCanNext, ChatColor.GREEN, ChatColor.YELLOW, ChatColor.RED );
 
+		for ( String x : result ) {
+			sender.sendMessage(x);
+		}
+		
 		
 		return true;
 	}

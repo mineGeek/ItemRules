@@ -55,21 +55,25 @@ public class Config {
 	 * The textual prefix for when we show the player a list of things
 	 * they can do
 	 */
-	public static String txtCanDoPrefix = "You can ";
+	public static String txtCanDoPrefix = "Unrestricted: ";
 	
 
 	/**
 	 * the textual prefix for when we show the player what they can do next
 	 */
-	public static String txtCanDoNextPrefix = "Next you can ";
+	public static String txtCanDoNextPrefix = "Will change next: ";
 	
 	
 	/**
 	 * The textual prefix for when we show the player what they cannot do
 	 */
-	public static String txtCannotDoPrefix = "You cannot yet ";
+	public static String txtCannotDoPrefix = "Restricted: ";
 	
 
+	public static String txtDefaultRestrictedMessage = "use this";
+	
+	public static String txtDefaultUnrestrictedMessage = "use this";
+	
 	/**
 	 * Whether or not to monitor player locations. Will go to true if there
 	 * are any areaRules set up
