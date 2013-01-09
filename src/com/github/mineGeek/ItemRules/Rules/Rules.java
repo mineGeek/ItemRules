@@ -87,21 +87,21 @@ public class Rules {
 					
 						if ( !appliesNext && doNext ) { //will not be applied next level!
 							
-							next.add( not );
+							if ( not != null ) next.add( not );
 							
 						} else if ( !doCan ) {
 							
-							cannot.add( is );
+							if ( is != null ) cannot.add( is );
 						}
 					} else if ( doCan ){
 					
-						can.add( not );
+						if ( not != null ) can.add( not );
 						
 						if ( doNext && appliesNext ) {
-							next.add( is );
+							if ( is != null ) next.add( is );
 						} else if ( doCanNow && !applied ) {
 							//is new
-							can.add( not );
+							if ( not != null ) can.add( not );
 						}
 						
 					}

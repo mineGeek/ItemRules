@@ -377,7 +377,15 @@ public class IRPlayer extends DataStore {
 		
 		RuleData item = this.getRuleData( String.valueOf( material.getId() )  , String.valueOf( data ) ) ;
 		
-		if ( item == null )	return mode == RuleMode.ALLOW || mode == RuleMode.DEFAULT ? false : true;
+		if ( item == null )	{
+			
+			if ( mode == RuleMode.DENY ) {
+				if ( Config.txtDefaultRestrictedMessage != null ) PlayerMessenger.SendPlayerMessage(this.player, Config.txtDefaultRestrictedMessage + " (" + action.toString().toLowerCase() + " " + material.toString().toLowerCase() + " [" + material.getId() + "])" );
+				return true;
+			} else {
+				return false;
+			}
+		}
 		
 		boolean result = item.isRestricted( action );
 		
