@@ -1,10 +1,11 @@
-package com.github.mineGeek.ItemRules;
+package com.github.mineGeek.ItemRestrictions.Utilities;
 
 
 import org.bukkit.Server;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import com.github.mineGeek.ItemRules.Rules.AreaRules;
 import com.github.mineGeek.ItemRules.Rules.Rules;
 
 /**
@@ -42,14 +43,7 @@ public class Config {
 	 * XP level
 	 */
 	public static Boolean ItemLevelDefaultsToXPLevel	= true;
-	
-	
-	/**
-	 * Default mode for restrictions. If false, rules act as 
-	 * blacklist (the default mode). If true, it acts as a whitelist
-	 */
-	public static Boolean defaultAllow					= false;
-		
+			
 	
 	/**
 	 * The textual prefix for when we show the player a list of things
@@ -108,6 +102,16 @@ public class Config {
 	 */
 	public static void loadRulesFromConfig( MemorySection c) {
 		
+		if ( c.contains("aliases") ) {
+			
+			for ( String x : c.getConfigurationSection("aliases").getKeys( false ) ) {
+				
+				Rules.addItemAlias( x, c.getStringList("aliases." + x) );
+				
+			}
+			
+		}
+		
 		if ( c.contains("rules") ) {
 			
 			for ( String x : c.getConfigurationSection( "rules").getKeys( false ) ) {
@@ -143,8 +147,12 @@ public class Config {
 		Config.XPLevelIncreasesItemLevel 	= c.getBoolean("XP.levelIncreasesItemLevel", true );
 		Config.XPLossReducesItemLevel 		= c.getBoolean("XP.levelDecreasesItemLevel", true );
 		Config.XPLevelIncreasesItemLevel 	= c.getBoolean("XP.itemLevelDefaultsToXPLevel", true );
-		Config.defaultAllow					= c.getBoolean("defaultAllow", false );
-
+		Config.txtCanDoPrefix				= c.getString("text.CanDoPrefix", "Not restricted: ");
+		Config.txtCanDoNextPrefix			= c.getString("text.CanDoNextPrefix", "Next rules change: ");
+		Config.txtCannotDoPrefix			= c.getString("text.CannotDoPrefix", "Restricted: ");
+		Config.txtDefaultRestrictedMessage	= c.getString("text.DefaultRestrictedMessage", "You cannot do that");
+		Config.txtDefaultUnrestrictedMessage= c.getString("text.DefaultUnrestrictedMessage", "");
+		
 	}
 	
 	

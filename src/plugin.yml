@@ -1,43 +1,25 @@
 name: ItemRules
 main: com.github.mineGeek.ItemRules.ItemRules
 version: 1.0.0
-softdepend: [mcMMO, Factions]
+softdepend: [mcMMO, Factions, Valut]
 commands:
-    ircan:
+    can:
         description: List of what you can do at your level
-        aliases: [can, cando]
-        usage: /lrcan [full]
-        permission-message: You don't have permission fool
-    ircant:
+        aliases: [ircan]
+        usage: /can [all|now|next]
+    cant:
         description: a list of what you can't do
-        aliases: [cant, cantdo, lrcant]
-        usage: /lrcant [full]
-        permission-message: You don't have permission fool
-    lrfull:
-        description: a list of what you can and cannot do
-        aliases: [full, rfull]
-        usage: /lrfull [all]
+        aliases: [ircant]
+        usage: /cant [all|now|next]
+    apply:
+        description: Applies a (manual) rule to a player
+        aliases: [irapply]
+        usage: /apply player ruleName
+        permission: itemRules.admin.apply
         permisson-message: You don't have permission for this
-    lrcreate:
-        description: creates a new rule
-        usage: /lrcreate rulename
-        permission: LevelRestrictions.admin.create
+    revoke:
+        description: removes a (manual) rule from player
+        aliases: [irrevoke]
+        usage: /revoke playerName ruleName
+        permission: itemRules.admin.revoke
         permission-message: You lack the skillz for this
-    lrkillrule:
-        description: deletes an existing rule
-        usage: /lrkillrule rulename
-        permission: LevelRestrictions.admin.killrule
-        permission-message: DENIED!
-    lredit:
-        description: allows you to edit a rule.
-        usage: /lredit rulename [desc|min|max|addaction|removeaction|additem|removeitem] value
-        permission: LevelRestrictions.admin.create
-        permission-message: fail. you no haz perms.
-    lrdump:
-        description: outputs rules to screen
-        permission: LevelRestrictions.admin
-    lrlevel:
-        description: change current item level
-        usage: /lrlevel [playername] [set]
-        permission: LevelRestrictions.admin.level
-        permission-message: You have insufficient permissions for this action

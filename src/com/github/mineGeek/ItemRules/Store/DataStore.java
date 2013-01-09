@@ -14,42 +14,32 @@ import java.util.Map;
 public class DataStore {
 
 	
-	
-	
 	/**
 	 *  Map of columnName => Object to store
 	 */
 	public Map<String, Object> data = new HashMap<String, Object>();
-	
-	
-	
+		
 	
 	/**
 	 * Default file name. Should be player.getName();
 	 */
 	private String fileName 	= "playerData";
-	
-	
-	
+		
 	
 	/**
 	 * Default file extension.
 	 */
 	private String fileExt 		= "bin";
-	
-	
-	
+		
 	
 	/**
 	 * Path to save/load from
 	 */
 	public 	String dataFolder;
-
-
 	
 	
 	/**
-	 * Constructor - takes the datafolder to work from
+	 * Constructor - takes the data folder to work from
 	 * @param dataFolder
 	 */
 	public DataStore( String dataFolder ) {
@@ -57,19 +47,15 @@ public class DataStore {
 	}
 	
 	
-	
-	
 	/**
-	 * Basic setting of an object to a columnname. Whatever is set, is stored.
+	 * Basic setting of an object to a column name. Whatever is set, is stored.
 	 * @param ColumnName
 	 * @param value
 	 */
 	public void set( String ColumnName, Object value ) {
 		this.data.put(ColumnName, value);
 	}
-	
-	
-	
+
 	
 	/**
 	 * Standard getting of object. Will return whatever has been set.
@@ -79,8 +65,6 @@ public class DataStore {
 	public Object get( String columnName ) {		
 		return this.data.get( columnName );		
 	}
-	
-	
 	
 	
 	/**
@@ -96,8 +80,6 @@ public class DataStore {
 		return (Integer)this.get( columnName );
 		
 	}
-	
-	
 	
 	
 	/**
@@ -116,9 +98,6 @@ public class DataStore {
 	}
 	
 	
-	
-	
-	
 	/**
 	 * gets an Object as a Boolean
 	 * @param columnName
@@ -132,9 +111,6 @@ public class DataStore {
 		return (Boolean)value;
 		
 	}
-	
-	
-	
 	
 	
 	/**
@@ -151,10 +127,7 @@ public class DataStore {
 		
 	}
 	
-	
-	
-	
-	
+
 	/**
 	 * Returns current filename
 	 * @return
@@ -162,9 +135,6 @@ public class DataStore {
 	public String getFileName() {
 		return this.fileName;
 	}
-	
-	
-	
 	
 	
 	/**
@@ -175,22 +145,16 @@ public class DataStore {
 		this.fileName = value;
 	}
 	
-	
-	
-	
-	
+
 	/**
-	 * gets file extenstion
+	 * gets file extension
 	 * @return
 	 */
 	public String getFileExt() {
 		return this.fileExt;
 	}
 	
-	
-	
-	
-	
+
 	/**
 	 * sets file extension
 	 * @param value
@@ -199,11 +163,9 @@ public class DataStore {
 		this.fileExt = value;
 	}
 	
-
-	
 	
 	/**
-	 * convienence method for returning full read/write path
+	 * Convenience method for returning full read/write path
 	 * @return
 	 */
 	public String getFullFileName() {
@@ -211,8 +173,6 @@ public class DataStore {
 		String result = this.dataFolder + File.separator + "players" +  File.separator + this.getFileName() + "." + this.getFileExt();
 		return result;
 	}
-	
-	
 	
 	
 	/**
@@ -233,11 +193,8 @@ public class DataStore {
 	}
 	
 	
-	
-	
-	
 	/**
-	 * loads objects from a flatfile.
+	 * loads objects from a flat file.
 	 * @return
 	 */
 	public Boolean load() {

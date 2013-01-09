@@ -3,6 +3,7 @@ package com.github.mineGeek.ItemRules.Commands;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.github.mineGeek.ItemRules.Rules.Rules;
@@ -24,7 +25,7 @@ public class RulesAvailable extends CommandBase {
 	 */
 	protected Boolean exec( String cmdName, String[] args ) {
 			
-		Integer argStart = 0;
+		int argStart = 0;
 		Player player = null;
 		
 		if ( !( sender instanceof Player ) ) {
@@ -84,8 +85,15 @@ public class RulesAvailable extends CommandBase {
 		
 		List<String> result = Rules.getRuleList( player, doCan, doCanNow, doCanNext, ChatColor.GREEN, ChatColor.YELLOW, ChatColor.RED );
 
+		boolean toPlayer = ( ( sender instanceof Player || sender instanceof CommandSender) );
+		
 		for ( String x : result ) {
-			sender.sendMessage(x);
+			
+			if ( toPlayer) {
+				player.sendMessage(x);
+			} else {
+				sender.sendMessage(x);
+			}
 		}
 		
 		

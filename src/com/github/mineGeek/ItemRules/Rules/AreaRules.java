@@ -1,4 +1,4 @@
-package com.github.mineGeek.ItemRules;
+package com.github.mineGeek.ItemRules.Rules;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.configuration.ConfigurationSection;
+
+import com.github.mineGeek.ItemRestrictions.Utilities.Area;
+import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 
 /**
  * Collection/Controller of areaRules
@@ -93,6 +96,10 @@ public class AreaRules {
 
 		rule.setTag( tag );
 		rule.setArea( area );
+		
+		rule.setOnEntranceMessage( config.getString( "messages.onEntrance") );
+		rule.setOnExitMessage( config.getString("messages.onExit") );
+		
 		rule.setEntranceRules( config.getStringList("entrance") );
 		rule.setExitRules( config.getStringList("exit") );
 		

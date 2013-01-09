@@ -7,25 +7,83 @@ import java.util.Map;
 
 import com.github.mineGeek.ItemRules.ItemRules.Actions;
 import com.github.mineGeek.ItemRules.Rules.Applicator.ApplicationResult;
-import com.github.mineGeek.ItemRules.Store.PlayerStoreItem;
+import com.github.mineGeek.ItemRules.Store.IRPlayer;
 
+/**
+ * Basic rule that qualifies use of action and item
+ *
+ */
 public class Rule {
 	
+	
+	/**
+	 * Measures how this rule is qualified against the player
+	 */
 	public enum AppliesToMode {NOW, NEXT, PREVIOUS};
+	
+	
+	/**
+	 * Describes what the result of the restriction is. 
+	 * Allow = item is whitelisted
+	 * Deny = item is blacklisted
+	 * Previous options will remove any existing rules up to this one
+	 */
+	public enum RuleMode {DEFAULT, ALLOW, DENY, ALLOWPREVIOUS, DENYPREVIOUS};
 
+	
+	/**
+	 * Criteria for this rule
+	 */
 	private List<Applicator> appliesTo = new ArrayList<Applicator>();
+	
+	
+	/**
+	 * Items allowed by this rule
+	 */
 	private Map<String, RuleData> allowedItems = new HashMap<String, RuleData>();
+	
+	
+	/**
+	 * Items restricted by rule
+	 */
 	private Map<String, RuleData> restrictedItems = new HashMap<String, RuleData>();
 	
+	
+	/**
+	 * Actions applied to rule
+	 */
 	private List<Actions> actions = new ArrayList<Actions>();
 	
-	private boolean whitelistItems = false;
+	
+	/**
+	 * Revaluate this rule each time they are loaded
+	 * False for sticky or manual rules
+	 */
 	private boolean autoProcess = true;
 	
+	
+	/**
+	 * Unique tag for rule
+	 */
 	private String tag;
-	private String description;
+	
+	
+	/**
+	 * Message to display when player is restricted
+	 */
 	private String restrictedMessage;
+	
+	
+	/**
+	 * Message to display when user is unrestricted
+	 */
 	private String unrestrictedMessage;
+	
+	
+	/**
+	 * Mode that applies to rule ( Default, Allow or Deny)
+	 */
+	private RuleMode ruleMode = RuleMode.DEFAULT;
 	
 	
 	/**
@@ -36,82 +94,148 @@ public class Rule {
 		
 		this.tag = tag;
 
+		this.ruleMode = rule.ruleMode;
 		this.appliesTo = rule.appliesTo;
 		this.allowedItems = rule.allowedItems;
 		this.restrictedItems = rule.restrictedItems;
 		this.restrictedMessage = rule.restrictedMessage;
-		this.unrestrictedMessage = rule.unrestrictedMessage;
-		
-		this.actions = rule.actions;
-		
-		this.whitelistItems = rule.whitelistItems;
-		this.autoProcess = rule.autoProcess;
-		
-		this.description = rule.description;
+		this.unrestrictedMessage = rule.unrestrictedMessage;		
+		this.actions = rule.actions;		
+		this.autoProcess = rule.autoProcess;		
 		
 	}
 	
 	
+	/**
+	 * Constructor with tag
+	 * @param tag
+	 */
 	public Rule( String tag ) {
 		this.tag = tag;
 	}
 	
+	
+	/**
+	 * Returns tag
+	 * @return
+	 */
 	public String getTag() {
 		return this.tag;
 	}
 	
-	public void setDescription( String value ) {
-		this.description = value;
+
+	/**
+	 * Sets RuleMode ( Default, Deny or Allow)
+	 * @param mode
+	 */
+	public void setRuleMode( RuleMode mode ) {
+		this.ruleMode = mode;
 	}
 	
-	public String getDescription() {
-		return this.description;
+	
+	/**
+	 * Returns RuleMode
+	 * @return
+	 */
+	public RuleMode getRuleMode() {
+		return this.ruleMode;
 	}
 	
+	
+	/**
+	 * Returns RestrictedMessage
+	 * Displayed when this rule is restricting a player
+	 * @param value
+	 */
 	public void setRestrictedMessage( String value ) {
 		this.restrictedMessage = value;
 	}
 	
+	
+	/**
+	 * Returns Restricted Message 
+	 * @return
+	 */
 	public String getRestrictedMessage() {
 		return this.restrictedMessage;
 	}
 	
+	
+	/**
+	 * Sets Unrestricted Message
+	 * @param value
+	 */
 	public void setUnrestrictedMessage( String value ) {
 		this.unrestrictedMessage = value;
 	}
 	
+	
+	/**
+	 * Returns Unrestricted Message
+	 * @return
+	 */
 	public String getUnrestrictedMessage() {
 		return this.unrestrictedMessage;
 	}
 	
+	
+	/**
+	 * Sets Auto mode
+	 * If true, rule is reevaluated each loadRule()
+	 * @param value
+	 */
 	public void setAuto( boolean value ) {
 		this.autoProcess = value;
 	}
 	
+	
+	/**
+	 * Returns Auto mode
+	 * @return
+	 */
 	public boolean getAuto() {
 		return this.autoProcess;
 	}
 	
-	public void setWhitelistItems( boolean value ) {
+	
+	/**
+	 * Adds items as restricted
+	 * @param list
+	 */
+	public void addRestrictedItems( List<String> list ) {
 		
-		this.whitelistItems = value;
-		
+		if ( !list.isEmpty() ) {
+			for (String x : list ) {
+				this.addRestrictedItem(x);
+			}
+		}
 	}
 	
-	public boolean getWhitelistItems() {
-		return this.whitelistItems;
-	}
 	
+	/**
+	 * Add item as restricted
+	 * @param itemId
+	 */
 	public void addRestrictedItem( String itemId ) {
 		
 		this.restrictedItems.put(itemId, new RuleData( this.getTag(), true ) );
 		
 	}
 	
+	
+	/**
+	 * Remove an item from the restricted list
+	 * @param itemId
+	 */
 	public void removeRestrictedItem( String itemId ) {
 		this.restrictedItems.remove( itemId );
 	}
 	
+	
+	/**
+	 * Sets the entire restricted item list
+	 * @param itemIds
+	 */
 	public void setRestrictedItems( List<String> itemIds ) {
 		
 		if ( !itemIds.isEmpty() ) {
@@ -122,20 +246,55 @@ public class Rule {
 		
 	}
 	
+	
+	/**
+	 * Returns list of restricted items
+	 * @return
+	 */
 	public Map<String, RuleData> getRestrictedItems() {
 		 return this.restrictedItems;
 	}
 	
+	
+	/**
+	 * Adds item to allowed list
+	 * @param list
+	 */
+	public void addAllowedItems( List<String> list ) {
+		
+		if ( !list.isEmpty() ) {
+			for ( String x : list ) {
+				this.addAllowedItem(x);
+			}
+		} 
+		
+	}
+	
+	
+	/**
+	 * Adds item to list of allowed items
+	 * @param itemid
+	 */
 	public void addAllowedItem( String itemid) {
 			
 		this.allowedItems.put(itemid, new RuleData( this.getTag(), false ) );
 		
 	}
 	
+	
+	/**
+	 * Removes item from list of alled stuff
+	 * @param itemId
+	 */
 	public void removeAllowedItem( String itemId ) {
 		this.allowedItems.remove(itemId);
 	}
 	
+	
+	/**
+	 * Sets the entire allowed items list
+	 * @param itemids
+	 */
 	public void setAllowedItems( List<String> itemids ) {
 		
 		if ( !itemids.isEmpty() ) {
@@ -148,31 +307,60 @@ public class Rule {
 		
 	}
 	
+	
+	/**
+	 * Returns the list of items allowed by rule
+	 * @return
+	 */
 	public Map<String, RuleData> getAllowedItems() {
 		
 		return this.allowedItems;
 		
 	}
 	
+	
+	/**
+	 * Sets the list of actions this rule applies to
+	 * @param actions
+	 */
 	public void setActions( List<String> actions ) {
 		
 		if ( !actions.isEmpty() ) {
 			for( String x : actions ) {
-				this.actions.add( Actions.valueOf(x) );
+				this.actions.add( Actions.valueOf(x.toUpperCase()) );
 			}
 		}		
 		
 	}
 	
+	
+	/**
+	 * Adds an Applicator ( criteria) to this rule
+	 * @param app
+	 */
 	public void addApplicator( Applicator app ) {
 		this.appliesTo.add( app );
 	}
 	
-	public boolean appliesToPlayer( PlayerStoreItem player ) {
+	
+	/**
+	 * Returns true if player qualifies to have this
+	 * rule applied
+	 * @param player
+	 * @return
+	 */
+	public boolean appliesToPlayer( IRPlayer player ) {
 		return this.appliesToPlayer(player, AppliesToMode.NOW );
 	}
 	
-	public boolean appliesToPlayer( PlayerStoreItem player, AppliesToMode method ) {
+	
+	/**
+	 * Returns true if rule applied to player
+	 * @param player
+	 * @param method
+	 * @return
+	 */
+	public boolean appliesToPlayer( IRPlayer player, AppliesToMode method ) {
 		
 		if ( player.getPlayer().hasPermission("itemRules.bypass." + this.getTag() ) ) return false;
 		
@@ -216,10 +404,6 @@ public class Rule {
 		
 		return false;
 		
-		//if ( this.allowedItems.containsKey( itemId + "." + data ) ) return this.allowedItems.get( itemId + "." + data ).isWhitelisted();
-		//if ( this.allowedItems.containsKey( itemId ) ) return this.allowedItems.get( itemId + "." + data ).isWhitelisted();
-		//return this.getWhitelistItems();
-		
 	}
 	
 	
@@ -238,20 +422,30 @@ public class Rule {
 		return this.isRestrictedItem( String.valueOf( itemId ), "");
 	}
 
+	
+	/**
+	 * Returns true if Action applied to rule
+	 * @param action
+	 * @return
+	 */
 	public boolean appliesToAction( Actions action ) {
 		return this.actions.contains( action );
 	}
 	
+	
+	/**
+	 * Good Guy Closure
+	 */
 	public void close() {
 		
-		if ( !this.appliesTo.isEmpty() ) {
+		if ( this.appliesTo != null && !this.appliesTo.isEmpty() ) {
 			for( Applicator a : this.appliesTo ) {
 				a.close();
 			}
+			this.appliesTo.clear();
 		}
 		
 		if ( this.actions != null) this.actions.clear();
-		if ( this.appliesTo != null) this.appliesTo.clear();
 		if ( this.allowedItems != null ) this.allowedItems.clear();
 		if ( this.restrictedItems != null ) this.restrictedItems.clear();
 		

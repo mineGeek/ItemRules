@@ -1,14 +1,16 @@
-package com.github.mineGeek.ItemRules;
+package com.github.mineGeek.ItemRules.Rules;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import com.github.mineGeek.ItemRestrictions.Utilities.Area;
+import com.github.mineGeek.ItemRestrictions.Utilities.Config;
+import com.github.mineGeek.ItemRules.API;
 import com.github.mineGeek.ItemRules.Events.onAreaRuleEntrance;
 import com.github.mineGeek.ItemRules.Events.onAreaRuleExit;
-import com.github.mineGeek.ItemRules.Rules.Rule;
-import com.github.mineGeek.ItemRules.Rules.Rules;
 import com.github.mineGeek.ItemRules.Store.Players;
 
 
@@ -24,14 +26,10 @@ public class AreaRule {
 	private Area area;
 	
 	
-	
-	
 	/**
 	 * List of rules that will be added to a player moving into the cuboid
 	 */
 	private List<Rule> enterRules = new ArrayList<Rule>();
-	
-	
 	
 	
 	/**
@@ -39,15 +37,17 @@ public class AreaRule {
 	 */
 	private List<Rule> exitRules = new ArrayList<Rule>();
 	
-	
-	
-	
+
 	/**
 	 * A unique tag for this rule
 	 */
 	private String tag;
 	
 	
+	private String onEntranceMessage;
+	
+	
+	private String onExitMessage;
 	
 	
 	/**
@@ -59,8 +59,6 @@ public class AreaRule {
 	}
 	
 	
-	
-	
 	/**
 	 * Set unique tag for areaRule
 	 * @param value
@@ -70,7 +68,21 @@ public class AreaRule {
 	}
 	
 	
+	public void setOnEntranceMessage( String value ) {
+		this.onEntranceMessage = value;
+	}
 	
+	public String getOnEntranceMessage() {
+		return this.onEntranceMessage;
+	}
+	
+	public void setOnExitMessage( String value ) {
+		this.onExitMessage = value;
+	}
+	
+	public String getOnExitMessage() {
+		return this.onExitMessage;
+	}
 	
 	
 	/**
@@ -175,6 +187,7 @@ public class AreaRule {
 				for ( Rule x : this.enterRules ) {
 					API.addRuleToPlayer(player, x.getTag() );
 				}
+				if ( this.getOnEntranceMessage() != null ) player.sendMessage( ChatColor.BLUE + "" + ChatColor.ITALIC + this.getOnEntranceMessage() );
 			}
 		}
 		
@@ -200,6 +213,7 @@ public class AreaRule {
 				for ( Rule x : this.exitRules ) {
 					API.removeRuleFromPlayer( player, x.getTag() );
 				}
+				if ( this.getOnEntranceMessage() != null ) player.sendMessage( ChatColor.YELLOW + "" + ChatColor.ITALIC + this.getOnExitMessage() );
 			}
 		}
 		

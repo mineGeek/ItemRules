@@ -9,11 +9,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import com.github.mineGeek.ItemRules.Config;
+import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 import com.github.mineGeek.ItemRules.Integration.FactionsPlayer;
 import com.github.mineGeek.ItemRules.Integration.McMMOPlayer;
 import com.github.mineGeek.ItemRules.Rules.Rule.AppliesToMode;
-import com.github.mineGeek.ItemRules.Store.PlayerStoreItem;
+import com.github.mineGeek.ItemRules.Rules.Rule.RuleMode;
+import com.github.mineGeek.ItemRules.Store.IRPlayer;
 import com.github.mineGeek.ItemRules.Store.Players;
 import com.gmail.nossr50.datatypes.SkillType;
 
@@ -25,6 +26,12 @@ import com.gmail.nossr50.datatypes.SkillType;
 public class Rules {
 
 
+	/**
+	 * Stores aliases between tags and lists of item id's. eg. 'woodenstuff' => 268, 269
+	 */
+	public static Map<String, List<String>> itemAliases = new HashMap<String, List<String>>();
+	
+	
 	/**
 	 * ArrayList of all rules
 	 */
@@ -39,7 +46,8 @@ public class Rules {
 	
 	
 	/**
-	 * Gets a formatted string of rules that apply to player. Sort of a shite function.
+	 * Gets a formatted string of rules that apply to player.
+	 * Sort of a shite (AKA messy ) function.
 	 * @param player
 	 * @param doCan
 	 * @param doCanNow
@@ -63,7 +71,7 @@ public class Rules {
 		
 		if ( !ruleList.isEmpty() ) {
 			
-			PlayerStoreItem ps = Players.get(player);
+			IRPlayer ps = Players.get(player);
 			
 			for ( Rule x : Rules.ruleList ) {
 		
@@ -161,7 +169,7 @@ public class Rules {
 		
 
 	/**
-	 * Returns a list of all rules that apply to a player grouped by action
+	 * Returns a list of all rules that apply to a player
 	 * @param player
 	 * @param XPLevel
 	 * @param itemLevel
@@ -170,10 +178,11 @@ public class Rules {
 	public static Map<String, RuleData> getPlayerRules( Player player ) {
 		
 		Map<String, RuleData> rules = new HashMap<String, RuleData>();
+		RuleMode mode = RuleMode.DEFAULT;
 		
 		if ( !ruleList.isEmpty() ) {
 			
-			PlayerStoreItem ps = Players.get(player);
+			IRPlayer ps = Players.get(player);
 
 			/**
 			 * Automatically apply rules
@@ -184,6 +193,19 @@ public class Rules {
 				if ( x.getAuto() ) {
 					
 					if ( x.appliesToPlayer( ps ) ) {
+						
+						if ( x.getRuleMode() != RuleMode.DEFAULT ) {
+							mode = x.getRuleMode();
+							if ( mode == RuleMode.ALLOWPREVIOUS || mode == RuleMode.DENYPREVIOUS ) {
+								boolean newValue = mode == RuleMode.ALLOWPREVIOUS ? true : false;
+								if ( !rules.isEmpty() ) {
+									for ( RuleData data : rules.values() ) {
+										data.value = newValue;
+									}
+								}
+								mode = mode == RuleMode.ALLOWPREVIOUS ? RuleMode.ALLOW : RuleMode.DENY;
+							}
+						}
 						
 						Map<String, RuleData> r = x.getAllowedItems();
 						
@@ -198,6 +220,10 @@ public class Rules {
 						r = x.getRestrictedItems();
 						
 						if ( !r.isEmpty() ) {
+							
+							for ( String y : r.keySet() ) {
+								rules.put(y, r.get(y) );
+							}
 							
 						}
 						
@@ -217,7 +243,20 @@ public class Rules {
 					
 						if ( Rules.ruleByTagList.get(x).appliesToPlayer( ps ) ) {
 						
-							Map<String, RuleData> r = Rules.ruleByTagList.get(x).getAllowedItems();
+							Map<String, RuleData> r = Rules.ruleByTagList.get(x).getAllowedItems();							
+							
+							if ( Rules.ruleByTagList.get(x).getRuleMode() != RuleMode.DEFAULT ) {
+								mode = Rules.ruleByTagList.get(x).getRuleMode();
+								if ( mode == RuleMode.ALLOWPREVIOUS || mode == RuleMode.DENYPREVIOUS ) {
+									boolean newValue = mode == RuleMode.ALLOWPREVIOUS ? true : false;
+									if ( !rules.isEmpty() ) {
+										for ( RuleData data : rules.values() ) {
+											data.value = newValue;
+										}
+									}
+									mode = mode == RuleMode.ALLOWPREVIOUS ? RuleMode.ALLOW : RuleMode.DENY;
+								}								
+							}
 							
 							if ( !r.isEmpty() ) {
 								
@@ -236,7 +275,7 @@ public class Rules {
 				
 			}
 		}
-	
+		Players.get(player).setRuleMode(mode);
 		return rules;
 
 	}
@@ -350,9 +389,14 @@ public class Rules {
 			
 		}
 		
-		rule.setWhitelistItems( config.getBoolean("explicit", false ) );
+		
+		if ( config.contains( "mode" ) ) {
+			
+			rule.setRuleMode( RuleMode.valueOf( config.getString("mode").toUpperCase()) );
+			
+		}
+		
 		rule.setAuto( config.getBoolean("auto", !manual ) );
-		rule.setDescription( config.getString("description", "") );
 		
 		if ( config.contains( "messages.restricted") ) rule.setRestrictedMessage( config.getString("messages.restricted", null) );
 		if ( config.contains( "messages.unrestricted") ) rule.setUnrestrictedMessage( config.getString("messages.unrestricted", null) );
@@ -360,8 +404,8 @@ public class Rules {
 		if ( config.contains("actions") ) 	rule.setActions( config.getStringList("actions") );
 		//if ( config.contains("items") ) 	rule.setAllowedItems( config.getStringList("items") );
 		
-		if ( config.contains("items.allow") ) rule.setAllowedItems( config.getStringList("items.allow") );
-		if ( config.contains("items.restrict") ) rule.setRestrictedItems( config.getStringList("items.restrict") );
+		if ( config.contains("items.allow") ) Rules.loadItemsFromList( config.getStringList("items.allow"), rule, true );
+		if ( config.contains("items.restrict") ) Rules.loadItemsFromList( config.getStringList("items.restrict"), rule, false );
 		
 		if ( config.contains("itemsAdd") ) {
 			
@@ -401,6 +445,69 @@ public class Rules {
 		
 	}
 	
+	/**
+	 * Add an item alias.
+	 * This way you can refer to user made lists of item ids by
+	 * a name instead of the itemids.
+	 * @param tag
+	 * @param items
+	 */
+	public static void addItemAlias( String tag, List<String> items ) {
+		
+		itemAliases.put( tag, items );
+		
+	}
+	
+	
+	/**
+	 * Returns the list of item ids for the tag
+	 * @param tag
+	 * @return
+	 */
+	public static List<String> getItemsFromAlias( String tag ) {
+		
+		return itemAliases.get( tag);
+		
+	}
+	
+	
+	/**
+	 * Loads the items from the alias
+	 * @param list
+	 * @param rule
+	 * @param isAllowedItem
+	 */
+	public static void loadItemsFromList( List<String> list, Rule rule, boolean isAllowedItem ) {
+		
+		if ( !list.isEmpty() ) {
+
+			List<String> aliases;
+			
+			for ( String x : list ) {
+				
+				aliases = getItemsFromAlias( x );
+				
+				if ( aliases == null ) {
+					// no alias. Just add
+					if ( isAllowedItem ) {
+						rule.addAllowedItem( x );
+					} else {
+						rule.addRestrictedItem( x );
+					}
+				} else {
+					if ( isAllowedItem ) {
+						rule.addAllowedItems( aliases );
+					} else {
+						rule.addRestrictedItems( aliases );
+					}
+				}
+				
+			}
+			
+		}
+		
+	}
+	
 	
 	/**
 	 * Returns number of rules loaded
@@ -411,16 +518,20 @@ public class Rules {
 	}
 	
 	
+	/**
+	 * Good Guy Closure
+	 */
 	public static void close() {
 		
-		if ( ! ruleList.isEmpty() ) {
+		if ( ruleList != null && !ruleList.isEmpty() ) {
 			for ( Rule r : ruleList ) {
 				r.close();
 			}
+			ruleList.clear();
 		}
 		
-		ruleList.clear();
-		ruleByTagList.clear();
+		if ( itemAliases != null ) itemAliases.clear();
+		if ( ruleByTagList != null ) ruleByTagList.clear();
 		
 	}
 	

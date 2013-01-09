@@ -2,46 +2,108 @@ package com.github.mineGeek.ItemRules.Rules;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.github.mineGeek.ItemRules.Store.PlayerStoreItem;
+import com.github.mineGeek.ItemRules.Store.IRPlayer;
 import com.massivecraft.factions.FPlayers;
 
+
+/**
+ * Qualifies player against Factions settings.
+ * Requires Factions. Dur.
+ *
+ */
 public class ConditionFactions implements Applicator {
 
 	
+	/**
+	 * List of factions this rule applies to
+	 */
 	private List<String> whitelist = new ArrayList<String>();
+	
+	
+	/**
+	 * List of factions exempt from rule
+	 */
 	private List<String> blacklist = new ArrayList<String>();
+	
+	
+	/**
+	 * condition for power level
+	 */
 	private ConditionBetween condition;
 	
 	
+	/**
+	 * Woah. A Constructor.
+	 */
 	public ConditionFactions() {}
 	
+	
+	/**
+	 * COnstructor taking whitelist
+	 * @param whitelist
+	 */
 	public ConditionFactions( List<String> whitelist ) {
 		this.setWhitelist( whitelist );
 	}
 	
+	
+	/**
+	 * Constructor taking multi lists!
+	 * @param whitelist
+	 * @param blacklist
+	 */
 	public ConditionFactions( List<String> whitelist, List<String> blacklist ) {
 		this.setWhitelist( whitelist );
 		this.setBlacklist( blacklist );
 	}
 	
+	/**
+	 * Super dooper constructor
+	 * @param whitelist
+	 * @param blacklist
+	 * @param minPower
+	 * @param maxPower
+	 */
 	public ConditionFactions(List<String> whitelist, List<String>blacklist, Integer minPower, Integer maxPower ) {
 		this.setWhitelist( whitelist );
 		this.setBlacklist( blacklist );
 		this.setPower( minPower, maxPower);
 	}
 	
+	
+	/**
+	 * Set it yourself
+	 * @param value
+	 */
 	public void setWhitelist(List<String>value ) {
 		this.whitelist = value;
 	}
 	
+	
+	/**
+	 * DIY in setting blacklists.
+	 * @param value
+	 */
 	public void setBlacklist( List<String> value ) {
 		this.blacklist = value;
 	}
 	
+	
+	/**
+	 * Power level to apply
+	 * @param min
+	 * @param max
+	 */
 	public void setPower( Integer min, Integer max ) {
 		this.condition = new ConditionBetween( min, max );
 	}
 	
+	
+	/**
+	 * Returns ApplicationResult of evaluation
+	 * @param value
+	 * @return
+	 */
 	private ApplicationResult isApplicable( int power ) {
 		
 		if ( this.condition != null && this.condition.meetsRequirements( power ) ) {
@@ -52,8 +114,14 @@ public class ConditionFactions implements Applicator {
 		
 	}
 	
+	
+	/**
+	 * Returns ApplicationResult of evaluation
+	 * @param value
+	 * @return
+	 */	
 	@Override
-	public ApplicationResult isApplicable(PlayerStoreItem player) {
+	public ApplicationResult isApplicable(IRPlayer player) {
 		
 		String factionName = FPlayers.i.get( player.getPlayer() ).getFaction().getTag();
 		int power = FPlayers.i.get( player.getPlayer()).getPowerRounded();
@@ -75,22 +143,38 @@ public class ConditionFactions implements Applicator {
 		
 	}
 
+	
+	/**
+	 * Good Guy Bye
+	 */
 	@Override
 	public void close() {
-		this.blacklist.clear();
-		this.whitelist.clear();
+		if ( this.blacklist != null ) this.blacklist.clear();
+		if ( this.whitelist != null ) this.whitelist.clear();
 		
 	}
 
+	
+	/**
+	 * Returns ApplicationResult of evaluation
+	 * @param value
+	 * @return
+	 */	
 	@Override
-	public ApplicationResult willBeApplicable(PlayerStoreItem player) {
+	public ApplicationResult willBeApplicable(IRPlayer player) {
 		
 		return this.isApplicable( FPlayers.i.get( player.getPlayer()).getPowerRounded() + 1 );
 
 	}
 
+	
+	/**
+	 * Returns ApplicationResult of evaluation
+	 * @param value
+	 * @return
+	 */	
 	@Override
-	public ApplicationResult wasApplicable(PlayerStoreItem player) {
+	public ApplicationResult wasApplicable(IRPlayer player) {
 		return this.isApplicable( FPlayers.i.get( player.getPlayer()).getPowerRounded() - 1 );
 	}
 	

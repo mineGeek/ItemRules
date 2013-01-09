@@ -10,23 +10,21 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import com.github.mineGeek.ItemRules.AreaRule;
-import com.github.mineGeek.ItemRules.AreaRules;
-import com.github.mineGeek.ItemRules.Config;
-import com.github.mineGeek.ItemRules.Integration.McMMOPlayer;
+import com.github.mineGeek.ItemRestrictions.Utilities.Config;
+import com.github.mineGeek.ItemRestrictions.Utilities.PlayerMessenger;
 import com.github.mineGeek.ItemRules.ItemRules.Actions;
-import com.github.mineGeek.ItemRules.PlayerMessenger;
+import com.github.mineGeek.ItemRules.Rules.AreaRule;
+import com.github.mineGeek.ItemRules.Rules.AreaRules;
 import com.github.mineGeek.ItemRules.Rules.RuleData;
 import com.github.mineGeek.ItemRules.Rules.Rule;
 import com.github.mineGeek.ItemRules.Rules.Rules;
+import com.github.mineGeek.ItemRules.Rules.Rule.RuleMode;
 
 /**
- * Wrapper for essentially extending the player
- * supporting file persistence
+ * ItemRules extension to Bukkits player
  *
  */
-public class PlayerStoreItem extends DataStore {
-	
+public class IRPlayer extends DataStore {
 	
 	/**
 	 * The Bukkit player
@@ -75,32 +73,20 @@ public class PlayerStoreItem extends DataStore {
 	 */
 	private List<String> inAreas = new ArrayList<String>();
 	
-	
-	
-	
 	/**
-	 * Local storage of McMMO skills and levels
+	 * The mode of rules currently applied.
+	 * Options are Default, Allow, Deny
 	 */
-	private Map<String, Integer> mcmmoSkills = new HashMap<String, Integer>();
-	
-	
-	
-	
-	/**
-	 * Local mcmmo flag that is set when they are in a party
-	 */
-	private Boolean mcmmoInParty = false;
-	
+	private RuleMode ruleMode = RuleMode.DEFAULT;
+
 	
 	/**
 	 * Constructor. Takes the folder to where the save file should be
 	 * @param dataFolder
 	 */
-	public PlayerStoreItem( String dataFolder ) {
+	public IRPlayer( String dataFolder ) {
 		super(dataFolder);
 	}
-	
-	
 	
 	
 	/**
@@ -108,7 +94,7 @@ public class PlayerStoreItem extends DataStore {
 	 * @param dataFolder
 	 * @param player
 	 */
-	public PlayerStoreItem( String dataFolder, Player player ) {
+	public IRPlayer( String dataFolder, Player player ) {
 		
 		super( dataFolder );
 		this.player = player;
@@ -120,16 +106,33 @@ public class PlayerStoreItem extends DataStore {
 			this.setXPLevel( player.getLevel(), false );
 		}
 		
-		if ( McMMOPlayer.enabled ) {
-			McMMOPlayer.loadPlayerSkills(player);
-			this.mcmmoInParty = McMMOPlayer.isPlayerInParty( player );
-		}
-		
 	}
 	
 	
+	/**
+	 * Returns Bukkit player
+	 * @return
+	 */
 	public Player getPlayer() {
 		return this.player;
+	}
+	
+	
+	/**
+	 * Sets the players rule mode to Default, allow or deny.
+	 * @param mode
+	 */
+	public void setRuleMode( RuleMode mode ) {
+		this.ruleMode = mode;
+	}
+	
+	
+	/**
+	 * Returns players rule mode. Default, Allow or Deny.
+	 * @return
+	 */
+	public RuleMode getRuleMode() {
+		return this.ruleMode;
 	}
 	
 	
@@ -151,9 +154,6 @@ public class PlayerStoreItem extends DataStore {
 	}
 	
 	
-	
-	
-	
 	/**
 	 * Adds manual rule.
 	 * Note that loadRules() will need to be run in order
@@ -161,11 +161,8 @@ public class PlayerStoreItem extends DataStore {
 	 * @param rule
 	 */
 	public void addManualRule( Rule rule ) {
-		this.manualRules.put( rule.getTag(), rule);
-		this.manualRuleList.add( rule.getTag() );
+		this.addManualRule( rule.getTag());
 	}
-	
-	
 	
 	
 	/**
@@ -177,12 +174,10 @@ public class PlayerStoreItem extends DataStore {
 	public void removeManualRule( String tag ) {
 		this.manualRules.remove(tag);
 		this.manualRuleList.remove(tag);
+		//this.player.sendMessage("remove " + tag);
 	}
 
-	
-	
-	
-	
+
 	/**
 	 * Clears out all manual rules from player
 	 * Note that loadRules() will need to be run in order
@@ -194,12 +189,15 @@ public class PlayerStoreItem extends DataStore {
 	}
 	
 	
-	
+	/**
+	 * Load all rules, for no reason.
+	 */
 	public void loadRules(  ) {
 		
 		this.loadRules( null );
 		
 	}
+	
 	
 	/**
 	 * Refreshes all rules specific to player. Should be
@@ -213,7 +211,6 @@ public class PlayerStoreItem extends DataStore {
 		if ( this.rules != null) {
 			if ( newRule != null ) {
 				if ( this.rules.equals( newRule ) ) {
-					//this.player.sendMessage("rules are the same");
 				}
 			}			
 		}
@@ -221,20 +218,13 @@ public class PlayerStoreItem extends DataStore {
 		
 		this.rules = newRule;
 		
-		if ( newRule == null || this.rules.isEmpty() ) {
-			
-			//this.player.sendMessage("There are currently no rules applied to you right now!!");
-			
-		} else {
-			
-			//this.player.sendMessage("there are currently " + this.rules.size()  + " items have restrictions");
+		if ( this.rules != null && !this.rules.isEmpty() ) {
 			
 			List<String> rulenames = new ArrayList<String>();
 			for ( RuleData r : this.rules.values() ) {
 				if ( !rulenames.contains(r.ruleTag )) rulenames.add(r.ruleTag);
 			}
 			
-			//this.player.sendMessage(" Rule applied: " + rulenames.toString() );			
 		}
 		
 		
@@ -274,7 +264,10 @@ public class PlayerStoreItem extends DataStore {
 		
 	}
 	
-	
+	/**
+	 * Returns list of tags of the manually applied rules
+	 * @return
+	 */
 	public List<String> getManualRules() {
 		return this.manualRuleList;
 	}
@@ -294,9 +287,7 @@ public class PlayerStoreItem extends DataStore {
 				for ( AreaRule x : list ) {
 					if ( !x.getArea().intersectsWith( location ) ) {
 						x.applyExitRules( this.player );
-						this.inAreas.remove(x.getTag());
-						//this.player.sendMessage("Leaving: " + x );
-						
+						this.inAreas.remove(x.getTag());						
 					}
 				}
 			}
@@ -312,14 +303,12 @@ public class PlayerStoreItem extends DataStore {
 	 */
 	public void processEntranceRules( List<AreaRule> list ) {
 		
-		
 		if ( !list.isEmpty() ) {
 			for ( AreaRule x : list ) {
 				if ( !this.inAreas.contains(x.getTag() ) ) {
 					if ( x.getArea().intersectsWith( this.player.getLocation() ) ) {
 						x.applyEntranceRules( this.player );
 						this.inAreas.add(x.getTag());
-						//this.player.sendMessage("Entering: " + x );
 					}
 				}
 			}
@@ -329,9 +318,10 @@ public class PlayerStoreItem extends DataStore {
 	
 	
 	/**
-	 * Sets and measures the players current location. If player walks into a chunk containing
-	 * an area rule, we start monitoring their movements. Once they actually pass into the area
-	 * we Trigger the "Entrance" rules. When they leave, we trigger the "exit rules". If no arearules
+	 * Sets and measures the players current location.
+	 * If player walks into a chunk containing an area rule, 
+	 * we start monitoring their movements. Once they actually pass into the area
+	 * we Trigger the "Entrance" rules. When they leave, we trigger the "exit rules". If no area rules
 	 * are specified, we don't even get here. If so, we cross reference the areas by chunk to radically
 	 * reduce the amount of calculations during game.
 	 * @param location
@@ -343,7 +333,6 @@ public class PlayerStoreItem extends DataStore {
 		if ( !sig.equals(this.lastChunkSignature ) ) {		
 			
 			this.lastChunkSignature = sig;
-			//this.player.sendMessage(sig);
 		}
 		
 		if ( this.activeAreaRules != null ) {
@@ -359,7 +348,14 @@ public class PlayerStoreItem extends DataStore {
 	}
 	
 	
-	public RuleData getRuleItem( String material, String data ) {
+	/**
+	 * Returns the rule data corresponding to the 
+	 * material/item.
+	 * @param material
+	 * @param data
+	 * @return
+	 */
+	public RuleData getRuleData( String material, String data ) {
 		
 		if ( this.rules.containsKey( material + "." + data ) ) return this.rules.get(material + "." + data);
 		if ( this.rules.containsKey( material ) ) return this.rules.get( material );
@@ -367,13 +363,9 @@ public class PlayerStoreItem extends DataStore {
 	}
 	
 	
-	public Map<String, RuleData> getAppliedRules() {
-		return this.rules;
-	}
-	
 	/**
-	 * Core process to see if player has access to the item/material for specified action.
-	 * If not, send a message to player
+	 * Returns true if players rules prevent them from performing
+	 * the action with/to the material in question
 	 * @param action
 	 * @param material
 	 * @param data
@@ -381,9 +373,11 @@ public class PlayerStoreItem extends DataStore {
 	 */
 	public boolean isRestricted( Actions action, Material material, byte data ) {
 		
-		RuleData item = this.getRuleItem( String.valueOf( material.getId() )  , String.valueOf( data ) ) ;
+		RuleMode mode = this.getRuleMode();
 		
-		if ( item == null )	return false;
+		RuleData item = this.getRuleData( String.valueOf( material.getId() )  , String.valueOf( data ) ) ;
+		
+		if ( item == null )	return mode == RuleMode.ALLOW || mode == RuleMode.DEFAULT ? false : true;
 		
 		boolean result = item.isRestricted( action );
 		
@@ -392,36 +386,8 @@ public class PlayerStoreItem extends DataStore {
 		}
 		
 		return result;
-		
 
 	}
-	
-	
-	
-	
-	
-	/**
-	 * Incriments players XP level the specified amount
-	 * @param level
-	 */
-	public void incrimentLevel( Integer level ) {
-		
-		this.setXPLevel( this.getXPLevel() + level );
-		
-	}
-	
-	
-	
-	
-	
-	/**
-	 * convienence method for incrimenting players XP level by 1
-	 */
-	public void incrimentLevel() {
-		this.incrimentLevel( 1 );
-	}
-	
-	
 	
 	
 	/**
@@ -433,17 +399,14 @@ public class PlayerStoreItem extends DataStore {
 	}
 	
 	
-	
-	
-	
 	/**
-	 * Sets XP level and triggers a refresh (unless refreshRules = false )
+	 * Sets XP level
+	 * triggers a refresh (unless refreshRules = false )
 	 * @param level
 	 * @param refreshRules
 	 */
 	public void setXPLevel( Integer level, Boolean refreshRules ) {
 			
-		this.set("XPLevel", level);
 		Integer il = this.getItemLevel();
 		
 		if ( Config.XPLevelIncreasesItemLevel && level > il ) {
@@ -456,12 +419,9 @@ public class PlayerStoreItem extends DataStore {
 			
 		}
 		
-		if ( refreshRules)  loadRules();
+		if ( refreshRules )  loadRules();
 		
 	}
-	
-	
-	
 	
 	
 	/**
@@ -473,124 +433,34 @@ public class PlayerStoreItem extends DataStore {
 	}
 	
 	
-	
-	
-	
 	/**
-	 * returns players current item level
+	 * returns players itemLevel
 	 * @return
 	 */
 	public Integer getItemLevel() {
 		return this.getAsInteger("itemLevel", 0 );
 	}
 	
-
-	
 	
 	/**
-	 * Sets and stores the players previous item level
-	 * @param level
-	 */
-	public void setPreviousLevel( Integer level ) {
-		this.set("previousLevel", level);
-	}
-	
-	
-	
-	
-	
-	/**
-	 * gets players previos item level
-	 * @return
-	 */
-	public Integer getPreviousLevel() {
-		return this.getAsInteger("previousLevel", 0);
-	}
-	
-	
-	
-	
-	/**
-	 * returns the currently stored xp level
+	 * returns the players XP level
 	 * @return
 	 */
 	public Integer getXPLevel() {
-		return this.getAsInteger("XPLevel", 0 );
+		return this.player.getLevel();
 	}
 
-	
-	
-	
-	
 	/**
-	 * Convienence method for current faction name
-	 * @return
+	 * Good Guy Clear out.
 	 */
-	public String getFactionName() {
-		return "hi";
-	}
-	
-	
-	
-	
-	
-	/**
-	 * Convienence method for getting current faction power
-	 * @return
-	 */
-	public double getFactionPowerMin() {
-		return 0;
-	}
-	
-	
-	
-	
-	
-	/**
-	 * Convienence method for getting current faction power
-	 * @return
-	 */
-	public double getFactionPowerMax() {
-		return 0;
-	}	
-	
-	
-	
-	
-
-	public void setMcMMOLevel( String skill, Integer level ) {
-		this.mcmmoSkills.put(skill, level);
-	}
-	
-	public Integer getMcMMOLevel( String skill ) {
-		
-		Integer i = this.mcmmoSkills.get(skill);
-		if ( i !=null ) return i;
-		return 0;
-		
-	}
-	
-	public void setMcMMOInParty( Boolean value ) {
-		this.mcmmoInParty = value;
-	}
-	
-	public Boolean getMcMMOinParty() {
-		return this.mcmmoInParty;
-	}
-
-	public Map<String, Integer> getMcMMOLevels() {
-		return this.mcmmoSkills;
-	}
-
 	public void close() {
 		
 		if ( this.activeAreaRules != null && !this.activeAreaRules.isEmpty() ) this.activeAreaRules.clear();
-		if ( !this.data.isEmpty() ) this.data.clear();
-		if ( !this.inAreas.isEmpty() ) this.inAreas.clear();
-		if ( !this.manualRuleList.isEmpty() ) this.manualRuleList.clear();
-		if ( !this.manualRules.isEmpty() ) this.manualRules.clear();
-		if ( !this.mcmmoSkills.isEmpty() ) this.mcmmoSkills.clear();
-		if ( !this.rules.isEmpty() ) this.rules.clear();
+		if ( this.data != null && !this.data.isEmpty() ) this.data.clear();
+		if ( this.inAreas != null && !this.inAreas.isEmpty() ) this.inAreas.clear();
+		if ( this.manualRuleList != null && !this.manualRuleList.isEmpty() ) this.manualRuleList.clear();
+		if ( this.manualRules != null && !this.manualRules.isEmpty() ) this.manualRules.clear();
+		if ( this.rules != null && !this.rules.isEmpty() ) this.rules.clear();
 		this.player = null;
 		
 	}

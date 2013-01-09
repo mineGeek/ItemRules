@@ -1,5 +1,6 @@
 package com.github.mineGeek.ItemRules.Events;
 
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,8 +16,9 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+
+import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 import com.github.mineGeek.ItemRules.API;
-import com.github.mineGeek.ItemRules.Config;
 import com.github.mineGeek.ItemRules.ItemRules.Actions;
 import com.github.mineGeek.ItemRules.Store.Players;
 
@@ -187,7 +189,8 @@ public class Listeners implements Listener {
     {
     	
     	if(evt.isCancelled()) return;
-
+    	
+    	
     	if ( Players.get( evt.getPlayer() ).isRestricted( Actions.BREAK, evt.getBlock().getType(), evt.getBlock().getData() ) ) {
     		evt.setCancelled( true );
     	}

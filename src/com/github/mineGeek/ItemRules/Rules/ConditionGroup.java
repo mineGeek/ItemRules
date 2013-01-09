@@ -5,12 +5,28 @@ import java.util.List;
 import org.bukkit.Bukkit;
 
 import com.github.mineGeek.ItemRules.Integration.Vault;
-import com.github.mineGeek.ItemRules.Store.PlayerStoreItem;
+import com.github.mineGeek.ItemRules.Store.IRPlayer;
 
+
+/**
+ * Qualifies person for rule based on if they are/arent in a permission group.
+ * Requires Vault.
+ *
+ */
 public class ConditionGroup extends ConditionStringList implements Applicator {
 
+	
+	/**
+	 * White/Blacklist mode
+	 */
 	private boolean appliesTo = true;
 	
+	
+	/**
+	 * Constructor taking all params!
+	 * @param appliesTo
+	 * @param groups
+	 */
 	public ConditionGroup( boolean appliesTo, List<String> groups ) {
 		
 		super( groups );
@@ -18,8 +34,14 @@ public class ConditionGroup extends ConditionStringList implements Applicator {
 		
 	}
 	
+	
+	/**
+	 * Returns ApplicationResult of evaluation
+	 * @param value
+	 * @return
+	 */	
 	@Override
-	public ApplicationResult isApplicable(PlayerStoreItem player) {
+	public ApplicationResult isApplicable(IRPlayer player) {
 		
 		if ( !Vault.enabled ) {
 			Bukkit.getLogger().info("WARNING!!! Using a group condition in itemRules, but Vault is missing or not working!");
@@ -47,18 +69,34 @@ public class ConditionGroup extends ConditionStringList implements Applicator {
 		return this.appliesTo ? ApplicationResult.NO : ApplicationResult.NONE;
 	}
 	
+	
+	/**
+	 * Good Guy Close
+	 */
 	@Override
 	public void close() {
 		super.close();
 	}
 
+	
+	/**
+	 * Returns ApplicationResult of evaluation
+	 * @param value
+	 * @return
+	 */	
 	@Override
-	public ApplicationResult willBeApplicable(PlayerStoreItem player) {
+	public ApplicationResult willBeApplicable(IRPlayer player) {
 		return isApplicable( player );
 	}
 
+	
+	/**
+	 * Returns ApplicationResult of evaluation
+	 * @param value
+	 * @return
+	 */	
 	@Override
-	public ApplicationResult wasApplicable(PlayerStoreItem player) {
+	public ApplicationResult wasApplicable(IRPlayer player) {
 		return isApplicable( player );
 	}
 	

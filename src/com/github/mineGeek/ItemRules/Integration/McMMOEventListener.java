@@ -23,7 +23,7 @@ public class McMMOEventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onMcMMOExperience( McMMOPlayerLevelUpEvent evt) {
 		
-		Players.get( evt.getPlayer() ).setMcMMOLevel( evt.getSkill().name(), evt.getSkillLevel() );
+		//Players.get( evt.getPlayer() ).setMcMMOLevel( evt.getSkill().name(), evt.getSkillLevel() );
 		Players.get( evt.getPlayer() ).loadRules();
 		
 	}
@@ -31,7 +31,7 @@ public class McMMOEventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onMcMMOPartyChange( McMMOPartyChangeEvent evt ) {
 		
-		Players.get(evt.getPlayer()).setMcMMOInParty( ( evt.getNewParty() != null ) );
+		//Players.get(evt.getPlayer()).setMcMMOInParty( ( evt.getNewParty() != null ) );
 		Players.get(evt.getPlayer() ).loadRules();
 		
 	}

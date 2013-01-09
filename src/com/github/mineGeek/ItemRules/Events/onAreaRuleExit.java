@@ -4,17 +4,17 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import com.github.mineGeek.ItemRules.AreaRule;
-import com.github.mineGeek.ItemRules.Store.PlayerStoreItem;
+import com.github.mineGeek.ItemRules.Rules.AreaRule;
+import com.github.mineGeek.ItemRules.Store.IRPlayer;
 
 public class onAreaRuleExit extends Event implements Cancellable {
 	
     private static final HandlerList handlers = new HandlerList();
-    private PlayerStoreItem player;
+    private IRPlayer player;
     private AreaRule areaRule;
     private Boolean cancelled = false;
     
-    public onAreaRuleExit (AreaRule areaRule, PlayerStoreItem player ) {
+    public onAreaRuleExit (AreaRule areaRule, IRPlayer player ) {
         this.player = player;
         this.areaRule = areaRule;
         this.cancelled = false;
@@ -24,7 +24,7 @@ public class onAreaRuleExit extends Event implements Cancellable {
         return this.areaRule;
     }
     
-    public PlayerStoreItem getPlayer() {
+    public IRPlayer getPlayer() {
     	return this.player;
     }
  

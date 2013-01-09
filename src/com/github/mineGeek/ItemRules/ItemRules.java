@@ -4,11 +4,15 @@ import java.io.File;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.github.mineGeek.ItemRestrictions.Utilities.Config;
+import com.github.mineGeek.ItemRestrictions.Utilities.PlayerMessenger;
+import com.github.mineGeek.ItemRules.Commands.ApplyRule;
 import com.github.mineGeek.ItemRules.Commands.RulesAvailable;
 import com.github.mineGeek.ItemRules.Events.Listeners;
 import com.github.mineGeek.ItemRules.Integration.FactionsPlayer;
 import com.github.mineGeek.ItemRules.Integration.McMMOPlayer;
 import com.github.mineGeek.ItemRules.Integration.Vault;
+import com.github.mineGeek.ItemRules.Rules.AreaRules;
 import com.github.mineGeek.ItemRules.Rules.Rules;
 import com.github.mineGeek.ItemRules.Store.Players;
 
@@ -77,6 +81,9 @@ public class ItemRules extends JavaPlugin {
     	RulesAvailable ra = new RulesAvailable();
     	getCommand("ircan").setExecutor( ra );
     	getCommand("ircant").setExecutor( ra );
+    	ApplyRule ar = new ApplyRule();
+    	getCommand("irapply").setExecutor( ar );
+    	getCommand("irrevoke").setExecutor( ar );
     	
 
 	}

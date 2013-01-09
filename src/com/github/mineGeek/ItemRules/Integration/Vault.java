@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-import com.github.mineGeek.ItemRules.Config;
+import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 
 import net.milkbowl.vault.permission.Permission;
 

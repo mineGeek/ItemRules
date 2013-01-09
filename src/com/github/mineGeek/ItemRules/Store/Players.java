@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
-import com.github.mineGeek.ItemRules.Config;
+import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 
 /**
  * Static accessor for all active players
@@ -14,11 +14,9 @@ import com.github.mineGeek.ItemRules.Config;
 public class Players {
 
 	/**
-	 *  Username => PlayerStoreItem mapping
+	 *  Username => IRPlayer mapping
 	 */
-	private static 	Map<String, PlayerStoreItem>players = new HashMap<String, PlayerStoreItem>();
-	
-	
+	private static 	Map<String, IRPlayer>players = new HashMap<String, IRPlayer>();
 	
 	
 	/**
@@ -28,18 +26,14 @@ public class Players {
 	public 	static 	String dataFolder;
 	
 	
-
-
 	/**
 	 * Accessor for player map using player object
 	 * @param Player player
 	 * @return PlayerStoreItem
 	 */
-	public static PlayerStoreItem get( Player player ) {
+	public static IRPlayer get( Player player ) {
 		return get( player.getName() );
 	}
-	
-	
 	
 	
 	/**
@@ -47,11 +41,9 @@ public class Players {
 	 * @param String playerName
 	 * @return PlayerStoreItem
 	 */
-	public static PlayerStoreItem get( String playerName ) {
+	public static IRPlayer get( String playerName ) {
 		return players.get( playerName );
 	}
-	
-	
 	
 	
 	/**
@@ -61,12 +53,10 @@ public class Players {
 	 */
 	public static void addPlayer( Player player ) {
 
-		PlayerStoreItem ui = new PlayerStoreItem( dataFolder, player);
+		IRPlayer ui = new IRPlayer( dataFolder, player);
 		players.put( player.getName(), ui );
 		ui.loadRules();
 	}
-	
-	
 	
 	
 	/**
@@ -78,9 +68,6 @@ public class Players {
 		players.get(playerName).close();
 		players.remove( playerName );
 	}
-	
-	
-	
 	
 	
 	/**
@@ -96,10 +83,7 @@ public class Players {
 		}
 	}
 	
-	
-	
-	
-	
+
 	/**
 	 * Saves all players currently online
 	 */
@@ -109,6 +93,12 @@ public class Players {
 
 	}
 	
+	
+	/**
+	 * Saves all peeps currently online.
+	 * If close is specified, run close routine
+	 * @param close
+	 */
 	public static void saveOnline( boolean close ) {
 		
 		if ( Config.server.getOnlinePlayers().length > 0 ) {
@@ -121,21 +111,27 @@ public class Players {
 		
 	}
 	
+	
+	/**
+	 * Good Guy Close.
+	 * @param saveFirst
+	 */
 	public static void close( boolean saveFirst ) {
 		
 		if ( saveFirst ) {
 			saveOnline( true );
 		}
 		
-		if ( !players.isEmpty() ) {
+		if ( players != null && !players.isEmpty() ) {
 			
-			for ( PlayerStoreItem p : players.values() ) {
+			for ( IRPlayer p : players.values() ) {
 				p.close();
 			}
 			
+			players.clear();	
 		}
 		
-		players.clear();
+		
 
 	}
 	

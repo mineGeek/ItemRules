@@ -6,9 +6,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import com.github.mineGeek.ItemRules.ItemRules;
-import com.github.mineGeek.ItemRules.Store.Players;
+import com.gmail.nossr50.api.ExperienceAPI;
+import com.gmail.nossr50.api.PartyAPI;
 import com.gmail.nossr50.datatypes.SkillType;
-import com.gmail.nossr50.util.Users;
 
 
 public class McMMOPlayer {
@@ -40,18 +40,16 @@ public class McMMOPlayer {
 		if ( !enabled ) return;
 		if ( !player.isOnline() ) return;
 		
-		for ( SkillType x : SkillType.values() ) {
-			//prevent thrown errors from querying levels that don't exist?
-			try {
-				int level = Users.getProfile( player.getName() ).getSkillLevel(x);
-				Players.get(player).setMcMMOLevel(x.toString(), level );
-			} catch ( Exception e ) {}
-		}
-		
+	}
+	
+	public static int getSkillLevel( Player player, SkillType skill ) {
+		if ( enabled ) return ExperienceAPI.getLevel(player, skill);
+		return 0;
 	}
 	
 	public static Boolean isPlayerInParty( Player player ) {
-		return Users.getPlayer(player).inParty();
+		if ( enabled ) return PartyAPI.inParty(player);
+		return false;
 	}
 	
 	

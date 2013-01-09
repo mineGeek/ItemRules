@@ -1,4 +1,4 @@
-package com.github.mineGeek.ItemRules;
+package com.github.mineGeek.ItemRestrictions.Utilities;
 
 import java.util.HashMap;
 import java.util.Iterator;
