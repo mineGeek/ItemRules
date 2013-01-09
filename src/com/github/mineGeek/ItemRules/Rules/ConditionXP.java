@@ -12,7 +12,7 @@ public class ConditionXP extends ConditionBetween implements Applicator {
 	
 	private ApplicationResult isApplicable( int value ) {
 		
-		if ( this.meetsRequirements( value ) ) return ApplicationResult.YES;
+		if ( !this.meetsRequirements( value ) ) return ApplicationResult.YES;
 		return ApplicationResult.NONE;		
 		
 	}	
@@ -34,9 +34,9 @@ public class ConditionXP extends ConditionBetween implements Applicator {
 	@Override
 	public ApplicationResult willBeApplicable(PlayerStoreItem player) {
 		ApplicationResult a = this.isApplicable( player.getXPLevel() + 1 );
-		//return a;
-		if (  a == ApplicationResult.NONE ) return ApplicationResult.NO;
 		return a;
+		//if (  a == ApplicationResult.NONE || a == ApplicationResult.YES ) return ApplicationResult.YES;
+		//return ApplicationResult.NO;
 		
 	}
 

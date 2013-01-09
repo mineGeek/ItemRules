@@ -1,17 +1,11 @@
 package com.github.mineGeek.ItemRules.Commands;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import com.github.mineGeek.ItemRules.Rules.RuleItem;
 import com.github.mineGeek.ItemRules.Rules.Rules;
-import com.github.mineGeek.ItemRules.Store.Players;
-
-
-
 
 
 /**
@@ -24,9 +18,6 @@ import com.github.mineGeek.ItemRules.Store.Players;
  */
 public class RulesAvailable extends CommandBase {
 
-	
-	
-	
 	
 	/**
 	 * Executes the command

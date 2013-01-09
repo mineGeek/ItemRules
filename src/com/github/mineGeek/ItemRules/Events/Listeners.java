@@ -40,8 +40,6 @@ public class Listeners implements Listener {
 	}
 	
 	
-	
-	
 	/**
 	 * When player leaves, we save their data and flush from queue.
 	 * @param evt
@@ -53,10 +51,7 @@ public class Listeners implements Listener {
     	
     }
     
-    
-    
-    
-    
+
     /**
      * When the player changes worlds, we reload their rules
      * @param evt

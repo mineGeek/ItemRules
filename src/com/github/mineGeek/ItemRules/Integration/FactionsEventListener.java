@@ -37,7 +37,7 @@ public class FactionsEventListener implements Listener {
 		    @Override 
 		    public void run() {
 		         API.refreshPlayerRules( peep );
-		         peep.sendMessage("Just updated the faction you joined");
+		         //peep.sendMessage("Just updated the faction you joined");
 		    }
 		}, 30L);		
 		
@@ -55,7 +55,7 @@ public class FactionsEventListener implements Listener {
 		    @Override 
 		    public void run() {
 		         API.refreshPlayerRules( peep );
-		         peep.sendMessage("Just updated the faction you left");
+		         //peep.sendMessage("Just updated the faction you left");
 		    }
 		}, 30L);		
 		

@@ -55,6 +55,12 @@ public class Rules {
 		List<String> cannot = new ArrayList<String>();
 		List<String> next = new ArrayList<String>();
 		
+		boolean applies;
+		boolean applied;
+		boolean appliesNext;
+		String 	not;
+		String	is;
+		
 		if ( !ruleList.isEmpty() ) {
 			
 			PlayerStoreItem ps = Players.get(player);
@@ -63,31 +69,33 @@ public class Rules {
 		
 				if ( x.getAuto() ) {
 					
-					if ( ( doCan || doCanNow ) && x.appliesToPlayer( ps ) ) {
-						if ( x.getUnrestrictedMessage() != null ) {
-							if ( doCanNow ) {
-								if ( !x.appliesToPlayer(ps, AppliesToMode.PREVIOUS ) ) can.add( x.getUnrestrictedMessage() );						
-							} else {
-								can.add( x.getUnrestrictedMessage() );
-							}
+					applied 	= x.appliesToPlayer( ps, AppliesToMode.PREVIOUS );
+					applies 	= x.appliesToPlayer( ps );
+					appliesNext = x.appliesToPlayer( ps, AppliesToMode.NEXT );
+					is 			= x.getRestrictedMessage();
+					not			= x.getUnrestrictedMessage();
+					
+					if ( applies ) {
+					
+						if ( !appliesNext && doNext ) { //will not be applied next level!
+							
+							next.add( not );
+							
+						} else if ( !doCan ) {
+							
+							cannot.add( is );
+						}
+					} else if ( doCan ){
+					
+						can.add( not );
+						
+						if ( doNext && appliesNext ) {
+							next.add( is );
+						} else if ( doCanNow && !applied ) {
+							//is new
+							can.add( not );
 						}
 						
-					} else if ( !doCan ){
-						
-						if ( x.getRestrictedMessage() != null )	 cannot.add( x.getRestrictedMessage() );
-						
-					}
-					
-					if ( doNext && x.getUnrestrictedMessage() != null &&  !can.contains( x.getUnrestrictedMessage() ) ) {
-					
-						if ( x.appliesToPlayer( ps, AppliesToMode.NEXT ) ) {
-
-							
-							if ( cannot.contains( x.getRestrictedMessage() ) ) cannot.remove( x.getRestrictedMessage() );
-							
-							next.add( x.getRestrictedMessage() );
-							
-						}
 					}
 					
 				}
@@ -159,9 +167,9 @@ public class Rules {
 	 * @param itemLevel
 	 * @return
 	 */
-	public static Map<String, RuleItem> getPlayerRules( Player player ) {
+	public static Map<String, RuleData> getPlayerRules( Player player ) {
 		
-		Map<String, RuleItem> rules = new HashMap<String, RuleItem>();
+		Map<String, RuleData> rules = new HashMap<String, RuleData>();
 		
 		if ( !ruleList.isEmpty() ) {
 			
@@ -177,7 +185,7 @@ public class Rules {
 					
 					if ( x.appliesToPlayer( ps ) ) {
 						
-						Map<String, RuleItem> r = x.getItems();
+						Map<String, RuleData> r = x.getAllowedItems();
 						
 						if ( !r.isEmpty() ) {
 							
@@ -187,6 +195,11 @@ public class Rules {
 							
 						}
 						
+						r = x.getRestrictedItems();
+						
+						if ( !r.isEmpty() ) {
+							
+						}
 						
 					}
 					
@@ -204,7 +217,7 @@ public class Rules {
 					
 						if ( Rules.ruleByTagList.get(x).appliesToPlayer( ps ) ) {
 						
-							Map<String, RuleItem> r = Rules.ruleByTagList.get(x).getItems();
+							Map<String, RuleData> r = Rules.ruleByTagList.get(x).getAllowedItems();
 							
 							if ( !r.isEmpty() ) {
 								
@@ -345,11 +358,15 @@ public class Rules {
 		if ( config.contains( "messages.unrestricted") ) rule.setUnrestrictedMessage( config.getString("messages.unrestricted", null) );
 		
 		if ( config.contains("actions") ) 	rule.setActions( config.getStringList("actions") );
-		if ( config.contains("items") ) 	rule.setItems( config.getStringList("items") );
+		//if ( config.contains("items") ) 	rule.setAllowedItems( config.getStringList("items") );
+		
+		if ( config.contains("items.allow") ) rule.setAllowedItems( config.getStringList("items.allow") );
+		if ( config.contains("items.restrict") ) rule.setRestrictedItems( config.getStringList("items.restrict") );
+		
 		if ( config.contains("itemsAdd") ) {
 			
 			for( String x : config.getStringList("itemsAdd") ) {
-				rule.addItem( x );
+				rule.addAllowedItem( x );
 			}
 			
 		}
@@ -357,18 +374,19 @@ public class Rules {
 		if ( config.contains("itemsRemove") ) {
 			
 			for( String x : config.getStringList("itemsRemove") ) {
-				rule.removeItem( x );
+				rule.removeAllowedItem( x );
 			}
 			
 		}
 		
-		List<String> list = config.contains("worlds") ? config.getStringList("worlds") : new ArrayList<String>();
+		if ( config.contains("permissions.applyto") ) rule.addApplicator( new ConditionPerms( true, config.getStringList("permissions.applyto") ) );
+		if ( config.contains("permissions.exclude") ) rule.addApplicator( new ConditionPerms( false, config.getStringList("permissions.exclude") ) );		
+			
+		if ( config.contains("groups.applyto") ) rule.addApplicator( new ConditionGroup( true, config.getStringList("groups.applyto") ) );
+		if ( config.contains("groups.exclude") ) rule.addApplicator( new ConditionGroup( false, config.getStringList("groups.exclude") ) );		
 		
-		if ( !list.isEmpty() ) rule.addApplicator( new ConditionWorld( true, list));
-		
-		list = config.contains("excludeWorlds") ? config.getStringList("excludeWorlds") : new ArrayList<String>();
-		
-		if ( !list.isEmpty() ) rule.addApplicator( new ConditionWorld( false, list));
+		if ( config.contains("worlds.applyto") ) rule.addApplicator( new ConditionWorld( true, config.getStringList("worlds.applyto") ) );
+		if ( config.contains("worlds.exclude") ) rule.addApplicator( new ConditionWorld( true, config.getStringList("worlds.exclude") ) );
 		
 		if ( config.contains("xp.min") || config.contains("xp.max") ) {
 			rule.addApplicator( new ConditionXP( config.contains("xp.min") ? config.getInt("xp.min") : null, config.contains("xp.max") ? config.getInt("xp.max") : null ) );	

@@ -14,7 +14,9 @@ public class Rule {
 	public enum AppliesToMode {NOW, NEXT, PREVIOUS};
 
 	private List<Applicator> appliesTo = new ArrayList<Applicator>();
-	private Map<String, RuleItem> items = new HashMap<String, RuleItem>();
+	private Map<String, RuleData> allowedItems = new HashMap<String, RuleData>();
+	private Map<String, RuleData> restrictedItems = new HashMap<String, RuleData>();
+	
 	private List<Actions> actions = new ArrayList<Actions>();
 	
 	private boolean whitelistItems = false;
@@ -25,7 +27,6 @@ public class Rule {
 	private String restrictedMessage;
 	private String unrestrictedMessage;
 	
-	private RuleItem ruleItem;
 	
 	/**
 	 * Copy constructor
@@ -34,16 +35,19 @@ public class Rule {
 	public Rule( String tag, Rule rule ) {
 		
 		this.tag = tag;
-		
+
 		this.appliesTo = rule.appliesTo;
-		this.items = rule.items;
+		this.allowedItems = rule.allowedItems;
+		this.restrictedItems = rule.restrictedItems;
+		this.restrictedMessage = rule.restrictedMessage;
+		this.unrestrictedMessage = rule.unrestrictedMessage;
+		
 		this.actions = rule.actions;
 		
 		this.whitelistItems = rule.whitelistItems;
 		this.autoProcess = rule.autoProcess;
 		
 		this.description = rule.description;
-		this.ruleItem = new RuleItem(this);
 		
 	}
 	
@@ -98,41 +102,55 @@ public class Rule {
 		return this.whitelistItems;
 	}
 	
-	
-	public RuleItem getRuleItem() {
+	public void addRestrictedItem( String itemId ) {
 		
-		if ( this.ruleItem == null ) {
-			this.ruleItem = new RuleItem( this );
+		this.restrictedItems.put(itemId, new RuleData( this.getTag(), true ) );
+		
+	}
+	
+	public void removeRestrictedItem( String itemId ) {
+		this.restrictedItems.remove( itemId );
+	}
+	
+	public void setRestrictedItems( List<String> itemIds ) {
+		
+		if ( !itemIds.isEmpty() ) {
+			for ( String x : itemIds ) {
+				this.addRestrictedItem( x );
+			}
 		}
-
-		return this.ruleItem;
-	}
-	
-	public void addItem( String itemid) {
-			
-		this.items.put(itemid, this.getRuleItem() );
 		
 	}
 	
-	public void removeItem( String itemId ) {
-		this.items.remove(itemId);
+	public Map<String, RuleData> getRestrictedItems() {
+		 return this.restrictedItems;
 	}
 	
-	public void setItems( List<String> itemids ) {
+	public void addAllowedItem( String itemid) {
+			
+		this.allowedItems.put(itemid, new RuleData( this.getTag(), false ) );
+		
+	}
+	
+	public void removeAllowedItem( String itemId ) {
+		this.allowedItems.remove(itemId);
+	}
+	
+	public void setAllowedItems( List<String> itemids ) {
 		
 		if ( !itemids.isEmpty() ) {
 			
 			for ( String x : itemids ) {
-				this.addItem(x);
+				this.addAllowedItem(x);
 			}
 			
 		}
 		
 	}
 	
-	public Map<String, RuleItem> getItems() {
+	public Map<String, RuleData> getAllowedItems() {
 		
-		return this.items;
+		return this.allowedItems;
 		
 	}
 	
@@ -187,11 +205,20 @@ public class Rule {
 	/**
 	 * Returns true if the item and data passed is applicable to rule
 	 */
-	public boolean appliesToItem( String itemId, String data ) {
+	public boolean isRestrictedItem( String itemId, String data ) {
 		
-		if ( this.items.containsKey( itemId + "." + data ) ) return this.items.get( itemId + "." + data ).isWhitelisted();
-		if ( this.items.containsKey( itemId ) ) return this.items.get( itemId + "." + data ).isWhitelisted();
-		return this.getWhitelistItems();
+		String i = itemId + "." + data;
+		
+		if ( this.restrictedItems.containsKey( i ) ) 		return true;
+		if ( this.restrictedItems.containsKey( itemId ) ) 	return true;
+		if ( this.allowedItems.containsKey(i) ) 			return false;
+		if ( this.allowedItems.containsKey(itemId)) 		return false;
+		
+		return false;
+		
+		//if ( this.allowedItems.containsKey( itemId + "." + data ) ) return this.allowedItems.get( itemId + "." + data ).isWhitelisted();
+		//if ( this.allowedItems.containsKey( itemId ) ) return this.allowedItems.get( itemId + "." + data ).isWhitelisted();
+		//return this.getWhitelistItems();
 		
 	}
 	
@@ -199,18 +226,18 @@ public class Rule {
 	/**
 	 * Returns true if the itemid and data passed is applicable to rule 
 	 */
-	public boolean appliesToItem( int itemId, byte data ) {
-		return appliesToItem( String.valueOf( itemId ), String.valueOf( data ) );
+	public boolean isRestrictedItem( int itemId, byte data ) {
+		return isRestrictedItem( String.valueOf( itemId ), String.valueOf( data ) );
 	}
 	
 	
 	/**
 	 * Returns true if the itemid passed is applicable to rule
 	 */
-	public boolean appliesToItem( int itemId ) {
-		return this.appliesToItem( String.valueOf( itemId ), "");
+	public boolean isRestrictedItem( int itemId ) {
+		return this.isRestrictedItem( String.valueOf( itemId ), "");
 	}
-	
+
 	public boolean appliesToAction( Actions action ) {
 		return this.actions.contains( action );
 	}
@@ -223,10 +250,10 @@ public class Rule {
 			}
 		}
 		
-		this.actions.clear();
-		this.appliesTo.clear();
-		this.items.clear();
-		this.ruleItem = null;
+		if ( this.actions != null) this.actions.clear();
+		if ( this.appliesTo != null) this.appliesTo.clear();
+		if ( this.allowedItems != null ) this.allowedItems.clear();
+		if ( this.restrictedItems != null ) this.restrictedItems.clear();
 		
 	}
 	

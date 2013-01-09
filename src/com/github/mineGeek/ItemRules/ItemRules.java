@@ -8,6 +8,7 @@ import com.github.mineGeek.ItemRules.Commands.RulesAvailable;
 import com.github.mineGeek.ItemRules.Events.Listeners;
 import com.github.mineGeek.ItemRules.Integration.FactionsPlayer;
 import com.github.mineGeek.ItemRules.Integration.McMMOPlayer;
+import com.github.mineGeek.ItemRules.Integration.Vault;
 import com.github.mineGeek.ItemRules.Rules.Rules;
 import com.github.mineGeek.ItemRules.Store.Players;
 
@@ -22,7 +23,7 @@ public class ItemRules extends JavaPlugin {
 	 *
 	 */
 	public enum Actions {CRAFT, USE, PICKUP, BREAK, PLACE};
-	
+
 	
 	/**
 	 * Save Players datastore when we get disabled.
@@ -49,7 +50,7 @@ public class ItemRules extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		
-		this.saveDefaultConfig();
+		this.saveDefaultConfig();		
 		
 		Config.server = this.getServer();
 		Config.c = this.getConfig();
@@ -58,6 +59,7 @@ public class ItemRules extends JavaPlugin {
     	/**
     	 * Intergrators
     	 */
+		Vault.VaultEnable();
     	FactionsPlayer.FactionsPlayerEnable( this );
     	McMMOPlayer.McMMOEnable( this );
 		
@@ -79,7 +81,7 @@ public class ItemRules extends JavaPlugin {
 
 	}
 	
-		
+	
 	/**
 	 * Make sure local file structure is sorted!
 	 */

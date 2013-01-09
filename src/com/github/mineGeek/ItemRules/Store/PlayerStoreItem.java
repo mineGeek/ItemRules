@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -15,7 +16,7 @@ import com.github.mineGeek.ItemRules.Config;
 import com.github.mineGeek.ItemRules.Integration.McMMOPlayer;
 import com.github.mineGeek.ItemRules.ItemRules.Actions;
 import com.github.mineGeek.ItemRules.PlayerMessenger;
-import com.github.mineGeek.ItemRules.Rules.RuleItem;
+import com.github.mineGeek.ItemRules.Rules.RuleData;
 import com.github.mineGeek.ItemRules.Rules.Rule;
 import com.github.mineGeek.ItemRules.Rules.Rules;
 
@@ -37,7 +38,7 @@ public class PlayerStoreItem extends DataStore {
 	 * Reference to current item restrictions
 	 * itemId => Rule Result
 	 */
-	Map<String, RuleItem> rules;
+	Map<String, RuleData> rules;
 	
 	
 	/**
@@ -207,12 +208,12 @@ public class PlayerStoreItem extends DataStore {
 	public void loadRules( String reasonForChange ) {		
 		
 		
-		Map<String, RuleItem> newRule = Rules.getPlayerRules( this.player );
+		Map<String, RuleData> newRule = Rules.getPlayerRules( this.player );
 
 		if ( this.rules != null) {
 			if ( newRule != null ) {
 				if ( this.rules.equals( newRule ) ) {
-					this.player.sendMessage("rules are the same");
+					//this.player.sendMessage("rules are the same");
 				}
 			}			
 		}
@@ -222,25 +223,22 @@ public class PlayerStoreItem extends DataStore {
 		
 		if ( newRule == null || this.rules.isEmpty() ) {
 			
-			this.player.sendMessage("There are currently no rules applied to you right now!!");
+			//this.player.sendMessage("There are currently no rules applied to you right now!!");
 			
 		} else {
 			
-			this.player.sendMessage("there are currently " + this.rules.size()  + " items have restrictions");
+			//this.player.sendMessage("there are currently " + this.rules.size()  + " items have restrictions");
 			
 			List<String> rulenames = new ArrayList<String>();
-			for ( RuleItem r : this.rules.values() ) {
-				if ( !rulenames.contains(r.getTag())) rulenames.add(r.getTag());
+			for ( RuleData r : this.rules.values() ) {
+				if ( !rulenames.contains(r.ruleTag )) rulenames.add(r.ruleTag);
 			}
 			
-			this.player.sendMessage(" Rule applied: " + rulenames.toString() );			
+			//this.player.sendMessage(" Rule applied: " + rulenames.toString() );			
 		}
 		
 		
 	}
-	
-	
-	
 	
 	
 	/**
@@ -254,8 +252,6 @@ public class PlayerStoreItem extends DataStore {
 	}
 	
 	
-	
-	
 	/**
 	 * Retrieves list of manually added rules from datastore
 	 */
@@ -264,8 +260,6 @@ public class PlayerStoreItem extends DataStore {
 		this.manualRuleList = this.getAsStringList("manualList");
 		
 	}
-	
-	
 	
 	
 	/**
@@ -302,6 +296,7 @@ public class PlayerStoreItem extends DataStore {
 						x.applyExitRules( this.player );
 						this.inAreas.remove(x.getTag());
 						//this.player.sendMessage("Leaving: " + x );
+						
 					}
 				}
 			}
@@ -309,11 +304,7 @@ public class PlayerStoreItem extends DataStore {
 		
 	}
 	
-	
-	
-	
-	
-	
+
 	/**
 	 * Processes the user entering an area. Used to add rules to a player
 	 * when they walk into a specified area
@@ -335,9 +326,6 @@ public class PlayerStoreItem extends DataStore {
 		}
 		
 	}
-	
-	
-	
 	
 	
 	/**
@@ -371,7 +359,7 @@ public class PlayerStoreItem extends DataStore {
 	}
 	
 	
-	public RuleItem getRuleItem( String material, String data ) {
+	public RuleData getRuleItem( String material, String data ) {
 		
 		if ( this.rules.containsKey( material + "." + data ) ) return this.rules.get(material + "." + data);
 		if ( this.rules.containsKey( material ) ) return this.rules.get( material );
@@ -379,7 +367,7 @@ public class PlayerStoreItem extends DataStore {
 	}
 	
 	
-	public Map<String, RuleItem> getAppliedRules() {
+	public Map<String, RuleData> getAppliedRules() {
 		return this.rules;
 	}
 	
@@ -393,23 +381,14 @@ public class PlayerStoreItem extends DataStore {
 	 */
 	public boolean isRestricted( Actions action, Material material, byte data ) {
 		
-		//Boolean result 	= Config.defaultValue;
-		//String message 	= "you cannot do that.";
-		//Boolean isRestricted = false;
+		RuleData item = this.getRuleItem( String.valueOf( material.getId() )  , String.valueOf( data ) ) ;
 		
-		RuleItem item = this.getRuleItem( String.valueOf( material.getId() )  , String.valueOf( data ) ) ;
-		
-		if ( item == null ) {
-			//PlayerMessenger.SendPlayerMessage( this.player, action.toString() + " for " + material.toString() + " does not apply");
-			return false;
-		}
+		if ( item == null )	return false;
 		
 		boolean result = item.isRestricted( action );
 		
-		if ( result ) {
-			PlayerMessenger.SendPlayerMessage( this.player, action.toString() + " for " + material.toString() + " is restricted");
-		} else {
-			PlayerMessenger.SendPlayerMessage( this.player, action.toString() + " for " + material.toString() + " is not restricted");
+		if ( result && item.getRestrictionMessage() != null ) {
+			PlayerMessenger.SendPlayerMessage( this.player, ChatColor.RED + "" + ChatColor.ITALIC + item.getRestrictionMessage() );
 		}
 		
 		return result;
