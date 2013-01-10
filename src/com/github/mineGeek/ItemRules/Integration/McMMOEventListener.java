@@ -24,6 +24,7 @@ public class McMMOEventListener implements Listener {
 	public void onMcMMOExperience( McMMOPlayerLevelUpEvent evt) {
 		
 		//Players.get( evt.getPlayer() ).setMcMMOLevel( evt.getSkill().name(), evt.getSkillLevel() );
+		evt.getPlayer().sendMessage("levelup");
 		Players.get( evt.getPlayer() ).loadRules();
 		
 	}
