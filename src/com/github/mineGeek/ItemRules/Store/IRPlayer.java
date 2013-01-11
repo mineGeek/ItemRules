@@ -376,7 +376,7 @@ public class IRPlayer extends DataStore {
 		RuleMode mode = this.getRuleMode();
 		
 		RuleData item = this.getRuleData( String.valueOf( material.getId() )  , String.valueOf( data ) ) ;
-		
+		if ( item != null ) PlayerMessenger.SendPlayerMessage( this.player, action.toString() + ": " + item + " material: " + material.getId() + "." + String.valueOf(data));
 		if ( item == null )	{
 			
 			if ( mode == RuleMode.DENY ) {

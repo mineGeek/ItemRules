@@ -62,6 +62,9 @@ public class Rules {
 		List<String> can = new ArrayList<String>();
 		List<String> cannot = new ArrayList<String>();
 		List<String> next = new ArrayList<String>();
+		List<String> appliedYes = new ArrayList<String>();
+		List<String> appliedNo = new ArrayList<String>();
+		List<String> appliedPassed = new ArrayList<String>();
 		
 		boolean applies;
 		boolean applied;
@@ -85,6 +88,10 @@ public class Rules {
 					
 					if ( applies ) {
 					
+						
+						
+						appliedYes.add(x.getTag());
+						
 						if ( !appliesNext && doNext ) { //will not be applied next level!
 							
 							if ( not != null ) next.add( not );
@@ -95,6 +102,8 @@ public class Rules {
 						}
 					} else if ( doCan ){
 					
+						appliedPassed.add( x.getTag() );
+						
 						if ( not != null ) can.add( not );
 						
 						if ( doNext && appliesNext ) {
@@ -104,6 +113,8 @@ public class Rules {
 							if ( not != null ) can.add( not );
 						}
 						
+					} else {
+						appliedNo.add(x.getTag());
 					}
 					
 				}
@@ -162,6 +173,56 @@ public class Rules {
 			result.add( r );
 			r = r + ". ";
 		}
+		
+		
+		if ( appliedPassed.size() > 0 ) {
+			
+			if ( r.length() > 0 ) r = r + " ";
+
+			r = r + canColor + "applied rules: " ;
+			for ( String x : appliedPassed ) {
+				if ( o ) r = r + ", ";
+				o = true;
+				r = r + x;
+			}
+			
+			r = r + ". ";
+			result.add( r );
+			r = "";
+			o = false;
+		}
+		
+		if ( appliedYes.size() > 0 ) {
+			
+			if ( r.length() > 0 ) r = r + " ";
+
+			r = r + nextColor + "applied rules: " ;
+			for ( String x : appliedYes ) {
+				if ( o ) r = r + ", ";
+				o = true;
+				r = r + x;
+			}
+			
+			r = r + ". ";
+			result.add( r );
+			r = "";
+			o = false;
+		}
+		
+		if ( appliedNo.size() > 0 ) {
+			
+			if ( r.length() > 0 ) r = r + " ";
+			
+			r = r + cannotColor + " not applied : ";
+			for ( String x: appliedNo ) {
+				if ( o ) r = r + ", ";
+				o = true;
+				r = r + x ;
+			}
+			
+			result.add( r );
+			r = r + ". ";
+		}		
 		
 		return result;
 		

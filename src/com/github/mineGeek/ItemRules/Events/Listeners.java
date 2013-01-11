@@ -116,7 +116,8 @@ public class Listeners implements Listener {
 	    		if ( Players.get( evt.getPlayer() ).isRestricted(Actions.USE, evt.getItem().getType(), evt.getItem().getData().getData() ) ) {
 	    			evt.setCancelled( true );
 	    		}
-	    	} else if ( evt.getClickedBlock() != null ) {
+	    	}
+	    	if ( evt.getClickedBlock() != null ) {
 	    	
 	    		if ( Players.get( evt.getPlayer() ).isRestricted(Actions.USE, evt.getClickedBlock().getType(), evt.getClickedBlock().getData() ) ) {
 	    			evt.setCancelled( true );
