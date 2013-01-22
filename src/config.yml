@@ -20,15 +20,71 @@ XP:
 #
 #########################################
 aliases:
-    woodenEquipment: [269, 270, 271]    
+    woodenEquipment: [268, 269, 270, 271, 290]
+    ironEquipment: [256, 257, 258, 267, 292]
+    stoneEquipment: [272, 273, 274, 275, 291]
+    goldEquipment: [283, 284, 285, 286, 294]
+    diamondEquipment: [276, 277, 278, 279, 293]
+    miscWeapons: [261, 262]
+    useAndBreakOnly: [1, 5, 20, '17.3', 71, 389, 63]
+    useOnly: [77]
 rules:
+    ExplicitlyRestrict:
+        messages:
+            restricted: 'You cannot break Stone, Jungle logs, planks or glass'
+        actions: [BREAK, USE]
+        xp:
+            min: 99
+        items:
+            restrict: ['useAndBreakOnly']
+    ExplicitlyAllow:
+        actions: [USE]
+        items:
+            allow: ['useOnly']
+    Ted:
+        messages:
+            restricted: 'You must be in faction Ted to do this. (type /f join Ted )'
+        factions:
+            exclude: ['Ted']
+        actions: [USE, BREAK]
+        items:
+            restrict: [70]
+    Bob:
+        messages:
+            restricted: 'You must be in faction Bob to do this. (type /f join Bob)'
+        factions:
+            exclude: ['Bob']
+        actions: [USE, PLACE]
+        items:
+            restrict: [72, 361, 290, 60, 104]
+    WoodCutting:
+        messages:
+            restricted: 'You must have Woodcutting level 1 to cut down birch trees'
+        factions:
+            appliesTo: [Bob]
+        mcmmo:
+            skills:
+                woodcutting: 1
+        actions: [USE, PLACE, BREAK]
+        items:
+            restrict: ['17.2', 258]
+    Herbalism:
+        actions: [USE, PLACE]
+        messages:
+            restricted: 'You must have herbalism level 1 to use these'
+        mcmmo:
+            skills:
+                herbalism: 1
+        items:
+            restrict:
+                [292, 362] 
     WoodenWeapons:
         messages:
             unrestricted: 'use wooden equipment'
-            restricted: 'no wooden equipment after level 2'
+            restricted: 'no wooden equipment after level 1'
         actions: [CRAFT, PICKUP, USE]
         xp:
-            max: 2
+            max: 1
         items:
             restrict:
             - 268
@@ -80,10 +136,11 @@ rules:
 #########################################
 manualRules:
     sticksOnly:
-        actions: [USE]
-        mode: denyprevious
+        mode: denyPrevious
+        actions: [USE, CRAFT]
         items:
-            restrict: [280]
+            allow: [280]
+            restrict: [woodenEquipment, ironEquipment, stoneEquipment, goldEquipment, diamondEquipment]
     diamondSwords:
         actions: [USE]
         items:
@@ -96,12 +153,13 @@ manualRules:
 #
 #########################################
 areaRules:
-    pvpZone:
+    StickZone:
+        world: pickleMasher
+        ne: [253, 65, 293]
+        sw: [259, 63, 314]
         messages:
-            onEntrance: 'You are now in a PVP Zone with sticks'
-            onExit: 'You are leaving the PVP stick zone'
-        world: world
-        ne: [-136, 75, 202]
-        sw: [-120, 68, 218]
+            onEntrance: 'You are now entering the Stick only PvP Zone'
+            onExit: 'You are now leaving the Stick Only PvP Zone'
         entrance: [sticksOnly]
         exit: [sticksOnly]
+            

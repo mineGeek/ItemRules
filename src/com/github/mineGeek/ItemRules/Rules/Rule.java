@@ -402,7 +402,8 @@ public class Rule {
 		if ( this.allowedItems.containsKey(i) ) 			return false;
 		if ( this.allowedItems.containsKey(itemId)) 		return false;
 		
-		return false;
+		return this.getRuleMode() != RuleMode.DENY;
+		
 		
 	}
 	

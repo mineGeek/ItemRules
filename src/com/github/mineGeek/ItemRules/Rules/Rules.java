@@ -309,12 +309,14 @@ public class Rules {
 							if ( Rules.ruleByTagList.get(x).getRuleMode() != RuleMode.DEFAULT ) {
 								mode = Rules.ruleByTagList.get(x).getRuleMode();
 								if ( mode == RuleMode.ALLOWPREVIOUS || mode == RuleMode.DENYPREVIOUS ) {
-									boolean newValue = mode == RuleMode.ALLOWPREVIOUS ? true : false;
+									boolean newValue = mode == RuleMode.ALLOWPREVIOUS ? false : true;
 									if ( !rules.isEmpty() ) {
 										for ( RuleData data : rules.values() ) {
 											data.value = newValue;
+								
 										}
 									}
+									
 									mode = mode == RuleMode.ALLOWPREVIOUS ? RuleMode.ALLOW : RuleMode.DENY;
 								}								
 							}
