@@ -25,7 +25,7 @@ public class Vault {
 
 		} else {
 			Bukkit.getLogger().info("Vault integration for [ItemRules] is enabled");
-	        RegisteredServiceProvider<Permission> rsp = Config.server.getServicesManager().getRegistration(Permission.class);
+	        RegisteredServiceProvider<Permission> rsp = Config.server().getServicesManager().getRegistration(Permission.class);
 	        perm = rsp.getProvider();
 	        enabled = perm != null;				
 			

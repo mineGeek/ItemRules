@@ -40,9 +40,9 @@ public class FactionsPlayer {
 		
 		List<String> list = new ArrayList<String>();
 		
-		if ( Config.server.getOnlinePlayers().length > 0 ) {
+		if ( Config.server().getOnlinePlayers().length > 0 ) {
 			
-			for( Player p : Config.server.getOnlinePlayers() ) {
+			for( Player p : Config.server().getOnlinePlayers() ) {
 				list.add( p.getName() );
 			}
 		}

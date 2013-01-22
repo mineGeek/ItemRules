@@ -1,6 +1,7 @@
 package com.github.mineGeek.ItemRestrictions.Utilities;
 
 
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -14,11 +15,7 @@ import com.github.mineGeek.ItemRules.Rules.Rules;
  */
 public class Config {
 
-	/**
-	 * The server
-	 */
-	public static Server server;
-	
+
 	
 	/**
 	 * The actual config file from getConfig()
@@ -74,6 +71,10 @@ public class Config {
 	 */
 	public static Boolean monitorPlayerLocations		= false;
 	
+	
+	public static Server server() {
+		return Bukkit.getServer();
+	}
 	
 	/**
 	 * Loads all areaRules from the config
@@ -132,7 +133,7 @@ public class Config {
 			
 		}		
 		
-		Config.server.getLogger().info("ItemRules loaded " + Rules.count() + " rules total.");
+		Config.server().getLogger().info("ItemRules loaded " + Rules.count() + " rules total.");
 		
 	}
 	
@@ -158,7 +159,6 @@ public class Config {
 	
 	public static void close() {
 		Config.c = null;
-		Config.server = null;
 		
 	}
 	

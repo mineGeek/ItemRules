@@ -31,9 +31,9 @@ public class FactionsEventListener implements Listener {
 		
 		Players.get( evt.getFPlayer().getName() ).loadRules();
 
-		final Player peep = Config.server.getPlayer( evt.getFPlayer().getName() );
+		final Player peep = Config.server().getPlayer( evt.getFPlayer().getName() );
 		
-		Config.server.getScheduler().scheduleSyncDelayedTask( this.plugin, new Runnable() {
+		Config.server().getScheduler().scheduleSyncDelayedTask( this.plugin, new Runnable() {
 		    @Override 
 		    public void run() {
 		         API.refreshPlayerRules( peep );
@@ -49,9 +49,9 @@ public class FactionsEventListener implements Listener {
 		
 		Players.get( evt.getFPlayer().getName() ).loadRules();
 
-		final Player peep = Config.server.getPlayer( evt.getFPlayer().getName() );
+		final Player peep = Config.server().getPlayer( evt.getFPlayer().getName() );
 		
-		Config.server.getScheduler().scheduleSyncDelayedTask( this.plugin, new Runnable() {
+		Config.server().getScheduler().scheduleSyncDelayedTask( this.plugin, new Runnable() {
 		    @Override 
 		    public void run() {
 		         API.refreshPlayerRules( peep );

@@ -181,7 +181,7 @@ public class AreaRule {
 		if ( !this.enterRules.isEmpty() ) {
 			
 			onAreaRuleEntrance event = new onAreaRuleEntrance( this, Players.get(player) );
-			Config.server.getPluginManager().callEvent(event);
+			Config.server().getPluginManager().callEvent(event);
 			
 			if ( !event.isCancelled() ) {
 				for ( Rule x : this.enterRules ) {
@@ -207,7 +207,7 @@ public class AreaRule {
 		if ( !this.exitRules.isEmpty() ) {
 			
 			onAreaRuleExit event = new onAreaRuleExit( this, Players.get(player) );
-			Config.server.getPluginManager().callEvent(event);
+			Config.server().getPluginManager().callEvent(event);
 			
 			if ( !event.isCancelled() ) {			
 				for ( Rule x : this.exitRules ) {

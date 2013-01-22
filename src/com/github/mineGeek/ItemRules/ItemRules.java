@@ -56,7 +56,6 @@ public class ItemRules extends JavaPlugin {
 		
 		this.saveDefaultConfig();		
 		
-		Config.server = this.getServer();
 		Config.c = this.getConfig();
 		
 		

@@ -29,7 +29,8 @@ public class IRPlayer extends DataStore {
 	/**
 	 * The Bukkit player
 	 */
-	Player player = null;	
+	
+	String playerName = null;
 	
 	
 	/**
@@ -97,7 +98,7 @@ public class IRPlayer extends DataStore {
 	public IRPlayer( String dataFolder, Player player ) {
 		
 		super( dataFolder );
-		this.player = player;
+		this.playerName = player.getName();
 		this.setFileName( player.getName() );
 		
 		this.load();
@@ -114,7 +115,7 @@ public class IRPlayer extends DataStore {
 	 * @return
 	 */
 	public Player getPlayer() {
-		return this.player;
+		return Config.server().getPlayer( this.playerName );
 	}
 	
 	
@@ -206,7 +207,7 @@ public class IRPlayer extends DataStore {
 	public void loadRules( String reasonForChange ) {		
 		
 		
-		Map<String, RuleData> newRule = Rules.getPlayerRules( this.player );
+		Map<String, RuleData> newRule = Rules.getPlayerRules( this.getPlayer() );
 
 		if ( this.rules != null) {
 			if ( newRule != null ) {
@@ -286,7 +287,7 @@ public class IRPlayer extends DataStore {
 			if ( !list.isEmpty() ) {
 				for ( AreaRule x : list ) {
 					if ( !x.getArea().intersectsWith( location ) ) {
-						x.applyExitRules( this.player );
+						x.applyExitRules( this.getPlayer() );
 						this.inAreas.remove(x.getTag());						
 					}
 				}
@@ -306,8 +307,8 @@ public class IRPlayer extends DataStore {
 		if ( !list.isEmpty() ) {
 			for ( AreaRule x : list ) {
 				if ( !this.inAreas.contains(x.getTag() ) ) {
-					if ( x.getArea().intersectsWith( this.player.getLocation() ) ) {
-						x.applyEntranceRules( this.player );
+					if ( x.getArea().intersectsWith( this.getPlayer().getLocation() ) ) {
+						x.applyEntranceRules( this.getPlayer() );
 						this.inAreas.add(x.getTag());
 					}
 				}
@@ -373,14 +374,15 @@ public class IRPlayer extends DataStore {
 	 */
 	public boolean isRestricted( Actions action, Material material, byte data ) {
 		
+
 		RuleMode mode = this.getRuleMode();
 		
 		RuleData item = this.getRuleData( String.valueOf( material.getId() )  , String.valueOf( data ) ) ;
-		if ( item != null ) PlayerMessenger.SendPlayerMessage( this.player, action.toString() + ": " + item + " material: " + material.getId() + "." + String.valueOf(data));
+		if ( item != null ) PlayerMessenger.SendPlayerMessage( this.getPlayer(), action.toString() + ": " + item + " material: " + material.getId() + "." + String.valueOf(data));
 		if ( item == null )	{
 			
 			if ( mode == RuleMode.DENY ) {
-				if ( Config.txtDefaultRestrictedMessage != null ) PlayerMessenger.SendPlayerMessage(this.player, Config.txtDefaultRestrictedMessage + " (" + action.toString().toLowerCase() + " " + material.toString().toLowerCase() + " [" + material.getId() + "])" );
+				if ( Config.txtDefaultRestrictedMessage != null ) PlayerMessenger.SendPlayerMessage(this.getPlayer(), Config.txtDefaultRestrictedMessage + " (" + action.toString().toLowerCase() + " " + material.toString().toLowerCase() + " [" + material.getId() + "])" );
 				return true;
 			} else {
 				return false;
@@ -390,12 +392,14 @@ public class IRPlayer extends DataStore {
 		boolean result = item.isRestricted( action );
 		
 		if ( result && item.getRestrictionMessage() != null ) {
-			PlayerMessenger.SendPlayerMessage( this.player, ChatColor.RED + "" + ChatColor.ITALIC + item.getRestrictionMessage() );
+			PlayerMessenger.SendPlayerMessage( this.getPlayer(), ChatColor.RED + "" + ChatColor.ITALIC + item.getRestrictionMessage() );
 		}
 		
 		return result;
+		
 
 	}
+	
 	
 	
 	/**
@@ -455,7 +459,7 @@ public class IRPlayer extends DataStore {
 	 * @return
 	 */
 	public Integer getXPLevel() {
-		return this.player.getLevel();
+		return this.getPlayer().getLevel();
 	}
 
 	/**
@@ -469,7 +473,6 @@ public class IRPlayer extends DataStore {
 		if ( this.manualRuleList != null && !this.manualRuleList.isEmpty() ) this.manualRuleList.clear();
 		if ( this.manualRules != null && !this.manualRules.isEmpty() ) this.manualRules.clear();
 		if ( this.rules != null && !this.rules.isEmpty() ) this.rules.clear();
-		this.player = null;
 		
 	}
 	

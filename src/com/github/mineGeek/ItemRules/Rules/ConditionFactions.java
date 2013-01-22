@@ -126,15 +126,21 @@ public class ConditionFactions implements Applicator {
 		String factionName = FPlayers.i.get( player.getPlayer() ).getFaction().getTag();
 		int power = FPlayers.i.get( player.getPlayer()).getPowerRounded();
 		
-		if ( this.blacklist.contains( factionName ) ) {
-			return ApplicationResult.NO;
-		}		
-		
 		if ( this.whitelist.contains( factionName ) ) {
 			
 			return isApplicable( power );
 			
+		} else if ( this.blacklist.contains( factionName ) ) {
+			
+			return ApplicationResult.NO;
+			
+		} else if ( this.blacklist.size() > 0 ) {
+			
+			return isApplicable( power );
+			
 		}
+		
+
 		
 		if ( isApplicable( power ) == ApplicationResult.NONE ) return ApplicationResult.NO;
 		

@@ -88,11 +88,11 @@ public class AreaRules {
 		
 		if ( ne.size() < 3 || sw.size() < 3 ) {
 			
-			Config.server.getLogger().info( " ======> [ItemRules] configuration error: Area rule '" + tag + "' has invalid ne/sw xyz coordinates");
+			Config.server().getLogger().info( " ======> [ItemRules] configuration error: Area rule '" + tag + "' has invalid ne/sw xyz coordinates");
 			return;
 		}
 		
-		Area area = new Area( Config.server.getWorld(worldName), ne.get(0) , ne.get(1), ne.get(2), sw.get(0), sw.get(1), sw.get(2) );
+		Area area = new Area( Config.server().getWorld(worldName), ne.get(0) , ne.get(1), ne.get(2), sw.get(0), sw.get(1), sw.get(2) );
 
 		rule.setTag( tag );
 		rule.setArea( area );

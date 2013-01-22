@@ -75,9 +75,9 @@ public class Players {
 	 */
 	public static void loadOnline() {
 		
-		if ( Config.server.getOnlinePlayers().length > 0 ) {
+		if ( Config.server().getOnlinePlayers().length > 0 ) {
 		
-			for( Player p : Config.server.getOnlinePlayers() ) {
+			for( Player p : Config.server().getOnlinePlayers() ) {
 				addPlayer( p );
 			}			
 		}
@@ -101,8 +101,8 @@ public class Players {
 	 */
 	public static void saveOnline( boolean close ) {
 		
-		if ( Config.server.getOnlinePlayers().length > 0 ) {
-			for( Player p : Config.server.getOnlinePlayers() ) {
+		if ( Config.server().getOnlinePlayers().length > 0 ) {
+			for( Player p : Config.server().getOnlinePlayers() ) {
 				Players.removePlayer( p.getName() );
 			}			
 		}

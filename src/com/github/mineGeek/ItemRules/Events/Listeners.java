@@ -1,12 +1,14 @@
 package com.github.mineGeek.ItemRules.Events;
 
-
+import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -26,6 +28,19 @@ import com.github.mineGeek.ItemRules.Store.Players;
 
 public class Listeners implements Listener {
 
+	
+	public Material getMaterialFromEntity( Entity entity ) {
+		
+		Class<?>[] interfaces = entity.getClass().getInterfaces();
+		if ( interfaces.length == 1 ) {
+			String s = interfaces[0].getSimpleName();
+			Material mat = Material.matchMaterial(s);
+			if ( mat != null ) return mat;
+		}
+		
+		return null;
+		
+	}
 	
 	/**]
 	 * When player logs in. We add to the Player store, load
@@ -206,6 +221,27 @@ public class Listeners implements Listener {
         
     }
     
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onHangingBreak( HangingBreakByEntityEvent evt ) {
+    	
+    	if(evt.isCancelled()) return;
+    	
+    	if ( evt.getRemover() instanceof Player ) {
+    	
+    		Player player = (Player) evt.getRemover();
+
+    		Material m = Material.getMaterial( evt.getEntity().getType().toString() );	
+    		
+    		if ( m != null ) {
+		    	if ( Players.get( player ).isRestricted( Actions.BREAK, m, (byte)0 ) ) {
+		    		evt.setCancelled( true );
+		    	}
+    		}
+    	
+    	}
+    	
+    }
     
     
     
