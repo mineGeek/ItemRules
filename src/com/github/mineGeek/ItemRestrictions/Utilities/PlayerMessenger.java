@@ -91,6 +91,6 @@ public class PlayerMessenger {
 	}
 	
 	public static void close() {
-		if ( _queue !=null && !_queue.isEmpty() ) _queue.clear();
+		if ( _queue !=null ) _queue.clear();
 	}
 }

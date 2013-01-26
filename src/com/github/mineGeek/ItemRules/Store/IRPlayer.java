@@ -281,18 +281,25 @@ public class IRPlayer extends DataStore {
 	 * @param list
 	 * @param location
 	 */
-	public void processExitRules( List<AreaRule> list, Location location ) {
+	public boolean processExitRules( List<AreaRule> list, Location location ) {
+		
+		boolean result = false;
 		
 		if ( !this.inAreas.isEmpty() ) {
 			if ( !list.isEmpty() ) {
 				for ( AreaRule x : list ) {
 					if ( !x.getArea().intersectsWith( location ) ) {
 						x.applyExitRules( this.getPlayer() );
-						this.inAreas.remove(x.getTag());						
+						this.inAreas.remove(x.getTag());
+						result = true;
+						if ( Config.debug_area_chunkExit ) this.getPlayer().sendMessage("Area Rule " + x.getTag() + " removed at " + (int)this.getPlayer().getLocation().getX() + ", " + (int)this.getPlayer().getLocation().getY() + ", " + (int)this.getPlayer().getLocation().getZ() + " [" + (int)x.getArea().ne.getX() + ", " + (int)x.getArea().ne.getY() + ", " + (int)x.getArea().ne.getZ() + "-" + (int)x.getArea().sw.getX() + ", " + (int)x.getArea().sw.getY() + ", " + (int)x.getArea().sw.getZ() + "]");
 					}
 				}
+				
 			}
 		}
+		
+		return result;
 		
 	}
 	
@@ -302,18 +309,25 @@ public class IRPlayer extends DataStore {
 	 * when they walk into a specified area
 	 * @param list
 	 */
-	public void processEntranceRules( List<AreaRule> list ) {
+	public boolean processEntranceRules( List<AreaRule> list ) {
+		
+		boolean result = false;
 		
 		if ( !list.isEmpty() ) {
 			for ( AreaRule x : list ) {
-				if ( !this.inAreas.contains(x.getTag() ) ) {
+				if ( !this.inAreas.contains( x.getTag() ) ) {
 					if ( x.getArea().intersectsWith( this.getPlayer().getLocation() ) ) {
 						x.applyEntranceRules( this.getPlayer() );
-						this.inAreas.add(x.getTag());
+						this.inAreas.add( x.getTag() );
+						result = true;
+						if ( Config.debug_area_chunkExit ) this.getPlayer().sendMessage("Area Rule " + x.getTag() + " triggered at " + (int)this.getPlayer().getLocation().getX() + ", " + (int)this.getPlayer().getLocation().getY() + ", " + (int)this.getPlayer().getLocation().getZ() + " [" + (int)x.getArea().ne.getX() + ", " + (int)x.getArea().ne.getY() + ", " + (int)x.getArea().ne.getZ() + "-" + (int)x.getArea().sw.getX() + ", " + (int)x.getArea().sw.getY() + ", " + (int)x.getArea().sw.getZ() + "]");
 					}
 				}
 			}
+			
 		}
+		
+		return result;
 		
 	}
 	
@@ -334,17 +348,55 @@ public class IRPlayer extends DataStore {
 		if ( !sig.equals(this.lastChunkSignature ) ) {		
 			
 			this.lastChunkSignature = sig;
+			
+			if ( Config.debug_area_chunkChange ) this.getPlayer().sendMessage(sig);
+		}
+
+		List<AreaRule> rules;
+		
+		if ( AreaRules.activeChunks.containsKey(sig) ) {
+			rules = new ArrayList<AreaRule>(AreaRules.activeChunks.get(sig));
+		} else {
+			rules = new ArrayList<AreaRule>();
 		}
 		
 		if ( this.activeAreaRules != null ) {
-			this.processExitRules( this.activeAreaRules, location );
+			if ( this.processExitRules( this.activeAreaRules, location) ) {
+				rules.removeAll( this.activeAreaRules );
+			}
+		}
+		
+		if ( !rules.isEmpty() ) {
+			if ( this.processEntranceRules( rules ) ) {
+				this.activeAreaRules = rules;
+			}
+		}
+		/*
+		if ( !rules.isEmpty() ) {
+		
+			if ( !rules.containsAll( this.activeAreaRules ) ) {
+				
+				//remove existing rules
+				this.processExitRules( this.activeAreaRules, location );
+				this.activeAreaRules = rules;
+				this.processEntranceRules( rules );
+				
+			}
+		} else if ( this.activeAreaRules != null ) {
+			this.processExitRules(this.activeAreaRules, location);
+			this.activeAreaRules = null;
+		}
+		
+		if ( this.activeAreaRules != null ) {
+			//this.processExitRules( this.activeAreaRules, location );
 		}
 		
 		this.activeAreaRules = AreaRules.activeChunks.get(sig);
 		
 		if ( this.activeAreaRules != null ) {
 			this.processEntranceRules( this.activeAreaRules );	
-		}		
+		}
+		*/		
 		
 	}
 	

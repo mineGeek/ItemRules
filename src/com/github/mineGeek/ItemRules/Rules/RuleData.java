@@ -22,11 +22,18 @@ public class RuleData {
 	public String ruleTag;
 	
 	
+	public RuleData( RuleData clone ) {
+		
+		this.value = clone.value;
+		this.ruleTag = clone.ruleTag;
+		
+	}
+	
 	/**
 	 * Constructor taking the tag from the rule 
 	 * that created this.
 	 * @param tag
-	 */
+	 */	
 	public RuleData( String tag ) {
 		this.ruleTag = tag;
 	}

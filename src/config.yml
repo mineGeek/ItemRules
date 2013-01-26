@@ -26,7 +26,7 @@ aliases:
     goldEquipment: [283, 284, 285, 286, 294]
     diamondEquipment: [276, 277, 278, 279, 293]
     miscWeapons: [261, 262]
-    useAndBreakOnly: [1, 5, 20, '17.3', 71, 389, 63]
+    useAndBreakOnly: [1, 2, 3, 5, 20, '17.3', 71, 389, 63]
     useOnly: [77]
 rules:
     ExplicitlyRestrict:
@@ -155,6 +155,7 @@ manualRules:
 areaRules:
     StickZone:
         world: pickleMasher
+        mode: denyPrevious
         ne: [253, 65, 293]
         sw: [259, 63, 314]
         messages:

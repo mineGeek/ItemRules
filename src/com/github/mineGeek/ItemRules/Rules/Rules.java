@@ -244,7 +244,7 @@ public class Rules {
 		if ( !ruleList.isEmpty() ) {
 			
 			IRPlayer ps = Players.get(player);
-
+			ps.setRuleMode( RuleMode.DEFAULT );
 			/**
 			 * Automatically apply rules
 			 */
@@ -258,13 +258,11 @@ public class Rules {
 						if ( x.getRuleMode() != RuleMode.DEFAULT ) {
 							mode = x.getRuleMode();
 							if ( mode == RuleMode.ALLOWPREVIOUS || mode == RuleMode.DENYPREVIOUS ) {
-								boolean newValue = mode == RuleMode.ALLOWPREVIOUS ? true : false;
 								if ( !rules.isEmpty() ) {
-									for ( RuleData data : rules.values() ) {
-										data.value = newValue;
-									}
+									rules.clear();
 								}
-								mode = mode == RuleMode.ALLOWPREVIOUS ? RuleMode.ALLOW : RuleMode.DENY;
+								
+								ps.setRuleMode( mode == RuleMode.ALLOWPREVIOUS ? RuleMode.ALLOW : RuleMode.DENY );
 							}
 						}
 						
@@ -273,7 +271,7 @@ public class Rules {
 						if ( !r.isEmpty() ) {
 							
 							for( String y : r.keySet() ) {
-								rules.put(y, r.get(y) );
+								rules.put(y, new RuleData( r.get(y) ) );
 							}
 							
 						}
@@ -283,7 +281,7 @@ public class Rules {
 						if ( !r.isEmpty() ) {
 							
 							for ( String y : r.keySet() ) {
-								rules.put(y, r.get(y) );
+								rules.put(y, new RuleData( r.get(y) ) );
 							}
 							
 						}
@@ -308,23 +306,21 @@ public class Rules {
 							
 							if ( Rules.ruleByTagList.get(x).getRuleMode() != RuleMode.DEFAULT ) {
 								mode = Rules.ruleByTagList.get(x).getRuleMode();
-								if ( mode == RuleMode.ALLOWPREVIOUS || mode == RuleMode.DENYPREVIOUS ) {
-									boolean newValue = mode == RuleMode.ALLOWPREVIOUS ? false : true;
-									if ( !rules.isEmpty() ) {
-										for ( RuleData data : rules.values() ) {
-											data.value = newValue;
 								
-										}
+								if ( mode == RuleMode.ALLOWPREVIOUS || mode == RuleMode.DENYPREVIOUS ) {
+									
+									if ( !rules.isEmpty() ) {
+										rules.clear();
 									}
 									
-									mode = mode == RuleMode.ALLOWPREVIOUS ? RuleMode.ALLOW : RuleMode.DENY;
+									ps.setRuleMode( mode == RuleMode.ALLOWPREVIOUS ? RuleMode.ALLOW : RuleMode.DENY );
 								}								
 							}
 							
 							if ( !r.isEmpty() ) {
 								
 								for ( String y : r.keySet() ) {
-									rules.put(y, r.get(y) );
+									rules.put(y, new RuleData( r.get(y) ) );
 								}
 								
 							}
@@ -338,7 +334,7 @@ public class Rules {
 				
 			}
 		}
-		Players.get(player).setRuleMode(mode);
+		//Players.get(player).setRuleMode(mode);
 		return rules;
 
 	}

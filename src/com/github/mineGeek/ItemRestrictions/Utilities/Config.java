@@ -65,6 +65,11 @@ public class Config {
 	
 	public static String txtDefaultUnrestrictedMessage = "use this";
 	
+	
+	public static boolean debug_area_chunkEntrance = false;
+	public static boolean debug_area_chunkExit = false;
+	public static boolean debug_area_chunkChange = false;
+	
 	/**
 	 * Whether or not to monitor player locations. Will go to true if there
 	 * are any areaRules set up
@@ -153,6 +158,10 @@ public class Config {
 		Config.txtCannotDoPrefix			= c.getString("text.CannotDoPrefix", "Restricted: ");
 		Config.txtDefaultRestrictedMessage	= c.getString("text.DefaultRestrictedMessage", "You cannot do that");
 		Config.txtDefaultUnrestrictedMessage= c.getString("text.DefaultUnrestrictedMessage", "");
+		
+		Config.debug_area_chunkEntrance		= c.getBoolean("debug.area.chunkEntrance", false);
+		Config.debug_area_chunkExit			= c.getBoolean("debug.area.chunkExit", false);
+		Config.debug_area_chunkChange		= c.getBoolean("debug.area.chunkChange", false);
 		
 	}
 	

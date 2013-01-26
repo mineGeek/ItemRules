@@ -95,14 +95,11 @@ public class Area {
 	 * @return
 	 */
 	public Boolean intersectsWith( Location l ) {	
-		
-		if ( l.getX() > Math.max( ne.getX(), sw.getX() ) ) 	return false;
-		if ( l.getX() < Math.min( ne.getX(), sw.getX() ) ) 	return false;
-		if ( l.getZ() > Math.max( ne.getZ(), sw.getZ() ) ) 	return false;
-		if ( l.getZ() < Math.min( ne.getZ(), sw.getZ() ) ) 	return false;
-		if ( l.getY() > Math.max( ne.getY(), sw.getY() ) ) 	return false;
-		if ( l.getY() < Math.min( ne.getY(), sw.getY() ) ) 	return false;
-		
+
+		if ( ( Math.max( ne.getX(), sw.getX() ) < l.getX() - 1 ) || ( Math.min( ne.getX(), sw.getX() ) >= l.getX() ) ) return false;
+		if ( ( Math.max( ne.getZ(), sw.getZ() ) < l.getZ() - 1 ) || ( Math.min( ne.getZ(), sw.getZ() ) >= l.getZ() ) ) return false;
+		if ( ( Math.max( ne.getY(), sw.getY() ) < l.getY() - 1 ) || ( Math.min( ne.getY(), sw.getY() ) >= l.getY() ) ) return false;
+	
 		return true;
 		
 		
