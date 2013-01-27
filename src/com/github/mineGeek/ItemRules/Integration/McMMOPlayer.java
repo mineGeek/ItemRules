@@ -8,7 +8,8 @@ import org.bukkit.plugin.Plugin;
 import com.github.mineGeek.ItemRules.ItemRules;
 import com.gmail.nossr50.api.ExperienceAPI;
 import com.gmail.nossr50.api.PartyAPI;
-import com.gmail.nossr50.skills.SkillType;
+import com.gmail.nossr50.datatypes.SkillType;
+
 
 /**
  * Wrapper for the McMMO player
