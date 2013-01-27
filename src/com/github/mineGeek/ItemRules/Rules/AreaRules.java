@@ -97,6 +97,7 @@ public class AreaRules {
 		rule.setTag( tag );
 		rule.setArea( area );
 		
+		if ( config.contains( "description") ) rule.setDescription( config.getString("description") );
 		rule.setOnEntranceMessage( config.getString( "messages.onEntrance") );
 		rule.setOnExitMessage( config.getString("messages.onExit") );
 		

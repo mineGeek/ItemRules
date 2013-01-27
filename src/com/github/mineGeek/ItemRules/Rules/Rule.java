@@ -68,6 +68,8 @@ public class Rule {
 	private String tag;
 	
 	
+	private String description;
+	
 	/**
 	 * Message to display when player is restricted
 	 */
@@ -121,6 +123,15 @@ public class Rule {
 	 */
 	public String getTag() {
 		return this.tag;
+	}
+	
+	
+	public String getDescription() {
+		return this.description;
+	}
+	
+	public void setDescription( String value ) {
+		this.description = value;
 	}
 	
 

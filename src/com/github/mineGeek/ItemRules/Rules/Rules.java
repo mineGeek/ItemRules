@@ -45,6 +45,47 @@ public class Rules {
 	private static Map<String, Rule> ruleByTagList = new HashMap<String, Rule>();
 	
 	
+	public static List<String> getPlayerRulesList( Player player, boolean doCan, boolean doRestricted, boolean doUnapplied ) {
+		
+		List<String> result = new ArrayList<String>();
+		
+		//Get current rules for player
+		Map< String, List<String>> rules = Players.get( player ).getRuleMatrix();
+		
+		if ( !rules.isEmpty() ) {
+			
+			
+			for ( String key : rules.keySet() ) {
+				
+				if ( key.equals( "inactive" ) && !doCan ) continue;
+				if ( key.equals( "active" ) && !doRestricted ) continue;
+				if ( key.equals( "unapplied" ) && !doUnapplied ) continue;
+				
+				String s = null;
+				
+				for ( String x : rules.get(key) ) {
+					
+					if ( s != null ) {
+						s = s + ", " + Rules.getRule( x ).getDescription();
+					} else {
+						s = Rules.getRule( x ).getDescription();
+					}				
+					
+				}
+				
+				if ( s != null ) {
+					result.add( ( key == "inactive" ? ChatColor.GREEN + Config.txtCanDoPrefix : key == "active" ? ChatColor.RED + Config.txtCannotDoPrefix : ChatColor.YELLOW )  + s );
+				}			
+				
+			}
+		
+		}
+		
+		return result;
+		
+	}
+	
+	
 	/**
 	 * Gets a formatted string of rules that apply to player.
 	 * Sort of a shite (AKA messy ) function.
@@ -240,10 +281,12 @@ public class Rules {
 		
 		Map<String, RuleData> rules = new HashMap<String, RuleData>();
 		RuleMode mode = RuleMode.DEFAULT;
+		IRPlayer ps = Players.get(player);
+		ps.clearRuleMatrixItem();
 		
 		if ( !ruleList.isEmpty() ) {
 			
-			IRPlayer ps = Players.get(player);
+			
 			ps.setRuleMode( RuleMode.DEFAULT );
 			/**
 			 * Automatically apply rules
@@ -266,6 +309,8 @@ public class Rules {
 							}
 						}
 						
+						ps.addRuleMatrixItem( ( mode == RuleMode.ALLOW ? "inactive" : "active" ), x.getTag() );
+						
 						Map<String, RuleData> r = x.getAllowedItems();
 						
 						if ( !r.isEmpty() ) {
@@ -286,6 +331,8 @@ public class Rules {
 							
 						}
 						
+					} else {
+						ps.addRuleMatrixItem( "unapplied", x.getTag() );
 					}
 					
 				}
@@ -317,6 +364,8 @@ public class Rules {
 								}								
 							}
 							
+							ps.addRuleMatrixItem( ( mode == RuleMode.ALLOW ? "inactive" : "active" ), x );
+							
 							if ( !r.isEmpty() ) {
 								
 								for ( String y : r.keySet() ) {
@@ -325,6 +374,8 @@ public class Rules {
 								
 							}
 							
+						} else {
+							ps.addRuleMatrixItem( "unapplied", x );
 						}
 						
 					}
@@ -456,6 +507,8 @@ public class Rules {
 		}
 		
 		rule.setAuto( config.getBoolean("auto", !manual ) );
+		
+		if ( config.contains( "description") ) rule.setDescription( config.getString("description") );
 		
 		if ( config.contains( "messages.restricted") ) rule.setRestrictedMessage( config.getString("messages.restricted", null) );
 		if ( config.contains( "messages.unrestricted") ) rule.setUnrestrictedMessage( config.getString("messages.unrestricted", null) );

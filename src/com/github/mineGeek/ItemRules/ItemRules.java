@@ -78,11 +78,10 @@ public class ItemRules extends JavaPlugin {
 		
 		this.getServer().getPluginManager().registerEvents( new Listeners(), this);
     	RulesAvailable ra = new RulesAvailable();
-    	getCommand("ircan").setExecutor( ra );
-    	getCommand("ircant").setExecutor( ra );
+    	getCommand("rules").setExecutor( ra );
     	ApplyRule ar = new ApplyRule();
-    	getCommand("irapply").setExecutor( ar );
-    	getCommand("irrevoke").setExecutor( ar );
+    	getCommand("apply").setExecutor( ar );
+    	getCommand("revoke").setExecutor( ar );
     	
 
 	}

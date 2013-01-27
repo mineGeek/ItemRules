@@ -8,8 +8,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -18,6 +21,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
 
 import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 import com.github.mineGeek.ItemRules.API;
@@ -112,6 +116,35 @@ public class Listeners implements Listener {
     }
 	
 	
+    @EventHandler
+    public void onInventory(InventoryCloseEvent evt)
+    {
+        if (evt.getView().getType() == InventoryType.CRAFTING) {
+        	
+        	ItemStack helmet = evt.getPlayer().getInventory().getHelmet();
+        	ItemStack chest = evt.getPlayer().getInventory().getChestplate();
+        	ItemStack legs = evt.getPlayer().getInventory().getLeggings();
+        	ItemStack boots = evt.getPlayer().getInventory().getBoots();
+        	
+        	if ( helmet != null ) {
+        		
+        	}
+        	
+        	if ( chest != null ) {
+        		
+        	}
+        	
+        	if ( legs != null ) {
+        		
+        	}
+        	
+        	if ( boots != null ) {
+        		
+        	}
+        	
+        }
+            
+    }	
 	
 	
 	
@@ -148,8 +181,24 @@ public class Listeners implements Listener {
     }
     
     
-    
-    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onEntityDamage(EntityDamageByEntityEvent evt) {
+    	
+    	if ( evt.isCancelled() ) return;
+    	
+    	//can player use item?
+    	
+    	if ( evt.getDamager() instanceof Player ) {
+    	
+    		Player player = (Player)evt.getDamager();
+    		
+			if ( Players.get( player ).isRestricted( Actions.USE, player.getItemInHand().getType(), player.getItemInHand().getData().getData() ) ) {
+				evt.setCancelled( true );
+			}
+    	}
+    	
+    }
+
     
     /**
      * Check to see if the player can interact with the thing they are interacting with
@@ -158,7 +207,6 @@ public class Listeners implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInteractEntity(PlayerInteractEvent evt){
         
-    	
     	if ( evt.isCancelled() ) return;
     	
     	try {

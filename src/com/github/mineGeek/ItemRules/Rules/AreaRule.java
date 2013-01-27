@@ -43,6 +43,7 @@ public class AreaRule {
 	 */
 	private String tag;
 	
+	private String description;
 	
 	private String onEntranceMessage;
 	
@@ -67,6 +68,13 @@ public class AreaRule {
 		this.tag = value;
 	}
 	
+	public String getDescription() {
+		return this.description;
+	}
+	
+	public void setDescription( String value ) {
+		this.description = value;
+	}
 	
 	public void setOnEntranceMessage( String value ) {
 		this.onEntranceMessage = value;

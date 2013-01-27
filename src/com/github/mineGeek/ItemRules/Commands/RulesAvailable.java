@@ -2,7 +2,6 @@ package com.github.mineGeek.ItemRules.Commands;
 
 import java.util.List;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -42,7 +41,7 @@ public class RulesAvailable extends CommandBase {
 				
 			} else {
 				
-				execMessage = "You didn't specify the Player name. e.g. /irfull notch";
+				execMessage = "You didn't specify the Player name. e.g. /rules notch";
 				return true;
 				
 			}
@@ -56,34 +55,31 @@ public class RulesAvailable extends CommandBase {
 		
 		
 		
-		Boolean doCan 		= cmdName.equalsIgnoreCase("ircan") ? true : false;
-		Boolean doCanNext 	= doCan ? true : false;				
-		Boolean doCanNow	= doCan ? true : false;
+		Boolean doCan 		= false;
+		Boolean doRestricted= true;				
+		Boolean doUnapplied	= false;
 		
 		if (  args.length > ( 0 + argStart ) ) {
 			
-
-			
 			if ( args[ argStart ].equalsIgnoreCase("all") ) {
 				
-				doCanNow = false;
-				doCanNext = false;
+				doCan = doRestricted = doUnapplied = true;
 					
-			} else if ( args[ argStart ].equalsIgnoreCase("current" ) ) {
+			} else if ( args[ argStart ].equalsIgnoreCase("can" ) ) {
 				
-				doCanNow = true;
-				doCanNext = true;
+				doCan = true;
+				doRestricted = doUnapplied = false;
 					
-			} if ( args[argStart].equalsIgnoreCase("next") ) {
+			} if ( args[argStart].equalsIgnoreCase("unapplied") ) {
 				
-				doCanNow = doCan ? true : false;
-				doCanNext = true;
+				doUnapplied = true;
+				doCan = doRestricted = false;
 			}
 			
 			
 		}
 		
-		List<String> result = Rules.getRuleList( player, doCan, doCanNow, doCanNext, ChatColor.GREEN, ChatColor.YELLOW, ChatColor.RED );
+		List<String> result = Rules.getPlayerRulesList(player, doCan, doRestricted, doUnapplied );
 
 		boolean toPlayer = ( ( sender instanceof Player || sender instanceof CommandSender) );
 		

@@ -1,25 +1,21 @@
 name: ItemRules
 main: com.github.mineGeek.ItemRules.ItemRules
 version: 1.0.0
-softdepend: [mcMMO, Factions, Valut]
+softdepend: [mcMMO, Factions, Vault]
 commands:
-    can:
-        description: List of what you can do at your level
-        aliases: [ircan]
-        usage: /can [all|now|next]
-    cant:
-        description: a list of what you can't do
-        aliases: [ircant]
-        usage: /cant [all|now|next]
+    rules:
+        description: List of what rules are currently affecting you
+        aliases: [ir]
+        usage: /rules
     apply:
-        description: Applies a (manual) rule to a player
+        description: Attach a rule to a player
         aliases: [irapply]
-        usage: /apply player ruleName
-        permission: itemRules.admin.apply
-        permisson-message: You don't have permission for this
+        usage: /apply [playerName] [ruleName]
+        permission: ItemRules.apply
+        permission-message: 'You lack permissions for this command'        
     revoke:
-        description: removes a (manual) rule from player
+        description: Remove a manual rule from a player
         aliases: [irrevoke]
-        usage: /revoke playerName ruleName
-        permission: itemRules.admin.revoke
-        permission-message: You lack the skillz for this
+        usage: /revoke [playerName] [ruleName]
+        permission: ItemRules.revoke
+        permission-message: 'You lack permissions for this command'       

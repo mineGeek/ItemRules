@@ -81,6 +81,9 @@ public class IRPlayer extends DataStore {
 	private RuleMode ruleMode = RuleMode.DEFAULT;
 
 	
+	private Map<String, List<String>> RuleMatrix = new HashMap<String, List<String>>();
+	
+	
 	/**
 	 * Constructor. Takes the folder to where the save file should be
 	 * @param dataFolder
@@ -187,6 +190,37 @@ public class IRPlayer extends DataStore {
 	public void clearManualRules() {
 		this.manualRules.clear();
 		this.manualRuleList.clear();
+	}
+	
+	
+	public Map<String, List< String > > getRuleMatrix() {
+		return this.RuleMatrix;
+	}
+	
+	public void addRuleMatrixItem( String mode, String tag ) {
+		
+		if ( this.RuleMatrix.containsKey( mode ) ) {
+			
+			this.RuleMatrix.get( mode ).add( tag );
+			
+		} else {
+		
+			List<String> list = new ArrayList<String>();
+			list.add( tag );
+			this.RuleMatrix.put( mode, list );
+			
+		}
+		
+	}
+	
+	public void removeRuleMatrixItem( String mode, String tag ) {
+		
+		if ( this.RuleMatrix.containsKey( mode ) ) this.RuleMatrix.get( mode ).remove( tag );
+		
+	}
+	
+	public void clearRuleMatrixItem() {
+		this.RuleMatrix.clear();
 	}
 	
 	
@@ -434,7 +468,11 @@ public class IRPlayer extends DataStore {
 		if ( item == null )	{
 			
 			if ( mode == RuleMode.DENY ) {
-				if ( Config.txtDefaultRestrictedMessage != null ) PlayerMessenger.SendPlayerMessage(this.getPlayer(), Config.txtDefaultRestrictedMessage + " (" + action.toString().toLowerCase() + " " + material.toString().toLowerCase() + " [" + material.getId() + "])" );
+				if ( Config.txtDefaultRestrictedMessage != null ) {
+					
+					Object[] args = { action.toString().toLowerCase(), material.toString().replace("_", " ").toLowerCase() };
+					PlayerMessenger.SendPlayerMessage(this.getPlayer(), ChatColor.RED + String.format( Config.txtDefaultRestrictedMessage, args ) );
+				}
 				return true;
 			} else {
 				return false;
@@ -444,7 +482,9 @@ public class IRPlayer extends DataStore {
 		boolean result = item.isRestricted( action );
 		
 		if ( result && item.getRestrictionMessage() != null ) {
-			PlayerMessenger.SendPlayerMessage( this.getPlayer(), ChatColor.RED + "" + ChatColor.ITALIC + item.getRestrictionMessage() );
+						
+			Object[] args = { action.toString().toLowerCase(),  material.toString().replace("_", " ").toLowerCase() };
+			PlayerMessenger.SendPlayerMessage( this.getPlayer(), ChatColor.RED + "" + ChatColor.ITALIC + String.format(item.getRestrictionMessage(), args ) );
 		}
 		
 		return result;
