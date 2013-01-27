@@ -9,6 +9,12 @@ import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 
 import net.milkbowl.vault.permission.Permission;
 
+/**
+ * Basic communication handler for interacting with Vault.
+ * Mainly for permissions group
+ * @author Samuel.Sweet
+ *
+ */
 public class Vault {
 
 	public static Permission perm;

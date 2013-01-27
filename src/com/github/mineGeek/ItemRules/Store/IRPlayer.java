@@ -2,13 +2,17 @@ package com.github.mineGeek.ItemRules.Store;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 import com.github.mineGeek.ItemRestrictions.Utilities.PlayerMessenger;
@@ -118,7 +122,7 @@ public class IRPlayer extends DataStore {
 	 * @return
 	 */
 	public Player getPlayer() {
-		return Config.server().getPlayer( this.playerName );
+		return Bukkit.getPlayer( this.playerName );
 	}
 	
 	
@@ -229,7 +233,7 @@ public class IRPlayer extends DataStore {
 	 */
 	public void loadRules(  ) {
 		
-		this.loadRules( null );
+		this.loadRules( this.getPlayer() );
 		
 	}
 	
@@ -238,10 +242,9 @@ public class IRPlayer extends DataStore {
 	 * Refreshes all rules specific to player. Should be
 	 * called when rules change or xp or item level changes
 	 */
-	public void loadRules( String reasonForChange ) {		
-		
-		
-		Map<String, RuleData> newRule = Rules.getPlayerRules( this.getPlayer() );
+	public void loadRules( Player p ) {		
+				
+		Map<String, RuleData> newRule = Rules.getPlayerRules( p );
 
 		if ( this.rules != null) {
 			if ( newRule != null ) {
@@ -405,32 +408,56 @@ public class IRPlayer extends DataStore {
 				this.activeAreaRules = rules;
 			}
 		}
-		/*
-		if ( !rules.isEmpty() ) {
 		
-			if ( !rules.containsAll( this.activeAreaRules ) ) {
-				
-				//remove existing rules
-				this.processExitRules( this.activeAreaRules, location );
-				this.activeAreaRules = rules;
-				this.processEntranceRules( rules );
-				
-			}
-		} else if ( this.activeAreaRules != null ) {
-			this.processExitRules(this.activeAreaRules, location);
-			this.activeAreaRules = null;
-		}
+	}
+	
+	/**
+	 * Checks armor slots to make sure player isn't sneaking in stuff they can't use!
+	 */
+	public void checkInventory() {
 		
-		if ( this.activeAreaRules != null ) {
-			//this.processExitRules( this.activeAreaRules, location );
-		}
+		Player p = this.getPlayer();
 		
-		this.activeAreaRules = AreaRules.activeChunks.get(sig);
-		
-		if ( this.activeAreaRules != null ) {
-			this.processEntranceRules( this.activeAreaRules );	
-		}
-		*/		
+    	Map<Integer, ItemStack> items = new HashMap<Integer, ItemStack>();
+    	
+    	if ( p.getInventory().getHelmet() != null ) items.put( 1, p.getInventory().getHelmet() );
+    	if ( p.getInventory().getChestplate() != null ) items.put( 2, p.getInventory().getChestplate() );
+    	if ( p.getInventory().getLeggings() != null ) items.put( 3, p.getInventory().getLeggings() );
+    	if ( p.getInventory().getBoots() != null ) items.put( 4, p.getInventory().getBoots() );
+    	
+    	if ( items.size() > 0 ) {
+    	
+    		Iterator<Entry<Integer, ItemStack>> iItem = items.entrySet().iterator();
+    		
+    		while ( iItem.hasNext() ) {
+    			
+    			Entry<Integer, ItemStack> iEntry = iItem.next();
+    			ItemStack item = iEntry.getValue();
+    			
+		    	if ( this.isRestricted( Actions.USE, item.getType(), item.getData().getData() ) ) {
+		    		
+		    		if ( !this.isRestricted( Actions.PICKUP, item.getType(), item.getData().getData() ) ) {
+		    			
+		    			if ( p.getInventory().addItem( item ).size() > 0 ) {
+		    				p.getWorld().dropItemNaturally( p.getLocation(), item);
+		    			}
+		    			
+		    		} else {
+		    			p.getWorld().dropItemNaturally( p.getLocation(), item);
+		    		}
+		    		
+		    		switch ( iEntry.getKey() ) {
+		    		
+		    			case 1: p.getInventory().setHelmet( null ); break;
+		    			case 2: p.getInventory().setChestplate( null ); break;
+		    			case 3: p.getInventory().setLeggings( null ); break;
+		    			case 4: p.getInventory().setBoots( null ); break;		    			
+
+		    		}
+		    		
+		    	}
+    		}
+    	}   		
 		
 	}
 	
@@ -464,7 +491,7 @@ public class IRPlayer extends DataStore {
 		RuleMode mode = this.getRuleMode();
 		
 		RuleData item = this.getRuleData( String.valueOf( material.getId() )  , String.valueOf( data ) ) ;
-		if ( item != null ) PlayerMessenger.SendPlayerMessage( this.getPlayer(), action.toString() + ": " + item + " material: " + material.getId() + "." + String.valueOf(data));
+		//if ( item != null ) PlayerMessenger.SendPlayerMessage( this.getPlayer(), action.toString() + ": " + item + " material: " + material.getId() + "." + String.valueOf(data));
 		if ( item == null )	{
 			
 			if ( mode == RuleMode.DENY ) {
@@ -484,14 +511,14 @@ public class IRPlayer extends DataStore {
 		if ( result && item.getRestrictionMessage() != null ) {
 						
 			Object[] args = { action.toString().toLowerCase(),  material.toString().replace("_", " ").toLowerCase() };
-			PlayerMessenger.SendPlayerMessage( this.getPlayer(), ChatColor.RED + "" + ChatColor.ITALIC + String.format(item.getRestrictionMessage(), args ) );
+			Player p = this.getPlayer();
+			PlayerMessenger.SendPlayerMessage( p, ChatColor.RED + "" + ChatColor.ITALIC + String.format(item.getRestrictionMessage(), args ) );
 		}
 		
 		return result;
 		
 
 	}
-	
 	
 	
 	/**

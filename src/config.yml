@@ -3,13 +3,19 @@ text:
     CanDoNextPrefix: 'Next, you can '
     CannotDoPrefix: 'Restricted: '
     DefaultRestrictedMessage: 'You cannot do that'
+#########################################
+#
+# Describes how XP and ItemLevels relate
+# e.g. if you have a rule that restricts using something
+# until level 5, but don't want player to lose
+# that ability if they die, use itemLevel.min instead of XP.min
+# and set levelDescresesItemLevel: false
+#
+#########################################
 XP:
     itemLevelDefaultsToXPLevel: true
     levelIncreasesItemLevel: true
     levelDecreasesItemLevel: true
-    
-
-
 #########################################
 #
 # Aliases are a shorthand method for
@@ -26,107 +32,60 @@ aliases:
     goldEquipment: [283, 284, 285, 286, 294]
     diamondEquipment: [276, 277, 278, 279, 293]
     miscWeapons: [261, 262]
-    useAndBreakOnly: [1, 2, 3, 5, 20, '17.3', 71, 389, 63]
-    useOnly: [77]
+#########################################
+#
+# rules are automatically processed and applied
+# at various points in the game. This is the core
+# of the mod where you define each restriction
+#
+#########################################
 rules:
-    ExplicitlyRestrict:
+    woodenStuff:
+        description: 'use of wooden equipment after level 2' 
         messages:
-            restricted: 'You cannot break Stone, Jungle logs, planks or glass'
-        actions: [BREAK, USE]
+            restricted: 'You cannot %s %s after level 2'
+        actions: [USE, CRAFT, PICKUP]
         xp:
-            min: 99
+            max: 2
         items:
-            restrict: ['useAndBreakOnly']
-    ExplicitlyAllow:
-        actions: [USE]
-        items:
-            allow: ['useOnly']
-    Ted:
+            restrict: ['woodenEquipment']
+    stoneEquipment:
+        description: 'use of stone equipment until level 1.' 
         messages:
-            restricted: 'You must be in faction Ted to do this. (type /f join Ted )'
-        factions:
-            exclude: ['Ted']
-        actions: [USE, BREAK]
-        items:
-            restrict: [70]
-    Bob:
-        messages:
-            restricted: 'You must be in faction Bob to do this. (type /f join Bob)'
-        factions:
-            exclude: ['Bob']
-        actions: [USE, PLACE]
-        items:
-            restrict: [72, 361, 290, 60, 104]
-    WoodCutting:
-        messages:
-            restricted: 'You must have Woodcutting level 1 to cut down birch trees'
-        factions:
-            appliesTo: [Bob]
-        mcmmo:
-            skills:
-                woodcutting: 1
-        actions: [USE, PLACE, BREAK]
-        items:
-            restrict: ['17.2', 258]
-    Herbalism:
-        actions: [USE, PLACE]
-        messages:
-            restricted: 'You must have herbalism level 1 to use these'
-        mcmmo:
-            skills:
-                herbalism: 1
-        items:
-            restrict:
-                [292, 362] 
-    WoodenWeapons:
-        messages:
-            unrestricted: 'use wooden equipment'
-            restricted: 'no wooden equipment after level 1'
-        actions: [CRAFT, PICKUP, USE]
+            restricted: 'You cannot %s %s until level 1'
+        actions: [USE, CRAFT, PICKUP]
         xp:
-            max: 1
+            min: 1
         items:
-            restrict:
-            - 268
-            - woodenEquipment
-    StoneWeapons:
+            restrict: ['stoneEquipment']
+    ironEquipment:
+        description: 'Use of iron equipment until level 2' 
         messages:
-            unrestricted: 'use stone equipment'
-            restricted: 'no stone equipment until level 2'
-        actions:
-        - CRAFT
-        - PICKUP
-        - USE
-        worlds:
-            applyto:
-            - world
+            restricted: 'You cannot %s %s until level 2'
+        actions: [USE, BREAK, PICKUP]
         xp:
             min: 2
         items:
-            restrict:
-            - '272'
-            - '273'
-            - '274'
-            - '275'
-    diamondWeapons:
+            restrict: ['ironEquipment']
+    goldEquipment:
+        description: 'use of gold equipment until level 3' 
         messages:
-            unrestricted: 'use diamond weapons and tools'
-            restricted: 'no diamond weapons/tools until level 5'
-        actions:
-        - CRAFT
-        - PICKUP
-        - USE
-        worlds:
-            applyto:
-            - world
+            restricted: 'You cannot %s %s until level 3'
         xp:
-            min: 5 
+            min: 3
+        actions: [USE, PLACE, PICKUP]
         items:
-            restrict:
-            - '276'
-            - '277'
-            - '278'
-            - '279'
+            restrict: ['goldEquipment']
+    diamondEquipment:
+        description: 'use of diamond equipment until level 4' 
+        messages:
+            restricted: 'You cannot %s %s until level 4'
+        xp:
+            min: 4
+        actions: [USE, PLACE, PICKUP]
+        items:
+            restrict: ['diamondEquipment']
+
 #########################################
 #
 # Manualrules are not automatically applied
@@ -135,16 +94,6 @@ rules:
 #
 #########################################
 manualRules:
-    sticksOnly:
-        mode: denyPrevious
-        actions: [USE, CRAFT]
-        items:
-            allow: [280]
-            restrict: [woodenEquipment, ironEquipment, stoneEquipment, goldEquipment, diamondEquipment]
-    diamondSwords:
-        actions: [USE]
-        items:
-            allow: [276]
 #########################################
 #
 # An area rule is a zone where manual rules
@@ -153,14 +102,4 @@ manualRules:
 #
 #########################################
 areaRules:
-    StickZone:
-        world: pickleMasher
-        mode: denyPrevious
-        ne: [253, 65, 293]
-        sw: [259, 63, 314]
-        messages:
-            onEntrance: 'You are now entering the Stick only PvP Zone'
-            onExit: 'You are now leaving the Stick Only PvP Zone'
-        entrance: [sticksOnly]
-        exit: [sticksOnly]
             

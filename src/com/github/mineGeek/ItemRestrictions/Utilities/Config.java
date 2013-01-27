@@ -60,12 +60,25 @@ public class Config {
 	 */
 	public static String txtCannotDoPrefix = "Restricted: ";
 	
-
+	/**
+	 * The text for default restriction message
+	 */
 	public static String txtDefaultRestrictedMessage = "use this";
 	
+	/**
+	 * Text for default cando message
+	 */
 	public static String txtDefaultUnrestrictedMessage = "use this";
 	
 	
+	/**
+	 * Timeout of restriction messages to prevent flooding player
+	 */
+	public static int spamPlayerMessageTimeout = 1500;
+	
+	/**
+	 * Debugging parameters
+	 */
 	public static boolean debug_area_chunkEntrance = false;
 	public static boolean debug_area_chunkExit = false;
 	public static boolean debug_area_chunkChange = false;
@@ -76,7 +89,10 @@ public class Config {
 	 */
 	public static Boolean monitorPlayerLocations		= false;
 	
-	
+	/**
+	 * Reference to Bukkit server
+	 * @return
+	 */
 	public static Server server() {
 		return Bukkit.getServer();
 	}
@@ -93,8 +109,11 @@ public class Config {
 			}
 		}
 		
+		/**
+		 * DO not monitor player movement unless we 
+		 * have area rules active.
+		 */
 		if ( !AreaRules.activeChunks.isEmpty() ) {
-			//monitor movement!
 			Config.monitorPlayerLocations = true;			
 		}
 		
@@ -108,6 +127,9 @@ public class Config {
 	 */
 	public static void loadRulesFromConfig( MemorySection c) {
 		
+		/**
+		 * Load aliases
+		 */
 		if ( c.contains("aliases") ) {
 			
 			for ( String x : c.getConfigurationSection("aliases").getKeys( false ) ) {
@@ -118,6 +140,9 @@ public class Config {
 			
 		}
 		
+		/**
+		 * Load automatically applied rules
+		 */
 		if ( c.contains("rules") ) {
 			
 			for ( String x : c.getConfigurationSection( "rules").getKeys( false ) ) {
@@ -128,6 +153,9 @@ public class Config {
 			
 		}
 		
+		/**
+		 * Load manually applied rules
+		 */
 		if ( c.contains("manualRules") ) {
 			
 			for ( String x : c.getConfigurationSection( "manualRules").getKeys( false ) ) {
@@ -159,13 +187,17 @@ public class Config {
 		Config.txtDefaultRestrictedMessage	= c.getString("text.DefaultRestrictedMessage", "You cannot do that");
 		Config.txtDefaultUnrestrictedMessage= c.getString("text.DefaultUnrestrictedMessage", "");
 		
+		Config.spamPlayerMessageTimeout		= c.getInt( "playerMessageTimeout", 1500 );
+		
 		Config.debug_area_chunkEntrance		= c.getBoolean("debug.area.chunkEntrance", false);
 		Config.debug_area_chunkExit			= c.getBoolean("debug.area.chunkExit", false);
 		Config.debug_area_chunkChange		= c.getBoolean("debug.area.chunkChange", false);
 		
 	}
 	
-	
+	/**
+	 * Good guy brings closure
+	 */
 	public static void close() {
 		Config.c = null;
 		

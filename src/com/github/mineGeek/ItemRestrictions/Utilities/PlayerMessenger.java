@@ -7,24 +7,19 @@ import java.util.Map.Entry;
 
 import org.bukkit.entity.Player;
 
-
-
-
-
 /**
  * Utility class to help prevent spamming the crap out of a player with the same 
  * message. 
- * TODO: Change the gc to be scheduled.
+ * TODO: Change the gc to be a scheduled task.
  *
  */
 public class PlayerMessenger {
 
 
 	/**
-	 * HashMap of rtecent messages sent to users
+	 * HashMap of recent messages sent to users
 	 */
 	private static Map<String, Map<String, Long>> _queue = new HashMap<String, Map<String, Long>>();
-
 
 	
 	/**
@@ -35,8 +30,8 @@ public class PlayerMessenger {
 	public static void SendPlayerMessage(Player player, String message ) {
 		
 		Boolean printMessage = true;
-		//TODO: Make this a setting
-		Long benchMark = System.currentTimeMillis() - 1500;
+
+		Long benchMark = System.currentTimeMillis() - Config.spamPlayerMessageTimeout;
 		
 		Map<String, Long> map = new HashMap<String, Long>();
 		
@@ -56,12 +51,8 @@ public class PlayerMessenger {
 			player.sendMessage( message );
 		}
 		
-		//TODO: Make this better!
-		if ( map.size() > 10 ) {
-			clean();
-		}
-		
 	}
+	
 	
 	/**
 	 * GC on list. Get rid of old stuff.
@@ -80,7 +71,7 @@ public class PlayerMessenger {
 				
 				Map.Entry<String, Long> y = x.next();
 				
-				if ( y.getValue() < System.currentTimeMillis() - 5000 ) {
+				if ( y.getValue() < System.currentTimeMillis() - Config.spamPlayerMessageTimeout ) {
 					_queue.remove( o.getKey() );
 				}
 				
@@ -90,6 +81,10 @@ public class PlayerMessenger {
 		
 	}
 	
+	
+	/**
+	 * Good guy brings closure
+	 */
 	public static void close() {
 		if ( _queue !=null ) _queue.clear();
 	}

@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 
 import com.github.mineGeek.ItemRules.Rules.Rules;
 
-
 /**
  * Allows users to see which rules apply and do not apply.
  * covers:
@@ -52,7 +51,6 @@ public class RulesAvailable extends CommandBase {
 			player = (Player)sender;
 			
 		}
-		
 		
 		
 		Boolean doCan 		= false;

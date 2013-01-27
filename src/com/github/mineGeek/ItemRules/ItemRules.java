@@ -3,6 +3,7 @@ package com.github.mineGeek.ItemRules;
 import java.io.File;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 import com.github.mineGeek.ItemRestrictions.Utilities.PlayerMessenger;
@@ -30,6 +31,13 @@ public class ItemRules extends JavaPlugin {
 
 	
 	/**
+	 * Scheduled task to periodically clean up the Messenger queue
+	 */
+	@SuppressWarnings("unused")
+	private BukkitTask messengerGC;
+	
+	
+	/**
 	 * Save Players datastore when we get disabled.
 	 */
 	@Override
@@ -48,6 +56,7 @@ public class ItemRules extends JavaPlugin {
 		
 	}
 	
+	
 	/**
 	 * Set up plugin.
 	 */
@@ -55,7 +64,6 @@ public class ItemRules extends JavaPlugin {
 	public void onEnable() {
 		
 		this.saveDefaultConfig();		
-		
 		Config.c = this.getConfig();
 		
 		
@@ -66,22 +74,39 @@ public class ItemRules extends JavaPlugin {
     	FactionsPlayer.FactionsPlayerEnable( this );
     	McMMOPlayer.McMMOEnable( this );
 		
-		
-		Config.loadConfig();
-		
+		/**
+		 * Configuration
+		 */
+		Config.loadConfig();		
 		Config.loadRulesFromConfig( this.getConfig() );
 		Config.loadAreaRulesFromConfig( this.getConfig() );
 		
+		/**
+		 * Player data
+		 */
 		this.checkDataFolders();
 		Players.dataFolder = this.getDataFolder().getPath();;
 		Players.loadOnline();
 		
+		/**
+		 * Commands and Listeners
+		 */
 		this.getServer().getPluginManager().registerEvents( new Listeners(), this);
     	RulesAvailable ra = new RulesAvailable();
     	getCommand("rules").setExecutor( ra );
     	ApplyRule ar = new ApplyRule();
     	getCommand("apply").setExecutor( ar );
     	getCommand("revoke").setExecutor( ar );
+    	
+    	/**
+    	 * Tasks
+    	 */
+    	this.messengerGC = Config.server().getScheduler().runTaskTimerAsynchronously( this, new Runnable() {
+    	    @Override  
+    	    public void run() {
+    	    	PlayerMessenger.clean();
+    	    }
+    	}, 3600L, 3600L); 	
     	
 
 	}

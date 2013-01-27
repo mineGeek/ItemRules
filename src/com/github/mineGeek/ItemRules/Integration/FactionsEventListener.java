@@ -1,6 +1,5 @@
 package com.github.mineGeek.ItemRules.Integration;
 
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -13,11 +12,12 @@ import com.github.mineGeek.ItemRules.Store.Players;
 import com.massivecraft.factions.event.FPlayerJoinEvent;
 import com.massivecraft.factions.event.FPlayerLeaveEvent;
 
-
-
+/**
+ * Factions event listener. To monitor when someone joins/leaves a faction
+ *
+ */
 public class FactionsEventListener implements Listener {
 
-	
 	ItemRules plugin;
 	
 	public FactionsEventListener( ItemRules plugin ) {
@@ -37,7 +37,6 @@ public class FactionsEventListener implements Listener {
 		    @Override 
 		    public void run() {
 		         API.refreshPlayerRules( peep );
-		         //peep.sendMessage("Just updated the faction you joined");
 		    }
 		}, 30L);		
 		
@@ -55,7 +54,6 @@ public class FactionsEventListener implements Listener {
 		    @Override 
 		    public void run() {
 		         API.refreshPlayerRules( peep );
-		         //peep.sendMessage("Just updated the faction you left");
 		    }
 		}, 30L);		
 		

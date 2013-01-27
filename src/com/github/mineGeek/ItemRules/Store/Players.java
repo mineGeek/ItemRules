@@ -42,6 +42,7 @@ public class Players {
 	 * @return PlayerStoreItem
 	 */
 	public static IRPlayer get( String playerName ) {
+		
 		return players.get( playerName );
 	}
 	

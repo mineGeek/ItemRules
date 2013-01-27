@@ -39,9 +39,6 @@ abstract class CommandBase  implements CommandExecutor{
 	}
 	
 	
-	
-	
-	
 	/**
 	 * Stub for kids to  @override 
 	 * @param cmdName

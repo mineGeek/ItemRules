@@ -7,6 +7,11 @@ import org.bukkit.event.HandlerList;
 import com.github.mineGeek.ItemRules.Rules.AreaRule;
 import com.github.mineGeek.ItemRules.Store.IRPlayer;
 
+/**
+ * Event API for entering into an Area. Allows other plugins to 
+ * monitor when an area is waled into
+ *
+ */
 public class onAreaRuleEntrance extends Event implements Cancellable {
 
 	    private static final HandlerList handlers = new HandlerList();

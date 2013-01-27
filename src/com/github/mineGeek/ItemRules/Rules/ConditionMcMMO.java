@@ -9,7 +9,8 @@ import org.bukkit.entity.Player;
 
 import com.github.mineGeek.ItemRules.Integration.McMMOPlayer;
 import com.github.mineGeek.ItemRules.Store.IRPlayer;
-import com.gmail.nossr50.datatypes.SkillType;
+import com.gmail.nossr50.skills.SkillType;
+
 
 /**
  * Qualifies application of rule based on mcMMO criteria

@@ -13,7 +13,10 @@ import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.FPlayers;
 
 
-
+/**
+ * Handles communication with Factions API
+ *
+ */
 public class FactionsPlayer {
 
 	public static boolean enabled = false;

@@ -10,6 +10,11 @@ import com.github.mineGeek.ItemRules.Store.Players;
 import com.gmail.nossr50.events.experience.McMMOPlayerLevelUpEvent;
 import com.gmail.nossr50.events.party.McMMOPartyChangeEvent;
 
+/**
+ * Manages Events with McMMO plugin.
+ * Shame not all of the events are consistant :(
+ *
+ */
 public class McMMOEventListener implements Listener {
 	
 	@SuppressWarnings("unused")
@@ -23,7 +28,6 @@ public class McMMOEventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onMcMMOExperience( McMMOPlayerLevelUpEvent evt) {
 		
-		//Players.get( evt.getPlayer() ).setMcMMOLevel( evt.getSkill().name(), evt.getSkillLevel() );
 		evt.getPlayer().sendMessage("levelup");
 		Players.get( evt.getPlayer() ).loadRules();
 		
@@ -32,7 +36,6 @@ public class McMMOEventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onMcMMOPartyChange( McMMOPartyChangeEvent evt ) {
 		
-		//Players.get(evt.getPlayer()).setMcMMOInParty( ( evt.getNewParty() != null ) );
 		Players.get(evt.getPlayer() ).loadRules();
 		
 	}

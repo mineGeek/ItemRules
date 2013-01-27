@@ -21,18 +21,22 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.inventory.ItemStack;
 
 import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 import com.github.mineGeek.ItemRules.API;
 import com.github.mineGeek.ItemRules.ItemRules.Actions;
+import com.github.mineGeek.ItemRules.Store.IRPlayer;
 import com.github.mineGeek.ItemRules.Store.Players;
 
 
 
 public class Listeners implements Listener {
 
-	
+	/**
+	 * Convienence stub to get the MaterialId from an entity ( if possible )
+	 * @param entity
+	 * @return
+	 */
 	public Material getMaterialFromEntity( Entity entity ) {
 		
 		Class<?>[] interfaces = entity.getClass().getInterfaces();
@@ -56,7 +60,7 @@ public class Listeners implements Listener {
 	public void onPlayerJoin( PlayerJoinEvent evt ) {
 
 		Players.addPlayer( evt.getPlayer() );
-		API.printCurrentRulesToPlayer( evt.getPlayer() );
+		API.printRulesToPlayer( evt.getPlayer() );
 		
 	}
 	
@@ -82,10 +86,7 @@ public class Listeners implements Listener {
     	Players.get( evt.getPlayer() ).loadRules();
     }
 	
-    
-    
-    
-    
+
     /**
      * When user changes XP level, we reload their rules and optionally
      * change their Item Level to match.
@@ -99,9 +100,6 @@ public class Listeners implements Listener {
 	}
 	
 	
-	
-	
-	
 	/**
 	 * When player respawns, set their location ( to update any exit area rules) and update
 	 * their XP level (which will cause their rules to reload)
@@ -110,42 +108,42 @@ public class Listeners implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST )
     public void onRespawn(PlayerRespawnEvent evt) {
 		
-		Players.get( evt.getPlayer() ).setXPLevel( evt.getPlayer().getLevel() );
-		Players.get(evt.getPlayer()).playerLocation( evt.getRespawnLocation() );
+		/**
+		 * Really lame hack as Bukkit.getPlayer( name ) will
+		 * return Null right now?
+		 */
+		final String peep = evt.getPlayer().getName();
+		IRPlayer p = Players.get( peep );
+		p.setXPLevel( evt.getPlayer().getLevel(), false );
+		p.playerLocation( evt.getRespawnLocation() );
+		
+		Config.server().getScheduler().scheduleSyncDelayedTask( Config.server().getPluginManager().getPlugin("ItemRules"), new Runnable() {
+		    @Override 
+		    public void run() {
+		    	API.refreshPlayerRules( Config.server().getPlayer( peep ) );
+		    }
+		}, 20L);		
+		
+
 
     }
 	
 	
-    @EventHandler
-    public void onInventory(InventoryCloseEvent evt)
-    {
-        if (evt.getView().getType() == InventoryType.CRAFTING) {
+	/**
+	 * When a player closes their inventory, check to make sure they didn't equip armor
+	 * they shouldn't have!
+	 * @param evt
+	 */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onInventoryClose(InventoryCloseEvent evt) {
+    	
+        if (evt.getView().getType() == InventoryType.CRAFTING && evt.getPlayer() instanceof Player ) {
         	
-        	ItemStack helmet = evt.getPlayer().getInventory().getHelmet();
-        	ItemStack chest = evt.getPlayer().getInventory().getChestplate();
-        	ItemStack legs = evt.getPlayer().getInventory().getLeggings();
-        	ItemStack boots = evt.getPlayer().getInventory().getBoots();
-        	
-        	if ( helmet != null ) {
-        		
-        	}
-        	
-        	if ( chest != null ) {
-        		
-        	}
-        	
-        	if ( legs != null ) {
-        		
-        	}
-        	
-        	if ( boots != null ) {
-        		
-        	}
+        	Players.get( (Player)evt.getPlayer() ).checkInventory();
         	
         }
             
     }	
-	
 	
 	
 	/**
@@ -181,6 +179,10 @@ public class Listeners implements Listener {
     }
     
     
+    /**
+     * Checks to see if the player can actually damage another entity with what they have in their hand
+     * @param evt
+     */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDamage(EntityDamageByEntityEvent evt) {
     	
@@ -224,10 +226,7 @@ public class Listeners implements Listener {
     	
     }
     
-    
-    
-    
-    
+
     /**
      * Can the user actually craft that? You be the judge.
      * @param evt
@@ -245,10 +244,6 @@ public class Listeners implements Listener {
     	}
 
     }
-    
-    
-    
-    
     
     
     /**
@@ -270,6 +265,10 @@ public class Listeners implements Listener {
     }
     
     
+    /**
+     * Takes care of breaking entities as they are different from blocks
+     * @param evt
+     */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onHangingBreak( HangingBreakByEntityEvent evt ) {
     	
@@ -290,9 +289,7 @@ public class Listeners implements Listener {
     	}
     	
     }
-    
-    
-    
+
     
     /**
      * Can the user place that there? Not on my watch!
@@ -311,9 +308,6 @@ public class Listeners implements Listener {
     	}
         
     }
-    
-    
-    
     
     
     /**

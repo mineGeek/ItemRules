@@ -9,7 +9,9 @@ import com.github.mineGeek.ItemRules.Store.Players;
 public class ApplyRule extends CommandBase {
 
 	/**
-	 * Executes the command
+	 * Executes a command to manually apply a rule to a player
+	 * note that recalculating the rules (which happens all the time) may
+	 * make this rule "fall back off" if it is an auto applied one!
 	 */
 	protected Boolean exec( String cmdName, String[] args ) {
 			

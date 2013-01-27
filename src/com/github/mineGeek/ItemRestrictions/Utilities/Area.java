@@ -105,6 +105,9 @@ public class Area {
 		
 	}
 	
+	/**
+	 * Good guy closure
+	 */
 	public void close() {
 		this.ne = null;
 		this.sw = null;

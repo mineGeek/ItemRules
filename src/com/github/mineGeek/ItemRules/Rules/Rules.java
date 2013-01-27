@@ -12,11 +12,10 @@ import org.bukkit.entity.Player;
 import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 import com.github.mineGeek.ItemRules.Integration.FactionsPlayer;
 import com.github.mineGeek.ItemRules.Integration.McMMOPlayer;
-import com.github.mineGeek.ItemRules.Rules.Rule.AppliesToMode;
 import com.github.mineGeek.ItemRules.Rules.Rule.RuleMode;
 import com.github.mineGeek.ItemRules.Store.IRPlayer;
 import com.github.mineGeek.ItemRules.Store.Players;
-import com.gmail.nossr50.datatypes.SkillType;
+import com.gmail.nossr50.skills.SkillType;
 
 
 /**
@@ -65,12 +64,13 @@ public class Rules {
 				
 				for ( String x : rules.get(key) ) {
 					
-					if ( s != null ) {
-						s = s + ", " + Rules.getRule( x ).getDescription();
-					} else {
-						s = Rules.getRule( x ).getDescription();
-					}				
-					
+					if ( Rules.getRule( x ).getDescription() != null ) {
+						if ( s != null ) {
+							s = s + ", " + Rules.getRule( x ).getDescription();
+						} else {
+							s = Rules.getRule( x ).getDescription();
+						}				
+					}
 				}
 				
 				if ( s != null ) {
@@ -84,191 +84,6 @@ public class Rules {
 		return result;
 		
 	}
-	
-	
-	/**
-	 * Gets a formatted string of rules that apply to player.
-	 * Sort of a shite (AKA messy ) function.
-	 * @param player
-	 * @param doCan
-	 * @param doCanNow
-	 * @param doNext
-	 * @param canColor
-	 * @param nextColor
-	 * @param cannotColor
-	 * @return
-	 */
-	public static List<String> getRuleList( Player player, Boolean doCan, Boolean doCanNow, Boolean doNext, ChatColor canColor, ChatColor nextColor, ChatColor cannotColor ) {
-
-		List<String> can = new ArrayList<String>();
-		List<String> cannot = new ArrayList<String>();
-		List<String> next = new ArrayList<String>();
-		List<String> appliedYes = new ArrayList<String>();
-		List<String> appliedNo = new ArrayList<String>();
-		List<String> appliedPassed = new ArrayList<String>();
-		
-		boolean applies;
-		boolean applied;
-		boolean appliesNext;
-		String 	not;
-		String	is;
-		
-		if ( !ruleList.isEmpty() ) {
-			
-			IRPlayer ps = Players.get(player);
-			
-			for ( Rule x : Rules.ruleList ) {
-		
-				if ( x.getAuto() ) {
-					
-					applied 	= x.appliesToPlayer( ps, AppliesToMode.PREVIOUS );
-					applies 	= x.appliesToPlayer( ps );
-					appliesNext = x.appliesToPlayer( ps, AppliesToMode.NEXT );
-					is 			= x.getRestrictedMessage();
-					not			= x.getUnrestrictedMessage();
-					
-					if ( applies ) {
-					
-						
-						
-						appliedYes.add(x.getTag());
-						
-						if ( !appliesNext && doNext ) { //will not be applied next level!
-							
-							if ( not != null ) next.add( not );
-							
-						} else if ( !doCan ) {
-							
-							if ( is != null ) cannot.add( is );
-						}
-					} else if ( doCan ){
-					
-						appliedPassed.add( x.getTag() );
-						
-						if ( not != null ) can.add( not );
-						
-						if ( doNext && appliesNext ) {
-							if ( is != null ) next.add( is );
-						} else if ( doCanNow && !applied ) {
-							//is new
-							if ( not != null ) can.add( not );
-						}
-						
-					} else {
-						appliedNo.add(x.getTag());
-					}
-					
-				}
-				
-			}
-
-		}
-		
-		String r = "";
-		List<String> result = new ArrayList<String>();
-		Boolean o = false;
-		
-		if ( can.size() > 0 ) {
-			
-			r = canColor + Config.txtCanDoPrefix;
-			for( String x : can ) {
-				
-				if ( o ) r = r + ", ";
-				o = true;
-				r = r + x;
-			}
-			r = r + ". ";
-			result.add( r );
-			r = "";
-			o = false;
-		}
-		
-		if ( next.size() > 0 ) {
-			
-			if ( r.length() > 0 ) r = r + " ";
-
-			r = r + nextColor + Config.txtCanDoNextPrefix ;
-			for ( String x : next ) {
-				if ( o ) r = r + ", ";
-				o = true;
-				r = r + x;
-			}
-			
-			r = r + ". ";
-			result.add( r );
-			r = "";
-			o = false;
-		}
-		
-		if ( cannot.size() > 0 ) {
-			
-			if ( r.length() > 0 ) r = r + " ";
-			
-			r = r + cannotColor + Config.txtCannotDoPrefix;
-			for ( String x: cannot ) {
-				if ( o ) r = r + ", ";
-				o = true;
-				r = r + x ;
-			}
-			
-			result.add( r );
-			r = r + ". ";
-		}
-		
-		
-		if ( appliedPassed.size() > 0 ) {
-			
-			if ( r.length() > 0 ) r = r + " ";
-
-			r = r + canColor + "applied rules: " ;
-			for ( String x : appliedPassed ) {
-				if ( o ) r = r + ", ";
-				o = true;
-				r = r + x;
-			}
-			
-			r = r + ". ";
-			result.add( r );
-			r = "";
-			o = false;
-		}
-		
-		if ( appliedYes.size() > 0 ) {
-			
-			if ( r.length() > 0 ) r = r + " ";
-
-			r = r + nextColor + "applied rules: " ;
-			for ( String x : appliedYes ) {
-				if ( o ) r = r + ", ";
-				o = true;
-				r = r + x;
-			}
-			
-			r = r + ". ";
-			result.add( r );
-			r = "";
-			o = false;
-		}
-		
-		if ( appliedNo.size() > 0 ) {
-			
-			if ( r.length() > 0 ) r = r + " ";
-			
-			r = r + cannotColor + " not applied : ";
-			for ( String x: appliedNo ) {
-				if ( o ) r = r + ", ";
-				o = true;
-				r = r + x ;
-			}
-			
-			result.add( r );
-			r = r + ". ";
-		}		
-		
-		return result;
-		
-	}
-		
 
 	/**
 	 * Returns a list of all rules that apply to a player
@@ -279,9 +94,11 @@ public class Rules {
 	 */
 	public static Map<String, RuleData> getPlayerRules( Player player ) {
 		
+		
 		Map<String, RuleData> rules = new HashMap<String, RuleData>();
+
 		RuleMode mode = RuleMode.DEFAULT;
-		IRPlayer ps = Players.get(player);
+		IRPlayer ps = Players.get(player.getName());
 		ps.clearRuleMatrixItem();
 		
 		if ( !ruleList.isEmpty() ) {

@@ -8,9 +8,13 @@ import org.bukkit.plugin.Plugin;
 import com.github.mineGeek.ItemRules.ItemRules;
 import com.gmail.nossr50.api.ExperienceAPI;
 import com.gmail.nossr50.api.PartyAPI;
-import com.gmail.nossr50.datatypes.SkillType;
+import com.gmail.nossr50.skills.SkillType;
 
-
+/**
+ * Wrapper for the McMMO player
+ * @author Samuel.Sweet
+ *
+ */
 public class McMMOPlayer {
 
 	public static boolean enabled = false;
