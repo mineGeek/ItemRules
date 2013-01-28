@@ -99,6 +99,22 @@ public class DataStore {
 	
 	
 	/**
+	 * Returns a map list of rules saved.
+	 * @param columnName
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<String, List<String>> getAsRuleList( String columnName ) {
+		
+		Object value = this.get(columnName);
+		
+		try					{ return (Map<String, List<String>>)value; }
+		catch (Exception e) { return new HashMap<String, List<String>>(); }
+		
+	}
+	
+	
+	/**
 	 * gets an Object as a Boolean
 	 * @param columnName
 	 * @param defaultValue

@@ -43,6 +43,18 @@ public class Config {
 			
 	
 	/**
+	 * Text to display to player when there are no changes to rules to display
+	 */
+	public static String txtNoChangesToDisplay = "There are no changes to your rules.";
+	
+	
+	/**
+	 * text to display to player if there are no rules to display
+	 */
+	public static String txtNoRules = "You have no rules applied to you.";
+	
+	
+	/**
 	 * textual prefix for displaying changes in player rules that
 	 * have just been lifted
 	 */
@@ -73,10 +85,12 @@ public class Config {
 	 */
 	public static String txtCannotDoPrefix = "Restricted: ";
 	
+	
 	/**
 	 * The text for default restriction message
 	 */
 	public static String txtDefaultRestrictedMessage = "use this";
+	
 	
 	/**
 	 * Text for default cando message
@@ -201,7 +215,8 @@ public class Config {
 		Config.txtCanNowDo					= c.getString("text.CanNowDo", "You can now ");
 		Config.txtDefaultRestrictedMessage	= c.getString("text.DefaultRestrictedMessage", "You cannot do that");
 		Config.txtDefaultUnrestrictedMessage= c.getString("text.DefaultUnrestrictedMessage", "");
-		
+		Config.txtNoRules					= c.getString("text.NoRulesToDisplay", "You have no rules applied to you.");
+		Config.txtNoChangesToDisplay		= c.getString("text.NoChangesToYourRules", "There are no changes to your rules.");
 		Config.spamPlayerMessageTimeout		= c.getInt( "playerMessageTimeout", 1500 );
 		
 		Config.debug_area_chunkEntrance		= c.getBoolean("debug.area.chunkEntrance", false);

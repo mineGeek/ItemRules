@@ -55,8 +55,8 @@ public class Rules {
 			
 			for ( String key : rules.keySet() ) {
 				
-				if ( key.equals( "inactive" ) && !doCan ) continue;
-				if ( key.equals( "active" ) && !doRestricted ) continue;
+				if ( key.equals( "unrestricted" ) && !doCan ) continue;
+				if ( key.equals( "restricted" ) && !doRestricted ) continue;
 				if ( key.equals( "unapplied" ) && !doUnapplied ) continue;
 				
 				String s = null;
@@ -73,7 +73,7 @@ public class Rules {
 				}
 				
 				if ( s != null ) {
-					result.add( ( key == "inactive" ? ChatColor.GREEN + Config.txtCanDoPrefix : key == "active" ? ChatColor.RED + Config.txtCannotDoPrefix : ChatColor.YELLOW )  + s );
+					result.add( ( key == "unrestricted" ? ChatColor.GREEN + Config.txtCanDoPrefix : key == "restricted" ? ChatColor.RED + Config.txtCannotDoPrefix : ChatColor.YELLOW )  + s );
 				}			
 				
 			}

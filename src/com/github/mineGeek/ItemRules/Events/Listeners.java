@@ -1,5 +1,8 @@
 package com.github.mineGeek.ItemRules.Events;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -9,9 +12,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
@@ -24,6 +29,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.github.mineGeek.ItemRestrictions.Utilities.Config;
@@ -36,6 +42,24 @@ import com.github.mineGeek.ItemRules.Store.Players;
 
 public class Listeners implements Listener {
 
+	
+	private Map<InventoryType, Material> inventoryMaterialMap;
+	
+	public Listeners() {
+		
+		this.inventoryMaterialMap = new HashMap<InventoryType, Material>();	
+		
+		this.inventoryMaterialMap.put( InventoryType.ANVIL, Material.ANVIL);
+		this.inventoryMaterialMap.put( InventoryType.BREWING, Material.BREWING_STAND );
+		this.inventoryMaterialMap.put( InventoryType.CHEST, Material.CHEST);
+		this.inventoryMaterialMap.put( InventoryType.DISPENSER, Material.DISPENSER );
+		this.inventoryMaterialMap.put( InventoryType.ENCHANTING, Material.ENCHANTMENT_TABLE );
+		this.inventoryMaterialMap.put( InventoryType.ENDER_CHEST, Material.ENDER_CHEST );
+		this.inventoryMaterialMap.put( InventoryType.FURNACE, Material.FURNACE );
+		this.inventoryMaterialMap.put( InventoryType.WORKBENCH, Material.WORKBENCH );
+		
+	}
+	
 	/**
 	 * Convienence stub to get the MaterialId from an entity ( if possible )
 	 * @param entity
@@ -64,6 +88,7 @@ public class Listeners implements Listener {
 	public void onPlayerJoin( PlayerJoinEvent evt ) {
 
 		Players.addPlayer( evt.getPlayer() );
+		API.printNewUnrestrictedToPlayer( evt.getPlayer(), false ); 
 		API.printRulesToPlayer( evt.getPlayer() );
 		
 	}
@@ -134,6 +159,90 @@ public class Listeners implements Listener {
 	
 	
 	/**
+	 * Handles shooting bows and arrows.
+	 * @param evt
+	 */
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onShootBow( EntityShootBowEvent evt ) {
+		
+		if ( evt.isCancelled() ) return;
+		
+		if ( evt.getEntity() instanceof Player ) {
+			
+			Player p = (Player)evt.getEntity();
+			if ( Players.get( p ).isRestricted( Actions.USE, evt.getBow().getType(), evt.getBow().getData().getData() ) ) {
+				evt.setCancelled( true );
+			} else {
+				Material m = this.getMaterialFromEntity( evt.getProjectile() );
+				
+				if ( m != null ) {
+					if ( Players.get( p ).isRestricted( Actions.USE, m, (byte)0)) {
+						evt.setCancelled( true );
+					}
+				}
+			}
+			
+		}
+		
+	}
+	
+	
+	
+	/**
+	 * Handle getting into carts
+	 * @param evt
+	 */
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onVehicleEnter(VehicleEnterEvent evt) {
+		
+		if ( evt.isCancelled() ) return;
+		
+		if ( evt.getEntered() instanceof Player ) {
+			
+			Player p = (Player)evt.getEntered();
+			Material m = this.getMaterialFromEntity( evt.getVehicle() );
+			
+			if ( m != null ) {
+			
+				if ( Players.get(p).isRestricted( Actions.USE, m, (byte)0)) {
+					evt.setCancelled( true );
+				}
+			}
+			
+			
+		}
+		
+	}
+	
+	
+	/**
+	 * Handle getting into some inventory
+	 * @param evt
+	 */
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onInventoryOpen( InventoryOpenEvent evt ) {
+		
+		if ( evt.getPlayer() instanceof Player ) {
+		
+			Player p = (Player)evt.getPlayer();
+			
+			if ( !this.inventoryMaterialMap.isEmpty() ) {
+				
+				Material m = this.inventoryMaterialMap.get( evt.getView().getType() );
+				
+				if ( m != null ) {
+					if ( Players.get( p ).isRestricted( Actions.USE, m, (byte)0 ) ) {
+						evt.setCancelled( true );
+					}
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	/**
 	 * When a player closes their inventory, check to make sure they didn't equip armor
 	 * they shouldn't have!
 	 * @param evt
@@ -149,6 +258,11 @@ public class Listeners implements Listener {
             
     }	
 	
+    
+    /**
+     * Handle filling up a bucket
+     * @param evt
+     */
     @SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerFillBucket(PlayerBucketFillEvent evt ) {
@@ -180,6 +294,10 @@ public class Listeners implements Listener {
     }
     
     
+    /**
+     * Handle emptying a bucket
+     * @param evt
+     */
     @SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerEmptyBucket(PlayerBucketEmptyEvent evt ) {
@@ -201,6 +319,10 @@ public class Listeners implements Listener {
     }    
     
     
+    /**
+     * Handle fishing
+     * @param evt
+     */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerFish(PlayerFishEvent evt) {
     	
@@ -216,7 +338,8 @@ public class Listeners implements Listener {
 	 * Check if a player can use the item
 	 * @param evt
 	 */
-    @EventHandler(priority = EventPriority.LOWEST)
+    @SuppressWarnings("deprecation")
+	@EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInteractBlock(PlayerInteractEvent evt){
         
     	

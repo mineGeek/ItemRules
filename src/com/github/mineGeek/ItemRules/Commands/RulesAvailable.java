@@ -1,10 +1,9 @@
 package com.github.mineGeek.ItemRules.Commands;
 
 import java.util.List;
-
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 import com.github.mineGeek.ItemRules.Rules.Rules;
 
 /**
@@ -79,15 +78,16 @@ public class RulesAvailable extends CommandBase {
 		
 		List<String> result = Rules.getPlayerRulesList(player, doCan, doRestricted, doUnapplied );
 
-		boolean toPlayer = ( ( sender instanceof Player || sender instanceof CommandSender) );
 		
-		for ( String x : result ) {
-			
-			if ( toPlayer) {
-				player.sendMessage(x);
-			} else {
+		if ( result != null && result.size() > 0 ) {
+		
+			for ( String x : result ) {
+
 				sender.sendMessage(x);
 			}
+		
+		} else {
+			sender.sendMessage( Config.txtNoRules );
 		}
 		
 		

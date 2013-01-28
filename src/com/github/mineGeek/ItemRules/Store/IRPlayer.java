@@ -2,12 +2,10 @@ package com.github.mineGeek.ItemRules.Store;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 import com.github.mineGeek.ItemRestrictions.Utilities.PlayerMessenger;
+import com.github.mineGeek.ItemRules.API;
 import com.github.mineGeek.ItemRules.ItemRules.Actions;
 import com.github.mineGeek.ItemRules.Rules.AreaRule;
 import com.github.mineGeek.ItemRules.Rules.AreaRules;
@@ -88,7 +87,7 @@ public class IRPlayer extends DataStore {
 
 	
 	private Map<String, List<String>> RuleMatrix = new HashMap<String, List<String>>();
-	private Map<String, List<String>> RuleMatrixPrev = new HashMap<String, List<String>>();
+
 	
 	
 	/**
@@ -200,9 +199,26 @@ public class IRPlayer extends DataStore {
 	}
 	
 	
+	public Map<String, List<String>>getPreviousRules() {
+		return this.getAsRuleList("previousRuleList");
+	}
+	
+	
+	public void setPreviousRuleList( Map<String, List<String>>list) {
+		this.set( "previousRuleList", list );
+	}
+	
+	
+	/**
+	 * Matrix of rules currently applied to player
+	 * @return
+	 */
 	public Map<String, List< String > > getRuleMatrix() {
 		return this.RuleMatrix;
 	}
+	
+	
+	
 	
 	public void addRuleMatrixItem( String mode, String tag ) {
 		
@@ -226,15 +242,17 @@ public class IRPlayer extends DataStore {
 		ChatColor color = ChatColor.GREEN;
 		String prefix = Config.txtCanNowDo;
 		
-		if ( this.RuleMatrixPrev != null && !this.RuleMatrixPrev.isEmpty() ) {
+		Map<String, List<String>> prev = this.getPreviousRules();
+		
+		if ( prev != null && !prev.isEmpty() ) {
 			
-			if ( type == "unrestricted" && this.RuleMatrixPrev.containsKey("restricted")) {
-				result = new ArrayList<String>( this.RuleMatrixPrev.get("restricted") );
+			if ( type == "unrestricted" && prev.containsKey("restricted")) {
+				result = new ArrayList<String>( prev.get("restricted") );
 				if ( this.RuleMatrix.containsKey( "restricted" ) ) {
 					result.removeAll( new ArrayList<String>( this.RuleMatrix.get( "restricted" ) ) );
 				}
-			} else if ( type == "restricted" && this.RuleMatrixPrev.containsKey("unapplied")) {
-				result = new ArrayList<String>( this.RuleMatrixPrev.get("unapplied") );
+			} else if ( type == "restricted" && prev.containsKey("unapplied")) {
+				result = new ArrayList<String>( prev.get("unapplied") );
 				color = ChatColor.RED;
 				prefix = Config.txtCanNoLongerDo;
 				if ( this.RuleMatrix.containsKey( "unapplied" ) ) {
@@ -283,7 +301,7 @@ public class IRPlayer extends DataStore {
 	public void clearRuleMatrix( boolean copyToPrevious ) {
 		
 		if ( copyToPrevious ) {
-			this.RuleMatrixPrev = new HashMap<String, List<String>>( this.RuleMatrix );
+			this.setPreviousRuleList( new HashMap<String, List<String>>( this.RuleMatrix ) );
 		}
 		
 		this.RuleMatrix.clear();
@@ -316,21 +334,7 @@ public class IRPlayer extends DataStore {
 			}			
 		}
 		
-		/*
-		if ( this.rules != null && !this.rules.isEmpty() ) {
-		
-			Set<String> oldRuleTags = new HashSet<String>( this.rules.keySet() );
-			
-			Set<String> newTags = new HashSet<String>( newRule.keySet() );
-			newTags.removeAll( new HashSet<String>( oldRuleTags ) );
-			
-			Set<String> removedTags = new HashSet<String>( oldRuleTags );
-			removedTags.removeAll( new HashSet<String>( newRule.keySet() ) );
 
-			boolean bob = false;
-			
-		}
-		*/
 		this.rules = newRule;
 		
 		if ( this.rules != null && !this.rules.isEmpty() ) {
@@ -342,11 +346,7 @@ public class IRPlayer extends DataStore {
 			
 		}
 		
-		String message = this.getNewAppliedRules( "restricted");
-		if ( message != null ) p.sendMessage( message );
-		message = this.getNewAppliedRules( "unrestricted");
-		if ( message != null ) p.sendMessage( message );
-		
+		API.printChangedRulesToPlayer(p, false );
 		
 	}
 	

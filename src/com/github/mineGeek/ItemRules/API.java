@@ -1,8 +1,11 @@
 package com.github.mineGeek.ItemRules;
 
 import java.util.List;
+
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 import com.github.mineGeek.ItemRules.Store.Players;
 import com.github.mineGeek.ItemRules.Rules.Rules;
 
@@ -100,9 +103,62 @@ public class API {
 	 */
 	public static void printRulesToPlayer( Player player ) {
 		List<String> result = Rules.getPlayerRulesList(player, false, true, false);
-		for (String x : result ) {
-			player.sendMessage(x);
+		if ( result != null && result.size() > 0 ) { 
+			for (String x : result ) {
+				player.sendMessage(x);
+			}
+		} else {
+			player.sendMessage( Config.txtNoRules );
 		}
+	}
+	
+	/**
+	 * Prints out differences to rules applied to player since last change
+	 * @param player
+	 * @param printNoChangesOnEmpty
+	 */
+	public static void printChangedRulesToPlayer( Player player, boolean printNoChangesOnEmpty ) {
+		if ( !API.printNewUnrestrictedToPlayer(player, false ) && !API.printNewRestrictionsToPlayer(player, false) && printNoChangesOnEmpty ) {
+			player.sendMessage( ChatColor.YELLOW + Config.txtNoChangesToDisplay );
+		}
+	}
+	
+	
+	/**
+	 * Prints rules that were removed from player recently
+	 * @param player
+	 * @param printNoChangesOnEmpty
+	 * @return
+	 */
+	public static boolean printNewUnrestrictedToPlayer( Player player, boolean printNoChangesOnEmpty ) {
+		String message = Players.get(player).getNewAppliedRules("unrestricted");
+
+		if ( message != null ) {
+			player.sendMessage(message);
+			return true;
+		} else if ( printNoChangesOnEmpty ) {
+			player.sendMessage( ChatColor.GREEN + Config.txtNoChangesToDisplay );
+		}
+		return false;
+	}
+	
+	
+	/**
+	 * Prints rules that were recently applied to player
+	 * @param player
+	 * @param printNoChangesOnEmpty
+	 * @return
+	 */
+	public static boolean printNewRestrictionsToPlayer( Player player, boolean printNoChangesOnEmpty ) {
+		String message = Players.get(player).getNewAppliedRules("restricted");
+		
+		if ( message != null ) {
+			player.sendMessage(message);
+			return true;
+		} else if ( printNoChangesOnEmpty ) {
+			player.sendMessage( ChatColor.RED + Config.txtNoChangesToDisplay );
+		}
+		return false;
 	}
 	
 }

@@ -34,7 +34,6 @@ public class ItemRules extends JavaPlugin {
 	/**
 	 * Scheduled task to periodically clean up the Messenger queue
 	 */
-	@SuppressWarnings("unused")
 	private BukkitTask messengerGC;
 	
 	
