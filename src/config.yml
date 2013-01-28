@@ -85,7 +85,6 @@ rules:
         actions: [USE, PLACE, PICKUP]
         items:
             restrict: ['diamondEquipment']
-
 #########################################
 #
 # Manualrules are not automatically applied

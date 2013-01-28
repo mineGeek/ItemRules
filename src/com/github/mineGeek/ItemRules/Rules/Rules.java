@@ -98,7 +98,7 @@ public class Rules {
 
 		RuleMode mode = RuleMode.DEFAULT;
 		IRPlayer ps = Players.get(player.getName());
-		ps.clearRuleMatrixItem();
+		ps.clearRuleMatrix( true );
 		
 		if ( !ruleList.isEmpty() ) {
 			
@@ -118,6 +118,7 @@ public class Rules {
 							mode = x.getRuleMode();
 							if ( mode == RuleMode.ALLOWPREVIOUS || mode == RuleMode.DENYPREVIOUS ) {
 								if ( !rules.isEmpty() ) {
+									ps.clearRuleMatrix( false );
 									rules.clear();
 								}
 								
@@ -125,7 +126,7 @@ public class Rules {
 							}
 						}
 						
-						ps.addRuleMatrixItem( ( mode == RuleMode.ALLOW ? "inactive" : "active" ), x.getTag() );
+						ps.addRuleMatrixItem( ( mode == RuleMode.ALLOW || mode == RuleMode.ALLOWPREVIOUS ? "allowed" : "restricted" ), x.getTag() );
 						
 						Map<String, RuleData> r = x.getAllowedItems();
 						
@@ -173,6 +174,7 @@ public class Rules {
 								if ( mode == RuleMode.ALLOWPREVIOUS || mode == RuleMode.DENYPREVIOUS ) {
 									
 									if ( !rules.isEmpty() ) {
+										ps.clearRuleMatrix( false );
 										rules.clear();
 									}
 									
@@ -180,7 +182,7 @@ public class Rules {
 								}								
 							}
 							
-							ps.addRuleMatrixItem( ( mode == RuleMode.ALLOW ? "inactive" : "active" ), x );
+							ps.addRuleMatrixItem( ( mode == RuleMode.ALLOW || mode == RuleMode.ALLOWPREVIOUS ? "allowed" : "restricted" ), x );
 							
 							if ( !r.isEmpty() ) {
 								
@@ -256,10 +258,10 @@ public class Rules {
 	public static void addRule( String tag, ConfigurationSection config, boolean manual ) {
 		
 		Rule rule = null;
-		
-		if ( config.contains("inherit") ) {
+
+		if ( config.isSet( "inherit") ) {
 			
-			rule = Rules.ruleByTagList.get( config.getString("inherit"));
+			rule = Rules.ruleByTagList.get( config.getString( "inherit"));
 			
 			if ( rule != null ) {
 				
@@ -277,13 +279,13 @@ public class Rules {
 		
 		if ( McMMOPlayer.enabled ) {
 		
-			if ( config.contains("mcmmo") ) {
+			if ( config.isSet( "mcmmo" ) ) {
 				
-				ConditionMcMMO mcMMO = new ConditionMcMMO( config.getBoolean("mcmmo.party", false) );
+				ConditionMcMMO mcMMO = new ConditionMcMMO( config.getBoolean( "mcmmo.party", false) );
 				
-				if ( config.contains("mcmmo.skills")) {
-					for ( String x : config.getConfigurationSection("mcmmo.skills").getKeys( false ) ) {
-						mcMMO.add( SkillType.valueOf( x.toUpperCase() ), config.getInt("mcmmo.skills." + x, 0) );
+				if ( config.isSet( "mcmmo.skills" )) {
+					for ( String x : config.getConfigurationSection( "mcmmo.skills" ).getKeys( false ) ) {
+						mcMMO.add( SkillType.valueOf( x.toUpperCase() ), config.getInt( "mcmmo.skills." + x, 0) );
 					}
 				}
 			
@@ -294,20 +296,20 @@ public class Rules {
 		
 		if ( FactionsPlayer.enabled ) {
 			
-			if ( config.contains("factions") ) {
+			if ( config.isSet( "factions" ) ) {
 				
 				ConditionFactions factions = new ConditionFactions();
 				
-				if ( config.contains("factions.appliesTo") ) {
-					factions.setWhitelist( config.getStringList("factions.appliesTo") );
+				if ( config.isSet( "factions.appliesTo" ) ) {
+					factions.setWhitelist( config.getStringList( "factions.appliesTo" ) );
 				}
 				
-				if ( config.contains("factions.exclude") ) {
-					factions.setBlacklist( config.getStringList("factions.exclude") );
+				if ( config.isSet( "factions.exclude" ) ) {
+					factions.setBlacklist( config.getStringList( "factions.exclude" ) );
 				}
 				
-				if ( config.contains("factions.maxPower") || config.contains("factions.minPower")) {
-					factions.setPower( config.getInt("factions.minPower"), config.getInt("factions.maxPower") );
+				if ( config.isSet( "factions.maxPower" ) || config.isSet( "factions.minPower" )) {
+					factions.setPower( config.getInt( "factions.minPower" ), config.getInt( "factions.maxPower") );
 				}
 				
 				if ( factions != null ) rule.addApplicator( factions );
@@ -316,56 +318,56 @@ public class Rules {
 		}
 		
 		
-		if ( config.contains( "mode" ) ) {
+		if ( config.isSet(  "mode" ) ) {
 			
-			rule.setRuleMode( RuleMode.valueOf( config.getString("mode").toUpperCase()) );
+			rule.setRuleMode( RuleMode.valueOf( config.getString( "mode" ).toUpperCase()) );
 			
 		}
 		
-		rule.setAuto( config.getBoolean("auto", !manual ) );
+		rule.setAuto( config.getBoolean( "auto", !manual ) );
 		
-		if ( config.contains( "description") ) rule.setDescription( config.getString("description") );
+		if ( config.isSet( "description") ) rule.setDescription( config.getString( "description" ) );
 		
-		if ( config.contains( "messages.restricted") ) rule.setRestrictedMessage( config.getString("messages.restricted", null) );
-		if ( config.contains( "messages.unrestricted") ) rule.setUnrestrictedMessage( config.getString("messages.unrestricted", null) );
+		if ( config.isSet( "messages.restricted") ) rule.setRestrictedMessage( config.getString( "messages.restricted", null) );
+		if ( config.isSet( "messages.unrestricted") ) rule.setUnrestrictedMessage( config.getString( "messages.unrestricted", null) );
 		
-		if ( config.contains("actions") ) 	rule.setActions( config.getStringList("actions") );
-		//if ( config.contains("items") ) 	rule.setAllowedItems( config.getStringList("items") );
+		if ( config.isSet( "actions") ) 	rule.setActions( config.getStringList( "actions" ) );
+		//if ( config.isSet("items") ) 	rule.setAllowedItems( config.getStringList("items") );
 		
-		if ( config.contains("items.allow") ) Rules.loadItemsFromList( config.getStringList("items.allow"), rule, true );
-		if ( config.contains("items.restrict") ) Rules.loadItemsFromList( config.getStringList("items.restrict"), rule, false );
+		if ( config.isSet( "items.allow" ) ) Rules.loadItemsFromList( config.getStringList( "items.allow" ), rule, true );
+		if ( config.isSet( "items.restrict" ) ) Rules.loadItemsFromList( config.getStringList( "items.restrict" ), rule, false );
 		
-		if ( config.contains("itemsAdd") ) {
+		if ( config.isSet( "itemsAdd" ) ) {
 			
-			for( String x : config.getStringList("itemsAdd") ) {
+			for( String x : config.getStringList( "itemsAdd" ) ) {
 				rule.addAllowedItem( x );
 			}
 			
 		}
 		
-		if ( config.contains("itemsRemove") ) {
+		if ( config.isSet( "itemsRemove" ) ) {
 			
-			for( String x : config.getStringList("itemsRemove") ) {
+			for( String x : config.getStringList( "itemsRemove" ) ) {
 				rule.removeAllowedItem( x );
 			}
 			
 		}
 		
-		if ( config.contains("permissions.applyto") ) rule.addApplicator( new ConditionPerms( true, config.getStringList("permissions.applyto") ) );
-		if ( config.contains("permissions.exclude") ) rule.addApplicator( new ConditionPerms( false, config.getStringList("permissions.exclude") ) );		
+		if ( config.isSet( "permissions.applyto" ) ) rule.addApplicator( new ConditionPerms( true, config.getStringList(  "permissions.applyto" ) ) );
+		if ( config.isSet( "permissions.exclude" ) ) rule.addApplicator( new ConditionPerms( false, config.getStringList(  "permissions.exclude" ) ) );		
 			
-		if ( config.contains("groups.applyto") ) rule.addApplicator( new ConditionGroup( true, config.getStringList("groups.applyto") ) );
-		if ( config.contains("groups.exclude") ) rule.addApplicator( new ConditionGroup( false, config.getStringList("groups.exclude") ) );		
+		if ( config.isSet( "groups.applyto" ) ) rule.addApplicator( new ConditionGroup( true, config.getStringList(  "groups.applyto" ) ) );
+		if ( config.isSet( "groups.exclude" ) ) rule.addApplicator( new ConditionGroup( false, config.getStringList(  "groups.exclude" ) ) );		
 		
-		if ( config.contains("worlds.applyto") ) rule.addApplicator( new ConditionWorld( true, config.getStringList("worlds.applyto") ) );
-		if ( config.contains("worlds.exclude") ) rule.addApplicator( new ConditionWorld( true, config.getStringList("worlds.exclude") ) );
+		if ( config.isSet( "worlds.applyto" ) ) rule.addApplicator( new ConditionWorld( true, config.getStringList(  "worlds.applyto" ) ) );
+		if ( config.isSet( "worlds.exclude" ) ) rule.addApplicator( new ConditionWorld( true, config.getStringList(  "worlds.exclude" ) ) );
 		
-		if ( config.contains("xp.min") || config.contains("xp.max") ) {
-			rule.addApplicator( new ConditionXP( config.contains("xp.min") ? config.getInt("xp.min") : null, config.contains("xp.max") ? config.getInt("xp.max") : null ) );	
+		if ( config.isSet( "xp.min" ) || config.isSet(  "xp.max" ) ) {
+			rule.addApplicator( new ConditionXP( config.isSet( "xp.min" ) ? config.getInt( "xp.min" ) : null, config.isSet( "xp.max" ) ? config.getInt( "xp.max" ) : null ) );	
 		}
 
-		if ( config.contains("itemLevel.min") || config.contains("itemLevel.max") ) {
-			rule.addApplicator( new ConditionItemLevel( config.contains("itemLevel.min") ? config.getInt("itemLevel.min") : null, config.contains("itemLevel.max") ? config.getInt("itemLevel.max") : null ) );	
+		if ( config.isSet( "itemLevel.min" ) || config.isSet( "itemLevel.max" ) ) {
+			rule.addApplicator( new ConditionItemLevel( config.isSet( "itemLevel.min" ) ? config.getInt( "itemLevel.min" ) : null, config.isSet( "itemLevel.max" ) ? config.getInt( "itemLevel.max" ) : null ) );	
 		}
 		
 		Rules.addRule( rule );

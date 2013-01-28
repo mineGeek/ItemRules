@@ -2,10 +2,12 @@ package com.github.mineGeek.ItemRules.Store;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -86,6 +88,7 @@ public class IRPlayer extends DataStore {
 
 	
 	private Map<String, List<String>> RuleMatrix = new HashMap<String, List<String>>();
+	private Map<String, List<String>> RuleMatrixPrev = new HashMap<String, List<String>>();
 	
 	
 	/**
@@ -217,14 +220,74 @@ public class IRPlayer extends DataStore {
 		
 	}
 	
+	public String getNewAppliedRules( String type ) {
+		
+		List<String> result = new ArrayList<String>();
+		ChatColor color = ChatColor.GREEN;
+		String prefix = Config.txtCanNowDo;
+		
+		if ( this.RuleMatrixPrev != null && !this.RuleMatrixPrev.isEmpty() ) {
+			
+			if ( type == "unrestricted" && this.RuleMatrixPrev.containsKey("restricted")) {
+				result = new ArrayList<String>( this.RuleMatrixPrev.get("restricted") );
+				if ( this.RuleMatrix.containsKey( "restricted" ) ) {
+					result.removeAll( new ArrayList<String>( this.RuleMatrix.get( "restricted" ) ) );
+				}
+			} else if ( type == "restricted" && this.RuleMatrixPrev.containsKey("unapplied")) {
+				result = new ArrayList<String>( this.RuleMatrixPrev.get("unapplied") );
+				color = ChatColor.RED;
+				prefix = Config.txtCanNoLongerDo;
+				if ( this.RuleMatrix.containsKey( "unapplied" ) ) {
+					result.removeAll( new ArrayList<String>( this.RuleMatrix.get( "unapplied" ) ) );
+				}
+			}
+			
+		}
+		
+		String message = this.getRuleListFromTagList( result );
+		if ( message != null ) return color + prefix + message;
+		return null;
+		
+	}
+	
+	private String getRuleListFromTagList( List<String> list ) {
+		
+		String result = null;
+		
+		if ( list != null && !list.isEmpty() ) {
+			for (String x : list ) {
+				if ( Rules.getRule(x).getDescription() != null ) {
+					if ( result == null ) {
+						result = Rules.getRule(x).getDescription();
+					} else {
+						result = ", " + Rules.getRule(x).getDescription();
+					}
+				}
+			}
+			
+		}
+		
+		return result;
+	}
+	
 	public void removeRuleMatrixItem( String mode, String tag ) {
 		
 		if ( this.RuleMatrix.containsKey( mode ) ) this.RuleMatrix.get( mode ).remove( tag );
 		
 	}
 	
-	public void clearRuleMatrixItem() {
+	public void clearRuleMatrix() {
+		this.clearRuleMatrix( true );
+	}
+	
+	public void clearRuleMatrix( boolean copyToPrevious ) {
+		
+		if ( copyToPrevious ) {
+			this.RuleMatrixPrev = new HashMap<String, List<String>>( this.RuleMatrix );
+		}
+		
 		this.RuleMatrix.clear();
+		
 	}
 	
 	
@@ -253,7 +316,21 @@ public class IRPlayer extends DataStore {
 			}			
 		}
 		
+		/*
+		if ( this.rules != null && !this.rules.isEmpty() ) {
 		
+			Set<String> oldRuleTags = new HashSet<String>( this.rules.keySet() );
+			
+			Set<String> newTags = new HashSet<String>( newRule.keySet() );
+			newTags.removeAll( new HashSet<String>( oldRuleTags ) );
+			
+			Set<String> removedTags = new HashSet<String>( oldRuleTags );
+			removedTags.removeAll( new HashSet<String>( newRule.keySet() ) );
+
+			boolean bob = false;
+			
+		}
+		*/
 		this.rules = newRule;
 		
 		if ( this.rules != null && !this.rules.isEmpty() ) {
@@ -264,6 +341,11 @@ public class IRPlayer extends DataStore {
 			}
 			
 		}
+		
+		String message = this.getNewAppliedRules( "restricted");
+		if ( message != null ) p.sendMessage( message );
+		message = this.getNewAppliedRules( "unrestricted");
+		if ( message != null ) p.sendMessage( message );
 		
 		
 	}

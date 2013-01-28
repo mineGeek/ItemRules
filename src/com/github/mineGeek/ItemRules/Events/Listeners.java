@@ -13,7 +13,10 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLevelChangeEvent;
@@ -21,6 +24,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
 
 import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 import com.github.mineGeek.ItemRules.API;
@@ -145,7 +149,69 @@ public class Listeners implements Listener {
             
     }	
 	
-	
+    @SuppressWarnings("deprecation")
+	@EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerFillBucket(PlayerBucketFillEvent evt ) {
+    	
+    	if ( evt.isCancelled() ) return;
+    	
+    	if ( ! Players.get( evt.getPlayer() ).isRestricted( Actions.USE, evt.getBucket(), (byte)0 ) ) {
+    		
+    		if ( Players.get( evt.getPlayer() ).isRestricted( Actions.PICKUP, evt.getBlockClicked().getType(), evt.getBlockClicked().getData() ) ) {
+    			evt.setCancelled( true );
+    		}
+    		
+    	} else {
+    		evt.setCancelled( true );
+    		
+    	}
+    	
+    	if ( evt.isCancelled() ) {
+    		try {
+    			evt.getPlayer().sendBlockChange( evt.getBlockClicked().getLocation(), evt.getBlockClicked().getType(), evt.getBlockClicked().getData());
+				if ( evt.getBucket().getId() == Material.BUCKET.getId() || evt.getBucket().getId() == Material.WATER_BUCKET.getId() || evt.getBucket().getId() == Material.LAVA_BUCKET.getId() ) {
+					ItemStack i = new ItemStack( evt.getBucket().getId(), 1 );
+					evt.getPlayer().setItemInHand( i );
+					evt.getPlayer().updateInventory();
+				}
+    		} catch (Exception e ){}    		
+    	}
+    	
+    }
+    
+    
+    @SuppressWarnings("deprecation")
+	@EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerEmptyBucket(PlayerBucketEmptyEvent evt ) {
+    	
+    	if ( evt.isCancelled() ) return;
+    	
+    	if ( Players.get( evt.getPlayer() ).isRestricted( Actions.USE, evt.getBucket(), (byte)0 ) ) {
+    		evt.setCancelled( true );
+    		try {
+    			evt.getPlayer().sendBlockChange( evt.getBlockClicked().getLocation(), evt.getBlockClicked().getType(), evt.getBlockClicked().getData());
+				if ( evt.getBucket().getId() == Material.BUCKET.getId() || evt.getBucket().getId() == Material.WATER_BUCKET.getId() || evt.getBucket().getId() == Material.LAVA_BUCKET.getId() ) {
+					ItemStack i = new ItemStack( evt.getBucket().getId(), 1 );
+					evt.getPlayer().setItemInHand( i );
+					evt.getPlayer().updateInventory();
+				}
+    		} catch (Exception e ){}
+    	}
+    	
+    }    
+    
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerFish(PlayerFishEvent evt) {
+    	
+    	if ( evt.isCancelled() ) return;
+    	
+    	if ( Players.get( evt.getPlayer() ).isRestricted( Actions.USE, evt.getPlayer().getItemInHand().getType(), evt.getPlayer().getItemInHand().getData().getData() ) ) {
+    		evt.setCancelled( true );
+    	}
+    }
+    
+    
 	/**
 	 * Check if a player can use the item
 	 * @param evt
@@ -161,6 +227,15 @@ public class Listeners implements Listener {
 	    	
 	    		if ( Players.get( evt.getPlayer() ).isRestricted(Actions.USE, evt.getItem().getType(), evt.getItem().getData().getData() ) ) {
 	    			evt.setCancelled( true );
+
+	    			if ( evt.getItem().getType().getId() == Material.BUCKET.getId() || evt.getItem().getType().getId() == Material.WATER_BUCKET.getId() || evt.getItem().getType().getId() == Material.LAVA_BUCKET.getId() ) {
+	    				
+	    				evt.getPlayer().sendBlockChange( evt.getClickedBlock().getLocation(), evt.getClickedBlock().getType(), evt.getClickedBlock().getData());
+	    				ItemStack i = new ItemStack( evt.getItem().getType().getId(), 1 );
+	    				evt.getPlayer().setItemInHand( i );
+	    				evt.getPlayer().updateInventory();
+	    			}
+	    			
 	    		}
 	    	}
 	    	if ( evt.getClickedBlock() != null ) {
@@ -171,11 +246,12 @@ public class Listeners implements Listener {
 	    		
 	    		
 	    	}
+	    	
     	} catch (Exception e ) {
 
     		e.printStackTrace();
     	}
-    	
+
     }
     
     
@@ -259,9 +335,11 @@ public class Listeners implements Listener {
     	
     	if ( Players.get( evt.getPlayer() ).isRestricted( Actions.BREAK, evt.getBlock().getType(), evt.getBlock().getData() ) ) {
     		evt.setCancelled( true );
+    	} else if ( Players.get( evt.getPlayer() ).isRestricted( Actions.USE, evt.getPlayer().getItemInHand().getType(), evt.getPlayer().getItemInHand().getData().getData() ) ) {
+    		evt.setCancelled( true );
     	}
 	
-        
+
     }
     
     

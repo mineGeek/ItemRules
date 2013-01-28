@@ -43,6 +43,19 @@ public class Config {
 			
 	
 	/**
+	 * textual prefix for displaying changes in player rules that
+	 * have just been lifted
+	 */
+	public static String txtCanNowDo = "You can now ";
+	
+	
+	/**
+	 * Textual prefix for displaying changes in player rules who can
+	 * no longer do x
+	 */
+	public static String txtCanNoLongerDo = "You can no longer ";
+	
+	/**
 	 * The textual prefix for when we show the player a list of things
 	 * they can do
 	 */
@@ -147,7 +160,7 @@ public class Config {
 			
 			for ( String x : c.getConfigurationSection( "rules").getKeys( false ) ) {
 				
-				Rules.addRule( x, c.getConfigurationSection("rules." + x) );
+				Rules.addRule( x, c.getConfigurationSection( "rules." + x ) );
 				
 			}
 			
@@ -184,6 +197,8 @@ public class Config {
 		Config.txtCanDoPrefix				= c.getString("text.CanDoPrefix", "Not restricted: ");
 		Config.txtCanDoNextPrefix			= c.getString("text.CanDoNextPrefix", "Next rules change: ");
 		Config.txtCannotDoPrefix			= c.getString("text.CannotDoPrefix", "Restricted: ");
+		Config.txtCanNoLongerDo				= c.getString("text.CanNoLongerDo", "You can no longer ");
+		Config.txtCanNowDo					= c.getString("text.CanNowDo", "You can now ");
 		Config.txtDefaultRestrictedMessage	= c.getString("text.DefaultRestrictedMessage", "You cannot do that");
 		Config.txtDefaultUnrestrictedMessage= c.getString("text.DefaultUnrestrictedMessage", "");
 		

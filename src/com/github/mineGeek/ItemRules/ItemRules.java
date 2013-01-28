@@ -2,6 +2,7 @@ package com.github.mineGeek.ItemRules;
 
 import java.io.File;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -43,6 +44,10 @@ public class ItemRules extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		
+		if ( this.messengerGC != null ) {
+			this.messengerGC.cancel();
+		}
+		
 		try { Players.close( true ); }
 		catch (Exception e ) {}
 		try{ AreaRules.close(); }
@@ -63,7 +68,8 @@ public class ItemRules extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		
-		this.saveDefaultConfig();		
+
+		this.saveDefaultConfig();
 		Config.c = this.getConfig();
 		
 		
@@ -101,10 +107,12 @@ public class ItemRules extends JavaPlugin {
     	/**
     	 * Tasks
     	 */
-    	this.messengerGC = Config.server().getScheduler().runTaskTimerAsynchronously( this, new Runnable() {
+    	this.messengerGC = Config.server().getScheduler().runTaskTimerAsynchronously( Bukkit.getPluginManager().getPlugin("ItemRules"), new Runnable() {
     	    @Override  
     	    public void run() {
-    	    	PlayerMessenger.clean();
+    	    	try {
+    	    		PlayerMessenger.clean();
+    	    	} catch (Exception e ) {}
     	    }
     	}, 3600L, 3600L); 	
     	

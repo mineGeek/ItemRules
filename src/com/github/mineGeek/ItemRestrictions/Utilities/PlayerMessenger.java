@@ -59,25 +59,27 @@ public class PlayerMessenger {
 	 */
 	public static void clean() {
 		
-		Iterator<Entry<String, Map<String, Long>>> i = _queue.entrySet().iterator();
-		
-		while ( i.hasNext() ) {
+		try{
+			Iterator<Entry<String, Map<String, Long>>> i = _queue.entrySet().iterator();
 			
-			Entry<String, Map<String, Long>> o = i.next();
-			
-			Iterator<Entry<String, Long>> x = o.getValue().entrySet().iterator();
-			
-			while ( x.hasNext() ) {
+			while ( i.hasNext() ) {
 				
-				Map.Entry<String, Long> y = x.next();
+				Entry<String, Map<String, Long>> o = i.next();
 				
-				if ( y.getValue() < System.currentTimeMillis() - Config.spamPlayerMessageTimeout ) {
-					_queue.remove( o.getKey() );
+				Iterator<Entry<String, Long>> x = o.getValue().entrySet().iterator();
+				
+				while ( x.hasNext() ) {
+					
+					Map.Entry<String, Long> y = x.next();
+					
+					if ( y.getValue() < System.currentTimeMillis() - Config.spamPlayerMessageTimeout ) {
+						_queue.remove( o.getKey() );
+					}
+					
 				}
 				
 			}
-			
-		}
+		} catch (Exception e ) {}
 		
 	}
 	
