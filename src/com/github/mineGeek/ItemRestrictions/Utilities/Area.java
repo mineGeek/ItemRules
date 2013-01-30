@@ -96,11 +96,14 @@ public class Area {
 	 */
 	public Boolean intersectsWith( Location l ) {	
 
-		if ( ( Math.max( ne.getX(), sw.getX() ) < l.getX() - 1 ) || ( Math.min( ne.getX(), sw.getX() ) >= l.getX() ) ) return false;
-		if ( ( Math.max( ne.getZ(), sw.getZ() ) < l.getZ() - 1 ) || ( Math.min( ne.getZ(), sw.getZ() ) >= l.getZ() ) ) return false;
-		if ( ( Math.max( ne.getY(), sw.getY() ) < l.getY() - 1 ) || ( Math.min( ne.getY(), sw.getY() ) >= l.getY() ) ) return false;
-	
-		return true;
+		if ( l.getWorld().getName().equals( ne.getWorld().getName() ) ) {
+			if ( ( Math.max( ne.getX(), sw.getX() ) < l.getX() - 1 ) || ( Math.min( ne.getX(), sw.getX() ) >= l.getX() ) ) return false;
+			if ( ( Math.max( ne.getZ(), sw.getZ() ) < l.getZ() - 1 ) || ( Math.min( ne.getZ(), sw.getZ() ) >= l.getZ() ) ) return false;
+			if ( ( Math.max( ne.getY(), sw.getY() ) < l.getY() - 1 ) || ( Math.min( ne.getY(), sw.getY() ) >= l.getY() ) ) return false;	
+			return true;
+		} else {
+			return false;
+		}
 		
 		
 	}
