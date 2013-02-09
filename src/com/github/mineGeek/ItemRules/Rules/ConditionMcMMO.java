@@ -9,9 +9,6 @@ import org.bukkit.entity.Player;
 
 import com.github.mineGeek.ItemRules.Integration.McMMOPlayer;
 import com.github.mineGeek.ItemRules.Store.IRPlayer;
-import com.gmail.nossr50.skills.SkillType;
-
-
 
 /**
  * Qualifies application of rule based on mcMMO criteria
@@ -22,7 +19,7 @@ public class ConditionMcMMO implements Applicator {
 	/**
 	 * List of mapped skills to min levels
 	 */
-	private Map<SkillType, ConditionBetween> skills = new HashMap<SkillType, ConditionBetween>();
+	private Map<String, ConditionBetween> skills = new HashMap<String, ConditionBetween>();
 	
 	
 	/**
@@ -69,7 +66,7 @@ public class ConditionMcMMO implements Applicator {
 	 * @param skill
 	 * @param min
 	 */
-	public void add( SkillType skill, int min ) {
+	public void add( String skill, int min ) {
 	
 		this.skills.put( skill , new ConditionBetween( min, null ) );
 		
@@ -85,12 +82,12 @@ public class ConditionMcMMO implements Applicator {
 		
 		if ( !this.skills.isEmpty() ) {
 			
-			Iterator<Entry<SkillType, ConditionBetween>> skills = this.skills.entrySet().iterator();
+			Iterator<Entry<String, ConditionBetween>> skills = this.skills.entrySet().iterator();
 			while ( skills.hasNext() ) {
 				
-				Entry<SkillType, ConditionBetween> row = skills.next();
+				Entry<String, ConditionBetween> row = skills.next();
 				
-				SkillType skill = row.getKey();
+				String skill = row.getKey();
 				ConditionBetween condition = row.getValue();
 				
 				if ( !condition.isMinOk( McMMOPlayer.getSkillLevel( player, skill) + adjustedLevel ) ) {

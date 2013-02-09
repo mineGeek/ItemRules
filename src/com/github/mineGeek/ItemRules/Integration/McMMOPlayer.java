@@ -8,7 +8,7 @@ import org.bukkit.plugin.Plugin;
 import com.github.mineGeek.ItemRules.ItemRules;
 import com.gmail.nossr50.api.ExperienceAPI;
 import com.gmail.nossr50.api.PartyAPI;
-import com.gmail.nossr50.skills.SkillType;
+
 
 
 
@@ -49,7 +49,7 @@ public class McMMOPlayer {
 		
 	}
 	
-	public static int getSkillLevel( Player player, SkillType skill ) {
+	public static int getSkillLevel( Player player, String skill ) {
 		if ( enabled ) return ExperienceAPI.getLevel(player, skill);
 		return 0;
 	}

@@ -1,6 +1,6 @@
 name: ItemRules
 main: com.github.mineGeek.ItemRules.ItemRules
-version: 1.0.2
+version: 1.0.3
 softdepend: [mcMMO, Factions, Vault]
 commands:
     rules:

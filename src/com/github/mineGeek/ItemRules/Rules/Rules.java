@@ -15,7 +15,6 @@ import com.github.mineGeek.ItemRules.Integration.McMMOPlayer;
 import com.github.mineGeek.ItemRules.Rules.Rule.RuleMode;
 import com.github.mineGeek.ItemRules.Store.IRPlayer;
 import com.github.mineGeek.ItemRules.Store.Players;
-import com.gmail.nossr50.skills.SkillType;
 
 /**
  * Static object for interacting with rules
@@ -285,7 +284,7 @@ public class Rules {
 				
 				if ( config.isSet( "mcmmo.skills" )) {
 					for ( String x : config.getConfigurationSection( "mcmmo.skills" ).getKeys( false ) ) {
-						mcMMO.add( SkillType.valueOf( x.toUpperCase() ), config.getInt( "mcmmo.skills." + x, 0) );
+						mcMMO.add( x.toUpperCase(), config.getInt( "mcmmo.skills." + x, 0) );
 					}
 				}
 			
