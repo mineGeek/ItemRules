@@ -50,8 +50,10 @@ public class McMMOPlayer {
 	}
 	
 	public static int getSkillLevel( Player player, String skill ) {
-		if ( enabled ) return ExperienceAPI.getLevel(player, skill);
-		return 0;
+		
+		int lvl = 0;
+		if ( enabled ) lvl = ExperienceAPI.getLevel(player, skill);
+		return lvl;
 	}
 	
 	public static Boolean isPlayerInParty( Player player ) {

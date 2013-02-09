@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.mineGeek.ItemRules.Integration.Vault;
 import com.github.mineGeek.ItemRules.ItemRules.Actions;
 import com.github.mineGeek.ItemRules.Rules.Applicator.ApplicationResult;
 import com.github.mineGeek.ItemRules.Store.IRPlayer;
@@ -373,7 +374,10 @@ public class Rule {
 	 */
 	public boolean appliesToPlayer( IRPlayer player, AppliesToMode method ) {
 		
-		if ( player.getPlayer().hasPermission("itemRules.bypass." + this.getTag() ) ) return false;
+
+		if ( Vault.hasPerm( player.getPlayer() , "itemRules.bypass." + this.getTag() ) ) return false;
+		
+		
 		
 		if ( this.appliesTo.isEmpty() ) return true; //? Doesn't apply to anyone so make it!?!?
 		

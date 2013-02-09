@@ -84,7 +84,7 @@ public class Listeners implements Listener {
 	 * print them off for the user.
 	 * @param evt
 	 */
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin( PlayerJoinEvent evt ) {
 
 		Players.addPlayer( evt.getPlayer() );

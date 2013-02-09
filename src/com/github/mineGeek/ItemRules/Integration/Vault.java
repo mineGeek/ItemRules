@@ -53,4 +53,13 @@ public class Vault {
 		
 	}
 	
+	public static boolean hasPerm( Player p, String path ) {
+		
+		if ( enabled ) {
+			return perm.has(p, path );
+		} else {
+			return p.hasPermission( path );
+		}
+	}
+	
 }

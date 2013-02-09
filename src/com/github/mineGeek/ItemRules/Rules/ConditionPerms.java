@@ -1,6 +1,8 @@
 package com.github.mineGeek.ItemRules.Rules;
 
 import java.util.List;
+
+import com.github.mineGeek.ItemRules.Integration.Vault;
 import com.github.mineGeek.ItemRules.Store.IRPlayer;
 
 /**
@@ -39,7 +41,7 @@ public class ConditionPerms extends ConditionStringList implements Applicator {
 			
 			for ( String x : this.list ) {
 				
-				if ( player.getPlayer().hasPermission( x ) ) {
+				if ( Vault.hasPerm( player.getPlayer(), x )  ) {
 					
 					if ( !this.appliesTo ) {
 						return ApplicationResult.NO;
