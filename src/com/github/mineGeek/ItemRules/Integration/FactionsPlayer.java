@@ -7,8 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 import com.github.mineGeek.ItemRules.ItemRules;
+import com.github.mineGeek.ItemRules.Utilities.Config;
 import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.FPlayers;
 

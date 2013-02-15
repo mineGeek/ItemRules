@@ -6,8 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
-import com.github.mineGeek.ItemRestrictions.Utilities.Config;
-import com.github.mineGeek.ItemRestrictions.Utilities.PlayerMessenger;
 import com.github.mineGeek.ItemRules.Commands.ApplyRule;
 import com.github.mineGeek.ItemRules.Commands.RulesAvailable;
 import com.github.mineGeek.ItemRules.Events.Listeners;
@@ -17,6 +15,8 @@ import com.github.mineGeek.ItemRules.Integration.Vault;
 import com.github.mineGeek.ItemRules.Rules.AreaRules;
 import com.github.mineGeek.ItemRules.Rules.Rules;
 import com.github.mineGeek.ItemRules.Store.Players;
+import com.github.mineGeek.ItemRules.Utilities.Config;
+import com.github.mineGeek.ItemRules.Utilities.PlayerMessenger;
 
 /**
  * Main entry point for plugin
@@ -106,7 +106,7 @@ public class ItemRules extends JavaPlugin {
     	/**
     	 * Tasks
     	 */
-    	this.messengerGC = Config.server().getScheduler().runTaskTimerAsynchronously( Bukkit.getPluginManager().getPlugin("ItemRules"), new Runnable() {
+    	this.messengerGC = Config.server().getScheduler().runTaskTimer( Bukkit.getPluginManager().getPlugin("ItemRules"), new Runnable() {
     	    @Override  
     	    public void run() {
     	    	try {

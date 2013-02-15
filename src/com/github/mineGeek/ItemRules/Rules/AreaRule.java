@@ -6,12 +6,12 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import com.github.mineGeek.ItemRestrictions.Utilities.Area;
-import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 import com.github.mineGeek.ItemRules.API;
 import com.github.mineGeek.ItemRules.Events.onAreaRuleEntrance;
 import com.github.mineGeek.ItemRules.Events.onAreaRuleExit;
 import com.github.mineGeek.ItemRules.Store.Players;
+import com.github.mineGeek.ItemRules.Utilities.Area;
+import com.github.mineGeek.ItemRules.Utilities.Config;
 
 
 /**

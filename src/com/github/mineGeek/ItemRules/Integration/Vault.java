@@ -2,11 +2,13 @@ package com.github.mineGeek.ItemRules.Integration;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-import com.github.mineGeek.ItemRestrictions.Utilities.Config;
+import com.github.mineGeek.ItemRules.Utilities.Config;
 
+import net.milkbowl.vault.item.Items;
 import net.milkbowl.vault.permission.Permission;
 
 /**
@@ -60,6 +62,16 @@ public class Vault {
 		} else {
 			return p.hasPermission( path );
 		}
+	}
+	
+	public static String getItemName( ItemStack i ) {
+		
+		if ( enabled ) {
+			return Items.itemByStack( i ).getName();
+		} else {
+			return i.getType().toString().toLowerCase().replace("_", " ");
+		}
+		
 	}
 	
 }

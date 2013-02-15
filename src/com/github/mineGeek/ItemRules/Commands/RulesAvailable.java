@@ -3,8 +3,8 @@ package com.github.mineGeek.ItemRules.Commands;
 import java.util.List;
 import org.bukkit.entity.Player;
 
-import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 import com.github.mineGeek.ItemRules.Rules.Rules;
+import com.github.mineGeek.ItemRules.Utilities.Config;
 
 /**
  * Allows users to see which rules apply and do not apply.
