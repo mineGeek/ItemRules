@@ -32,11 +32,11 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 import com.github.mineGeek.ItemRules.API;
 import com.github.mineGeek.ItemRules.ItemRules.Actions;
 import com.github.mineGeek.ItemRules.Store.IRPlayer;
 import com.github.mineGeek.ItemRules.Store.Players;
+import com.github.mineGeek.ItemRules.Utilities.Config;
 
 
 

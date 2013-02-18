@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
-import com.github.mineGeek.ItemRestrictions.Utilities.Config;
+import com.github.mineGeek.ItemRules.Utilities.Config;
 
 /**
  * Static accessor for all active players

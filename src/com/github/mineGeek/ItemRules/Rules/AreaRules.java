@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.bukkit.configuration.ConfigurationSection;
 
-import com.github.mineGeek.ItemRestrictions.Utilities.Area;
-import com.github.mineGeek.ItemRestrictions.Utilities.Config;
+import com.github.mineGeek.ItemRules.Utilities.Area;
+import com.github.mineGeek.ItemRules.Utilities.Config;
 
 /**
  * Collection/Controller of areaRules

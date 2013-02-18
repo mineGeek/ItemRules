@@ -9,12 +9,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 import com.github.mineGeek.ItemRules.Integration.FactionsPlayer;
 import com.github.mineGeek.ItemRules.Integration.McMMOPlayer;
 import com.github.mineGeek.ItemRules.Rules.Rule.RuleMode;
 import com.github.mineGeek.ItemRules.Store.IRPlayer;
 import com.github.mineGeek.ItemRules.Store.Players;
+import com.github.mineGeek.ItemRules.Utilities.Config;
 
 /**
  * Static object for interacting with rules

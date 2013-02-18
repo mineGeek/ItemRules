@@ -1,4 +1,4 @@
-package com.github.mineGeek.ItemRestrictions.Utilities;
+package com.github.mineGeek.ItemRules.Utilities;
 
 import java.util.List;
 

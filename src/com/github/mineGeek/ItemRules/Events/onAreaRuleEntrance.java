@@ -9,7 +9,7 @@ import com.github.mineGeek.ItemRules.Store.IRPlayer;
 
 /**
  * Event API for entering into an Area. Allows other plugins to 
- * monitor when an area is waled into
+ * monitor when an area is walked into
  *
  */
 public class onAreaRuleEntrance extends Event implements Cancellable {

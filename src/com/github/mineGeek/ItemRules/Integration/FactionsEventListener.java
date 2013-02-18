@@ -5,10 +5,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-import com.github.mineGeek.ItemRestrictions.Utilities.Config;
 import com.github.mineGeek.ItemRules.API;
 import com.github.mineGeek.ItemRules.ItemRules;
 import com.github.mineGeek.ItemRules.Store.Players;
+import com.github.mineGeek.ItemRules.Utilities.Config;
 import com.massivecraft.factions.event.FPlayerJoinEvent;
 import com.massivecraft.factions.event.FPlayerLeaveEvent;
 

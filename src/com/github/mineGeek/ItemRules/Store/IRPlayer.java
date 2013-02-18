@@ -13,10 +13,10 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
-import com.github.mineGeek.ItemRestrictions.Utilities.Config;
-import com.github.mineGeek.ItemRestrictions.Utilities.PlayerMessenger;
 import com.github.mineGeek.ItemRules.API;
+import com.github.mineGeek.ItemRules.Integration.Vault;
 import com.github.mineGeek.ItemRules.ItemRules.Actions;
 import com.github.mineGeek.ItemRules.Rules.AreaRule;
 import com.github.mineGeek.ItemRules.Rules.AreaRules;
@@ -24,6 +24,8 @@ import com.github.mineGeek.ItemRules.Rules.RuleData;
 import com.github.mineGeek.ItemRules.Rules.Rule;
 import com.github.mineGeek.ItemRules.Rules.Rules;
 import com.github.mineGeek.ItemRules.Rules.Rule.RuleMode;
+import com.github.mineGeek.ItemRules.Utilities.Config;
+import com.github.mineGeek.ItemRules.Utilities.PlayerMessenger;
 
 /**
  * ItemRules extension to Bukkits player
@@ -590,9 +592,11 @@ public class IRPlayer extends DataStore {
 		
 		boolean result = item.isRestricted( action );
 		
-		if ( result && item.getRestrictionMessage() != null ) {
-						
-			Object[] args = { action.toString().toLowerCase(),  material.toString().replace("_", " ").toLowerCase() };
+		if ( result && item.getRestrictionMessage() != null ) {			
+			ItemStack i = new ItemStack( material );
+			i.setData( new MaterialData(material, data) );
+			i.setDurability( (short)data);
+			Object[] args = { action.toString().toLowerCase(),  Vault.getItemName( i ) };
 			Player p = this.getPlayer();
 			PlayerMessenger.SendPlayerMessage( p, ChatColor.RED + "" + ChatColor.ITALIC + String.format(item.getRestrictionMessage(), args ) );
 		}
