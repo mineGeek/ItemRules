@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import com.github.mineGeek.ItemRules.ItemRules;
 import com.github.mineGeek.ItemRules.Store.Players;
 
-import com.gmail.nossr50.events.experience.McMMOPlayerExperienceEvent;
+import com.gmail.nossr50.events.experience.McMMOPlayerLevelUpEvent;
 import com.gmail.nossr50.events.party.McMMOPartyChangeEvent;
 
 /**
@@ -26,7 +26,7 @@ public class McMMOEventListener implements Listener {
 	
 	
 	@EventHandler(priority = EventPriority.LOWEST)
-	public void onMcMMOExperience( McMMOPlayerExperienceEvent evt) {
+	public void onMcMMOExperience( McMMOPlayerLevelUpEvent evt) {
 		
 		evt.getPlayer().sendMessage("levelup");
 		Players.get( evt.getPlayer() ).loadRules();

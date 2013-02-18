@@ -159,14 +159,14 @@ public class Rules {
 			 */
 			if ( !ps.getManualRules().isEmpty() ) {
 			
-				for ( String x : ps.getManualRules() ) {
+ 				for ( String x : ps.getManualRules() ) {
 					
 					if ( Rules.ruleByTagList.containsKey( x ) ) {
 					
 						if ( Rules.ruleByTagList.get(x).appliesToPlayer( ps ) ) {
 						
 							Map<String, RuleData> r = Rules.ruleByTagList.get(x).getAllowedItems();							
-							
+							r.putAll( Rules.ruleByTagList.get(x).getRestrictedItems() );
 							if ( Rules.ruleByTagList.get(x).getRuleMode() != RuleMode.DEFAULT ) {
 								mode = Rules.ruleByTagList.get(x).getRuleMode();
 								
@@ -175,7 +175,7 @@ public class Rules {
 									if ( !rules.isEmpty() ) {
 										ps.clearRuleMatrix( false );
 										rules.clear();
-									}
+									} 
 									
 									ps.setRuleMode( mode == RuleMode.ALLOWPREVIOUS ? RuleMode.ALLOW : RuleMode.DENY );
 								}								
