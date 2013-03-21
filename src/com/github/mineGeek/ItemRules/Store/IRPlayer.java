@@ -13,7 +13,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
 
 import com.github.mineGeek.ItemRules.API;
 import com.github.mineGeek.ItemRules.Integration.Vault;
@@ -593,10 +592,10 @@ public class IRPlayer extends DataStore {
 		boolean result = item.isRestricted( action );
 		
 		if ( result && item.getRestrictionMessage() != null ) {			
-			ItemStack i = new ItemStack( material );
-			i.setData( new MaterialData(material, data) );
-			i.setDurability( (short)data);
-			Object[] args = { action.toString().toLowerCase(),  Vault.getItemName( i ) };
+			//ItemStack i = new ItemStack( material );
+			//i.setData( new MaterialData(material, data) );
+			//i.setDurability( (short)data);
+			Object[] args = { action.toString().toLowerCase(),  Vault.getItemName( material.getId(), (short)data ) };
 			Player p = this.getPlayer();
 			PlayerMessenger.SendPlayerMessage( p, ChatColor.RED + "" + ChatColor.ITALIC + String.format(item.getRestrictionMessage(), args ) );
 		}

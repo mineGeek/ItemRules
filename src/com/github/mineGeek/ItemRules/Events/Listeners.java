@@ -384,7 +384,7 @@ public class Listeners implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDamage(EntityDamageByEntityEvent evt) {
-    	
+
     	if ( evt.isCancelled() ) return;
     	
     	//can player use item?

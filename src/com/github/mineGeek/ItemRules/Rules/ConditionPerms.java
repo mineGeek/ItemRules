@@ -55,7 +55,7 @@ public class ConditionPerms extends ConditionStringList implements Applicator {
 			
 		}
 		
-		return this.appliesTo ? ApplicationResult.NO : ApplicationResult.NONE;
+		return this.appliesTo ? ApplicationResult.NO : ApplicationResult.YES;
 	}
 	
 	/**

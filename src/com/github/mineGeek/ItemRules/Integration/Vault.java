@@ -1,6 +1,7 @@
 package com.github.mineGeek.ItemRules.Integration;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -62,6 +63,18 @@ public class Vault {
 		} else {
 			return p.hasPermission( path );
 		}
+	}
+	
+	public static String getItemName( int materialId, short data ) {
+		
+		try {
+			if ( enabled ) {
+				return Items.itemById( materialId, data ).getName();
+			}
+		} catch (Exception e ) {}
+		
+		return Material.getMaterial( materialId ).toString().toLowerCase().replace("_", " ");
+		
 	}
 	
 	public static String getItemName( ItemStack i ) {
