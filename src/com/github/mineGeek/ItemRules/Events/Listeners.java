@@ -32,6 +32,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.ItemStack;
 
+
 import com.github.mineGeek.ItemRules.API;
 import com.github.mineGeek.ItemRules.ItemRules.Actions;
 import com.github.mineGeek.ItemRules.Store.IRPlayer;
@@ -392,10 +393,12 @@ public class Listeners implements Listener {
     	if ( evt.getDamager() instanceof Player ) {
     	
     		Player player = (Player)evt.getDamager();
-    		
-			if ( Players.get( player ).isRestricted( Actions.USE, player.getItemInHand().getType(), player.getItemInHand().getData().getData() ) ) {
-				evt.setCancelled( true );
-			}
+
+    		try {
+				if ( Players.get( player ).isRestricted( Actions.USE, player.getItemInHand().getType(), player.getItemInHand().getData().getData() ) ) {
+					evt.setCancelled( true );
+				}
+    		} catch ( Exception e) {}
     	}
     	
     }
