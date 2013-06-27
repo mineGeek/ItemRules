@@ -2,8 +2,10 @@ package com.github.mineGeek.ItemRules.Rules;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.github.mineGeek.ItemRules.Integration.FactionsPlayer;
 import com.github.mineGeek.ItemRules.Store.IRPlayer;
-import com.massivecraft.factions.FPlayers;
+
 
 
 /**
@@ -123,8 +125,8 @@ public class ConditionFactions implements Applicator {
 	@Override
 	public ApplicationResult isApplicable(IRPlayer player) {
 		
-		String factionName = FPlayers.i.get( player.getPlayer() ).getFaction().getTag();
-		int power = FPlayers.i.get( player.getPlayer()).getPowerRounded();
+		String factionName = FactionsPlayer.getFactionName( player.getPlayer() );
+		int power = FactionsPlayer.getPower( player.getPlayer() );
 		
 		if ( this.whitelist.contains( factionName ) ) {
 			
@@ -169,7 +171,7 @@ public class ConditionFactions implements Applicator {
 	@Override
 	public ApplicationResult willBeApplicable(IRPlayer player) {
 		
-		return this.isApplicable( FPlayers.i.get( player.getPlayer()).getPowerRounded() + 1 );
+		return this.isApplicable( FactionsPlayer.getPower(player.getPlayer()) + 1);
 
 	}
 
@@ -181,7 +183,7 @@ public class ConditionFactions implements Applicator {
 	 */	
 	@Override
 	public ApplicationResult wasApplicable(IRPlayer player) {
-		return this.isApplicable( FPlayers.i.get( player.getPlayer()).getPowerRounded() - 1 );
+		return this.isApplicable( FactionsPlayer.getPower(player.getPlayer()) - 1 );
 	}
 	
 	

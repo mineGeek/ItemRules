@@ -9,8 +9,9 @@ import com.github.mineGeek.ItemRules.API;
 import com.github.mineGeek.ItemRules.ItemRules;
 import com.github.mineGeek.ItemRules.Store.Players;
 import com.github.mineGeek.ItemRules.Utilities.Config;
-import com.massivecraft.factions.event.FPlayerJoinEvent;
-import com.massivecraft.factions.event.FPlayerLeaveEvent;
+import com.massivecraft.factions.entity.UPlayer;
+import com.massivecraft.factions.event.FactionsEventMembershipChange;
+
 
 /**
  * Factions event listener. To monitor when someone joins/leaves a faction
@@ -25,39 +26,20 @@ public class FactionsEventListener implements Listener {
 		this.plugin = plugin;
 	}
 	
-	
 	@EventHandler(priority = EventPriority.LOWEST)
-	public void onFactionJoin( FPlayerJoinEvent evt ) {
+	public void onFactionChange( FactionsEventMembershipChange evt ) {
 		
-		Players.get( evt.getFPlayer().getName() ).loadRules();
-
-		final Player peep = Config.server().getPlayer( evt.getFPlayer().getName() );
+		UPlayer p = evt.getUPlayer();
+		Players.get( p.getName() ).loadRules();
 		
+		final Player peep = Config.server().getPlayer( p.getName() );
 		Config.server().getScheduler().scheduleSyncDelayedTask( this.plugin, new Runnable() {
 		    @Override 
 		    public void run() {
 		         API.refreshPlayerRules( peep );
 		    }
-		}, 30L);		
+		}, 30L);	
 		
-
-	}
-	
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onFactionLeave( FPlayerLeaveEvent evt ) {
-		
-		Players.get( evt.getFPlayer().getName() ).loadRules();
-
-		final Player peep = Config.server().getPlayer( evt.getFPlayer().getName() );
-		
-		Config.server().getScheduler().scheduleSyncDelayedTask( this.plugin, new Runnable() {
-		    @Override 
-		    public void run() {
-		         API.refreshPlayerRules( peep );
-		    }
-		}, 30L);		
-		
-
 	}
 	
 	public void close() {

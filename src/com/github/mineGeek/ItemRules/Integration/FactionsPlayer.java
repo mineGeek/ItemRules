@@ -9,8 +9,8 @@ import org.bukkit.plugin.Plugin;
 
 import com.github.mineGeek.ItemRules.ItemRules;
 import com.github.mineGeek.ItemRules.Utilities.Config;
-import com.massivecraft.factions.FPlayer;
-import com.massivecraft.factions.FPlayers;
+import com.massivecraft.factions.entity.UPlayer;
+
 
 
 /**
@@ -55,33 +55,43 @@ public class FactionsPlayer {
 		
 	}
 	
-
+	public static String getFactionName( Player player ) 
+	{
+		UPlayer uplayer = UPlayer.get(player);
+		return uplayer.getFactionName();
+		
+	}
+	
+	
 	
 	public static Boolean isInFaction( Player player, List<String> factions ) {
 		
 		if ( !enabled || factions == null ) return false;
-		return  factions.contains( FPlayers.i.get(player).getFaction().getTag() );
+		UPlayer uplayer = UPlayer.get(player);
+		return  factions.contains( uplayer.getFactionName() );
 		
 	}
 	
 	public static Boolean isFaction( Player player, String factionName ) {
-		FPlayer p = FPlayers.i.get( player );
-		return ( p.getFactionId() == factionName );
+
+		UPlayer uplayer = UPlayer.get(player);
+		return ( uplayer.getFactionName() == factionName );
 	}
 	
-	public static Double getPower( Player player ) {
-		FPlayer p = FPlayers.i.get( player );
-		return p.getPower();
+	public static int getPower( Player player ) {
+		UPlayer uplayer = UPlayer.get(player);
+		return uplayer.getPowerRounded();
 	}
 	
 	public static Boolean isPowerMin( Player player, Integer power ) {
-		FPlayer p = FPlayers.i.get( player );
-		return p.getPowerMinRounded() > power;
+		UPlayer uplayer = UPlayer.get(player);
+		return uplayer.getPowerMinRounded() > power;
 	}
 	
 	public static Boolean isPowerMax( Player player, Integer power ) {
-		FPlayer p = FPlayers.i.get( player );
-		return p.getPowerMaxRounded() > power;
+		UPlayer uplayer = UPlayer.get(player);
+		return uplayer.getPowerMaxRounded() > power;
+		
 	}	
 	
 

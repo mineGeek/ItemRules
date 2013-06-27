@@ -251,11 +251,13 @@ public class Listeners implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInventoryClose(InventoryCloseEvent evt) {
     	
-        if (evt.getView().getType() == InventoryType.CRAFTING && evt.getPlayer() instanceof Player ) {
-        	
-        	Players.get( (Player)evt.getPlayer() ).checkInventory();
-        	
-        }
+    	try{
+	        if (evt.getView().getType() == InventoryType.CRAFTING && evt.getPlayer() instanceof Player ) {
+	        	
+	        	Players.get( (Player)evt.getPlayer() ).checkInventory();
+	        	
+	        }
+    	} catch (Exception e ){}
             
     }	
 	
